@@ -11,6 +11,7 @@ import Doctor from './pages/Doctor'
 import Navbar from './components/Navbar'
 import Footer from "./components/Footer"
 import Appointment from "./pages/Appointment"
+import Insurance from "./pages/Insurance"
 
 function App() {
 
@@ -20,6 +21,7 @@ function App() {
       <Navbar/>
         <Routes>
          <Route path="/" exact element={<Home/> } />    
+         <Route path="/insurance-form" element={<MultiStep/> } />    
          <Route path="/doctors" element={<Doctor/> } />    
          <Route path="/doctors/:speciality" element={<Doctor/> } />    
          <Route path="/login" element={<Login/> } />    
@@ -28,6 +30,7 @@ function App() {
          <Route path="/my-profile"  element={<MyProfile/> } />    
          <Route path="/appointment/:docId" element={<Appointment/> } />    
          <Route path="/my-appointments/:id" element={<MyAppointment/> } />    
+         <Route path="/insurance" element={<Insurance/> } />    
         </Routes>
       <Footer/>
         </div> 
