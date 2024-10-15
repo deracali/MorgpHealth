@@ -172,11 +172,23 @@ const doctorProfile = async (req, res) => {
 
 const updateDoctorProfile = async (req, res) => {
     try {
-        const {  fees, address, available } = req.body;
-        const {docId} = req.params
+        const { fees, address, available, balance } = req.body;
+        const { docId } = req.params;
+
+        // Create an update object that only includes the fields to be updated
+        const updateFields = {};
+        if (fees !== undefined) updateFields.fees = fees;
+        if (address !== undefined) updateFields.address = address;
+        if (available !== undefined) updateFields.available = available;
+
+        // Increment the balance if it's provided
+        if (balance !== undefined) {
+            updateFields.$inc = { balance: balance }; // Increment balance
+        }
+
         const updatedDoctor = await doctorModel.findByIdAndUpdate(
             docId, 
-            { fees, address, available }, 
+            updateFields, 
             { new: true } // Return the updated document
         );
 

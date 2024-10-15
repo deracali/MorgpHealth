@@ -21,7 +21,6 @@ function App() {
       <Navbar/>
         <Routes>
          <Route path="/" exact element={<Home/> } />    
-         <Route path="/insurance-form" element={<MultiStep/> } />    
          <Route path="/doctors" element={<Doctor/> } />    
          <Route path="/doctors/:speciality" element={<Doctor/> } />    
          <Route path="/login" element={<Login/> } />    

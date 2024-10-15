@@ -15,6 +15,9 @@ import { DoctorContext } from "./context/DoctorContext";
 import DoctorAppointment from "./pages/Doctor/DoctorAppointment";
 import DoctorProfile from "./pages/Doctor/DoctorProfile";
 import DoctorDashboard from "./pages/Doctor/DoctorDashboard";
+import DoctorProf from "./pages/Admin/DoctorProfile";
+import DoctorWallet from "./pages/Doctor/DoctorWallet";
+import Withdrawal from "./pages/Doctor/Withdrawal";
 
 
 function App() {
@@ -33,12 +36,15 @@ function App() {
           <Route path='/all-appointment' element={<AllAppointment/>}/>
           <Route path='/add-doctor' element={<AddDoctor/>}/>
           <Route path='/doctor-list' element={<DoctorList/>}/>
+          <Route path='/doctor-profile/:id' element={<DoctorProf/>}/>       
           
           
           
           <Route path='/doctor-dashboard/:id' element={<DoctorDashboard/>}/>       
           <Route path='/doctor-appointment/:id' element={<DoctorAppointment/>}/>       
           <Route path='/doctor-profile/:id' element={<DoctorProfile/>}/>       
+          <Route path='/doctor-wallet/:id' element={<DoctorWallet/>}/>       
+          <Route path='/withdrawal' element={<Withdrawal/>}/>       
         </Routes>
        </div>
     </div> 
