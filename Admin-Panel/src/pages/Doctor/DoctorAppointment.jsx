@@ -2,7 +2,7 @@ import React, { useContext, useEffect, useState } from 'react';
 import { DoctorContext } from '../../context/DoctorContext';
 import { AppContext } from '../../context/AppContext';
 import { assets } from '../../assets/assets_admin/assets';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import axios from 'axios';
 
@@ -10,6 +10,8 @@ export default function DoctorAppointment() {
     const { dToken, cancelAppointment, completeAppointment } = useContext(DoctorContext);
     const { calculateAge, slotDateFormat, currency } = useContext(AppContext);
     const [appointments, setAppointments] = useState([]);
+    
+    const navigate = useNavigate()
 
     const { id } = useParams(); // Get appointment ID from URL
     const backendUrl = import.meta.env.VITE_BACKEND_URL; // Ensure you have the backend URL
@@ -53,7 +55,7 @@ export default function DoctorAppointment() {
                 </div>
         
         {[...appointments].reverse().map((item, index) => (
-        <div key={index} className='flex flex-wrap justify-between max-sm:gap-5 max-sm:text-base sm:grid grid-cols-[0.5fr_2fr_1fr_1fr_3fr_1fr_1fr] gap-1 item-center text-gray-500 py-3 px-6 border-b hover:bg-gray-50'>
+        <div  onClick={()=>navigate(`/session/${item._id}`)} key={index} className='flex cursor-pointer flex-wrap justify-between max-sm:gap-5 max-sm:text-base sm:grid grid-cols-[0.5fr_2fr_1fr_1fr_3fr_1fr_1fr] gap-1 item-center text-gray-500 py-3 px-6 border-b hover:bg-gray-50'>
         <p className='max-sm:hidden'>{index + 1}</p>
         <div className='flex items-center gap-2'>
             <img className="w-8 rounded-full" src={item.userData.image} alt={item.userData.name} />

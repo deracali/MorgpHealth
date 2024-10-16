@@ -6,21 +6,21 @@ export const AddOnsProvider = ({ children }) => {
   const [addOns, setAddOns] = useState([
     {
       id: 1,
-      value: "Online service",
-      desc: "Acces to multiplayer games",
-      price: 1,
+      value: "Premium Cover",
+      desc: "Access to full health insurance",
+      price: 150,
     },
     {
       id: 2,
-      value: "Larger storage",
-      desc: "Extra 1TB of cloud save",
-      price: 2,
+      value: "Gold Cover",
+      desc: "Access to limited health insurance",
+      price: 125,
     },
     {
       id: 3,
-      value: "Customizable profile",
-      desc: "Custom theme on your profile",
-      price: 2,
+      value: "Platinum Cover",
+      desc: "Access to minimal health insurance",
+      price: 83,
     },
   ]);
 

@@ -18,6 +18,7 @@ import DoctorDashboard from "./pages/Doctor/DoctorDashboard";
 import DoctorProf from "./pages/Admin/DoctorProfile";
 import DoctorWallet from "./pages/Doctor/DoctorWallet";
 import Withdrawal from "./pages/Doctor/Withdrawal";
+import Session from "./pages/Doctor/Session";
 
 
 function App() {
@@ -42,6 +43,7 @@ function App() {
           
           <Route path='/doctor-dashboard/:id' element={<DoctorDashboard/>}/>       
           <Route path='/doctor-appointment/:id' element={<DoctorAppointment/>}/>       
+          <Route path='/session/:id' element={<Session/>}/>       
           <Route path='/doctor-profile/:id' element={<DoctorProfile/>}/>       
           <Route path='/doctor-wallet/:id' element={<DoctorWallet/>}/>       
           <Route path='/withdrawal' element={<Withdrawal/>}/>       

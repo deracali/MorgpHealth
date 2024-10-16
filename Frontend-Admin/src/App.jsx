@@ -12,6 +12,9 @@ import Navbar from './components/Navbar'
 import Footer from "./components/Footer"
 import Appointment from "./pages/Appointment"
 import Insurance from "./pages/Insurance"
+import InsuranceData from "./pages/InsuranceData"
+import DoctorsPrescription from "./pages/DoctorsPrescription"
+import DoctorsDiagnosis from "./pages/DoctorsDiagnosis"
 
 function App() {
 
@@ -29,6 +32,9 @@ function App() {
          <Route path="/my-profile"  element={<MyProfile/> } />    
          <Route path="/appointment/:docId" element={<Appointment/> } />    
          <Route path="/my-appointments/:id" element={<MyAppointment/> } />    
+         <Route path="/my-insurance" element={<InsuranceData/> } />    
+         <Route path="/doctors-prescription/:id" element={<DoctorsPrescription/> } />    
+         <Route path="/doctors-diagnosis/:id" element={<DoctorsDiagnosis/> } />    
          <Route path="/insurance" element={<Insurance/> } />    
         </Routes>
       <Footer/>

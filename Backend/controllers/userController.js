@@ -74,6 +74,8 @@ const loginUser = async (req,res) => {
     }
 }
 
+
+
 const getProfile = async (req,res) => {
     try{
         const {userId} = req.body

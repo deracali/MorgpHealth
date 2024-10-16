@@ -2,6 +2,11 @@ import appointmentModel from '../models/appointmentModel.js'
 import doctorModel from '../models/doctorsModel.js'
 import bcrypt from 'bcrypt'
 import jwt from 'jsonwebtoken'
+import cloudinary from 'cloudinary';
+
+// Access the 'vs' property if it exists on the cloudinary object
+const { vs } = cloudinary;
+
 
 const changeAvailablity = async (req,res) => {
     try{
@@ -203,4 +208,95 @@ const updateDoctorProfile = async (req, res) => {
     }
 };
 
-export {changeAvailablity,doctorList, loginDoctor,appointmentsDoctor,appointmentCancel,appointmentComplete,doctorDashboard, doctorProfile, updateDoctorProfile}
+
+
+
+const updateAppointment = async (req, res) => {
+    try {
+        const { appointmentId } = req.params; // Assuming appointmentId is passed in the URL params
+        const {
+            userId,
+            docId,
+            slotDate,
+            slotTime,
+            amount,
+            cancelled,
+            payment,
+            testResult,
+            hospitalName,
+            age,
+            sex,
+            drugName1,
+            dosage1,
+            frequency1,
+            period1,
+            drugName2,
+            dosage2,
+            frequency2,
+            period2,
+            drugName3,
+            dosage3,
+            frequency3,
+            period3,
+            drugName4,
+            dosage4,
+            frequency4,
+            period4,
+        } = req.body;
+        const imageFile = req.file
+
+        // Prepare the update object
+        const updateData = {
+            userId,
+            docId,
+            slotDate,
+            slotTime,
+            amount,
+            cancelled,
+            payment,
+            testResult,
+            hospitalName,
+            age,
+            sex,
+            drugName1,
+            dosage1,
+            frequency1,
+            period1,
+            drugName2,
+            dosage2,
+            frequency2,
+            period2,
+            drugName3,
+            dosage3,
+            frequency3,
+            period3,
+            drugName4,
+            dosage4,
+            frequency4,
+            period4,
+        };
+
+        // Update the appointment in the database
+        const updatedAppointment = await appointmentModel.findByIdAndUpdate(appointmentId, updateData, { new: true });
+
+        if (!updatedAppointment) {
+            return res.json({ success: false, message: "Appointment not found" });
+        }
+        
+        if(imageFile){
+            const imageUpload = await cloudinary.uploader.upload(imageFile.path,{resource_type:"image"})
+            const imageUrl = imageUpload.secure_url
+
+            await appointmentModel.findByIdAndUpdate(appointmentId,{ imgSignature:imageUrl})
+        }
+
+        res.json({ success: true, message: "Appointment Updated", data: updatedAppointment });
+    } catch (error) {
+        console.log(error);
+        res.json({ success: false, message: error.message });
+    }
+};
+
+
+
+export {changeAvailablity,doctorList,updateAppointment, loginDoctor,appointmentsDoctor,appointmentCancel,appointmentComplete,doctorDashboard, doctorProfile, updateDoctorProfile}
