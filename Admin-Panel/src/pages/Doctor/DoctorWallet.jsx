@@ -79,7 +79,7 @@ const Wallet = () => {
             </section>
 
             <footer className="footer">
-                <button onClick={() => navigate('/withdrawal')} className="button">Withdraw</button>
+                <button onClick={() => navigate(`/withdrawal/${id}`)} className="button">Withdraw</button>
             </footer>
         </div>
     );

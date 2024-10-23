@@ -4,7 +4,7 @@ import { addInsurance, getInsurance } from '../controllers/insuranceController.j
 const insuranceRouter = express.Router()
 
 
-insuranceRouter.post('/insurance',addInsurance)
+insuranceRouter.post('/insurance/post',addInsurance)
 insuranceRouter.get('/insurance/:userId',getInsurance)
 
 

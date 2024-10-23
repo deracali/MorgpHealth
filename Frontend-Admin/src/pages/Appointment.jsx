@@ -141,7 +141,7 @@ export default function Appointment() {
 
             <div>
               <p className='flex pt-1 items-center gap-1 text-sm font-medium text-gray-900'>
-                About <img src={assets.info_icon} alt=''/>
+                About <img  className='w-4 h-4' src={assets.info_icon} alt=''/>
               </p>
               <p className='text-sm text-gray-500 max-w-[700px] mt-1'>{docInfo.about}</p>
             </div>

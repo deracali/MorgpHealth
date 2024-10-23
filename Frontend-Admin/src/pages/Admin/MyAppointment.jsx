@@ -1,11 +1,13 @@
 import React, { useContext, useEffect, useState } from 'react';
-import { AppContext } from '../context/AppContext';
+import { AppContext } from '../../context/AppContext';
 import axios from 'axios';
-import { useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 
 export default function MyAppointment() {
   
   const [appointments,setAppointments]  = useState([])
+
+  const navigate = useNavigate()
 
   const months = ["","Jan","Feb","Mar","Apr","Jun","Jul","Aug","Sep","Oct","Nov","Dec"]
   
@@ -94,12 +96,11 @@ export default function MyAppointment() {
         </button>
     )}
     {item.isCompleted && (
-        <button className='sm:min-w-48 py-2 rounded border border-green-500 text-green-500'>
-            Appointment Completed
+        <button onClick={()=>navigate(`/session/${item.docData._id}/${item._id}`)} className='sm:min-w-48 py-2 rounded border border-green-500 text-green-500'>
+            View Session
         </button>
     )}
 </div>
-
           </div>
         ))}
       </div>

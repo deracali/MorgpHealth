@@ -1,6 +1,6 @@
 import mongoose from 'mongoose';
 
-const doctorSchema = new mongoose.Schema({
+const ReviewdoctorSchema = new mongoose.Schema({
     name: { type: String, required: true },
     email: { type: String, required: true, unique: true },
     password: { type: String, required: true },
@@ -28,6 +28,6 @@ const doctorSchema = new mongoose.Schema({
     proofOfID: { type: String, required: true } // Path to uploaded proof of ID
 }, { minimize: false });
 
-const doctorModel = mongoose.models.doctor || mongoose.model('doctor', doctorSchema);
+const ReviewdoctorModel = mongoose.models.doctor || mongoose.model('Reviewdoctor', ReviewdoctorSchema);
 
-export default doctorModel;
+export default ReviewdoctorModel;

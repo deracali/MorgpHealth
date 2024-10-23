@@ -1,17 +1,33 @@
-import express from 'express'
-import {addDoctor,adminDashboard,allDoctors,appointmentCancel,appointmentsAdmin,loginAdmin} from '../controllers/adminController.js'
-import upload from '../middlewares/multer.js'
-import authAdmin from '../middlewares/authAdmin.js'
-import { changeAvailablity } from '../controllers/doctorController.js'
+// adminRouter.js
+import express from 'express';
+import multer from 'multer'; // Ensure multer is imported
+import { 
+    addDoctor, 
+    adminDashboard, 
+    allDoctors, 
+    appointmentCancel, 
+    appointmentsAdmin, 
+    loginAdmin 
+} from '../controllers/adminController.js';
+import { changeAvailablity } from '../controllers/doctorController.js';
+import upload from '../middlewares/multer.js'; // This remains as 'upload'
 
-const adminRouter = express.Router()
+const adminRouter = express.Router();
 
-adminRouter.post('/add-doctor',upload.single('image'),addDoctor)
-adminRouter.post('/login',loginAdmin)
-adminRouter.post('/all-doctors',allDoctors)
-adminRouter.post('/change-availability',changeAvailablity)
-adminRouter.get('/appointments',appointmentsAdmin)
-adminRouter.post('/cancel-appointment',appointmentCancel)
-adminRouter.get('/dashboard',adminDashboard)
+// Configure multer for multiple file uploads, using the imported upload
+const adminUpload = upload.fields([
+    { name: 'image', maxCount: 1 }, // Doctor's profile image
+    { name: 'medicalLicense', maxCount: 1 }, // Medical license image
+    { name: 'diplomaCertificates', maxCount: 1 }, // Diploma certificates image
+    { name: 'proofOfID', maxCount: 1 } // Proof of ID image
+]);
 
-export default adminRouter
+adminRouter.post('/add-doctor', adminUpload, addDoctor);
+adminRouter.post('/login', loginAdmin);
+adminRouter.post('/all-doctors', allDoctors);
+adminRouter.post('/change-availability', changeAvailablity);
+adminRouter.get('/appointments', appointmentsAdmin);
+adminRouter.post('/cancel-appointment', appointmentCancel);
+adminRouter.get('/dashboard', adminDashboard);
+
+export default adminRouter;

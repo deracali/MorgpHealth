@@ -15,9 +15,7 @@ const SelectPlan = () => {
   const { selectedMonthlyPlan } = useContext(PlansContext);
   const { selectedYearlyPlan} = useContext(PlansContext);
   const {personalInfo} = useContext(PersonalInfoContext)
-  useEffect(() => {
-    console.log(personalInfo);
-  }, [personalInfo]);
+  
 
   const handleToggleYearly = () => {
     setToggleYearly((prev) => !prev);

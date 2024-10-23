@@ -5,25 +5,22 @@ import { AppContext } from '../../context/AppContext';
 import { DoctorContext } from '../../context/DoctorContext';
 import { toast } from 'react-toastify';
 
-export default function DoctorsProfile() {
-  const { dToken } = useContext(DoctorContext);
+export default function DoctorDetail() {
   const { currency } = useContext(AppContext);
   const [profileData, setProfileData] = useState({
       address: { line1: '', line2: '' },
       fees: 0,
+      balance: 0,
       available: false,
-      // other default values...
   });
-  
+  const [balanceIncrement, setBalanceIncrement] = useState(0);  // New state for balance increment
   const [isEdit, setIsEdit] = useState(false);
   const { id } = useParams();
   const backendUrl = import.meta.env.VITE_BACKEND_URL;
 
   const getProfileData = async () => {
       try {
-          const { data } = await axios.get(`${backendUrl}/api/doctor/profile/${id}`, {
-              headers: { dToken }
-          });
+          const { data } = await axios.get(`${backendUrl}/api/doctor/profile/${id}`);
           if (data.success) {
               setProfileData(data.profileData);
           } else {
@@ -36,31 +33,44 @@ export default function DoctorsProfile() {
   };
 
   const updateProfile = async () => {
-      try {
-          const updateData = {
-              address: profileData.address,
-              fees: profileData.fees,
-              available: profileData.available,
-          };
+    try {
+        // Using the input value directly for the new balance
+        const updatedBalance = balanceIncrement; // This is the value from the input
 
-          const { data } = await axios.post(`${backendUrl}/api/doctor/update-profile/${id}`, updateData, { headers: { dToken } });
-          if (data.success) {
-              toast.success(data.message);
-              setIsEdit(false);
-              getProfileData();
-          } else {
-              toast.error(data.message);
-          }
-      } catch (error) {
-          console.log(error);
-      }
-  };
+        const updateData = {
+            address: profileData.address,
+            fees: profileData.fees,
+            balance: updatedBalance, // Set the new balance directly from the input
+            available: profileData.available,
+        };
+      
+        const { data } = await axios.post(`${backendUrl}/api/doctor/update-profile/${id}`, updateData);
+        if (data.success) {
+            toast.success(data.message);
+            setIsEdit(false);
+            setBalanceIncrement(0);  // Reset the balance increment after update
+            getProfileData(); // Fetch the updated profile data
+        } else {
+            toast.error(data.message);
+        }
+    } catch (error) {
+        console.error(error);
+        toast.error('An error occurred while updating the profile.'); // Improved error handling
+    }
+};
 
   useEffect(() => {
-      if (dToken) {
-          getProfileData();
-      }
-  }, [dToken]);
+      getProfileData();
+  }, []);
+  
+  const handleBalanceChange = (e) => {
+    const value = parseFloat(e.target.value);
+    if (!isNaN(value) && value >= 0) { // Ensure value is a non-negative number
+        setBalanceIncrement(value);
+    } else {
+        toast.error('Please enter a valid non-negative number for the balance.');
+    }
+};
 
   return (
     <div>
@@ -93,6 +103,26 @@ export default function DoctorsProfile() {
               )}
             </span>
           </p>
+          <p className='flex gap-2 py-2'>
+    Appointment balance: 
+    <span>
+        {currency} 
+        {isEdit ? (
+            <>
+                <input 
+                    type='number' 
+                    onChange={(e) => setBalanceIncrement(parseFloat(e.target.value) || '')} // Allow empty input
+                    value={balanceIncrement} // Control the input with balanceIncrement
+                />
+                <span className="text-xs text-gray-600 ml-2">(Enter the new balance)</span>
+            </>
+        ) : (
+            profileData.balance || 0
+        )}
+    </span>
+</p>
+
+
           <div>
             <p>Address:</p>
             <p className='text-sm'>

@@ -9,7 +9,6 @@ const appointmentSchema = new mongoose.Schema({
     docData: { type: Object, required: true },
     amount: { type: Number, required: true },
     date: { type: Number },
-    imgSignature: { type: String },
     cancelled: { type: Boolean, required: false },
     payment: { type: Boolean, required: false },
     testResult: { type: String, required: false },

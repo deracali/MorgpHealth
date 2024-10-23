@@ -2,8 +2,8 @@
 import {Routes,Route} from "react-router-dom"
 import './App.css'
 import Home from './pages/Home'
-import MyAppointment from './pages/MyAppointment'
-import MyProfile from './pages/MyProfile'
+import MyAppointment from './pages/Admin/MyAppointment'
+import MyProfile from './pages/Admin/MyProfile'
 import Contact from './pages/Contact'
 import About from './pages/About'
 import Login from './pages/Login'
@@ -15,6 +15,9 @@ import Insurance from "./pages/Insurance"
 import InsuranceData from "./pages/InsuranceData"
 import DoctorsPrescription from "./pages/DoctorsPrescription"
 import DoctorsDiagnosis from "./pages/DoctorsDiagnosis"
+import User from "./pages/Admin/User"
+import AddDoctor from "./pages/RegisterDoctor"
+import Session from "./pages/Admin/Session"
 
 function App() {
 
@@ -25,6 +28,7 @@ function App() {
         <Routes>
          <Route path="/" exact element={<Home/> } />    
          <Route path="/doctors" element={<Doctor/> } />    
+         <Route path="/add-doc" element={<AddDoctor/> } />    
          <Route path="/doctors/:speciality" element={<Doctor/> } />    
          <Route path="/login" element={<Login/> } />    
          <Route path="/about" element={<About/> } />    
@@ -32,10 +36,17 @@ function App() {
          <Route path="/my-profile"  element={<MyProfile/> } />    
          <Route path="/appointment/:docId" element={<Appointment/> } />    
          <Route path="/my-appointments/:id" element={<MyAppointment/> } />    
+         <Route path="/session/:id/:sessionId" element={<Session/> } />    
          <Route path="/my-insurance" element={<InsuranceData/> } />    
-         <Route path="/doctors-prescription/:id" element={<DoctorsPrescription/> } />    
-         <Route path="/doctors-diagnosis/:id" element={<DoctorsDiagnosis/> } />    
+         <Route path="/doctors-prescription/:sessionId" element={<DoctorsPrescription/> } />    
+         <Route path="/doctors-diagnosis/:sessionId" element={<DoctorsDiagnosis/> } />    
          <Route path="/insurance" element={<Insurance/> } />    
+
+
+
+
+
+         <Route path="/user-panel" element={<User/> } />    
         </Routes>
       <Footer/>
         </div> 

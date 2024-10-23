@@ -13,12 +13,14 @@ import NavBar from "./component/NavBar";
 import { AdminContext } from "./context/AdminContext";
 import { DoctorContext } from "./context/DoctorContext";
 import DoctorAppointment from "./pages/Doctor/DoctorAppointment";
-import DoctorProfile from "./pages/Doctor/DoctorProfile";
 import DoctorDashboard from "./pages/Doctor/DoctorDashboard";
 import DoctorProf from "./pages/Admin/DoctorProfile";
 import DoctorWallet from "./pages/Doctor/DoctorWallet";
 import Withdrawal from "./pages/Doctor/Withdrawal";
 import Session from "./pages/Doctor/Session";
+import DoctorsProfile from "./pages/Doctor/DoctorProfile";
+import DoctorReview from "./pages/Admin/DoctorReview";
+import DoctorDetail from "./pages/Admin/DoctorDetail";
 
 
 function App() {
@@ -37,16 +39,18 @@ function App() {
           <Route path='/all-appointment' element={<AllAppointment/>}/>
           <Route path='/add-doctor' element={<AddDoctor/>}/>
           <Route path='/doctor-list' element={<DoctorList/>}/>
+          <Route path='/doctor-review' element={<DoctorReview/>}/>
+          <Route path='/doctor-review/:id' element={<DoctorDetail/>}/>
           <Route path='/doctor-profile/:id' element={<DoctorProf/>}/>       
           
           
           
           <Route path='/doctor-dashboard/:id' element={<DoctorDashboard/>}/>       
           <Route path='/doctor-appointment/:id' element={<DoctorAppointment/>}/>       
-          <Route path='/session/:id' element={<Session/>}/>       
-          <Route path='/doctor-profile/:id' element={<DoctorProfile/>}/>       
+          <Route path='/session/:appointmentId' element={<Session/>}/>       
+          <Route path='/doctors-profile/:id' element={<DoctorsProfile/>}/>       
           <Route path='/doctor-wallet/:id' element={<DoctorWallet/>}/>       
-          <Route path='/withdrawal' element={<Withdrawal/>}/>       
+          <Route path='/withdrawal/:docId' element={<Withdrawal/>}/>       
         </Routes>
        </div>
     </div> 

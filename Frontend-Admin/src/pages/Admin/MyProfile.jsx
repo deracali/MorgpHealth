@@ -1,6 +1,6 @@
 import React, { useContext, useState } from 'react'
-import { assets } from '../assets/assets_frontend/assets'
-import { AppContext } from '../context/AppContext'
+import { assets } from '../../assets/assets_frontend/assets'
+import { AppContext } from '../../context/AppContext'
 import axios from 'axios'
 
 export default function MyProfile() {

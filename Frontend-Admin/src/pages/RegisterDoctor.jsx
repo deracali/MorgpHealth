@@ -1,7 +1,7 @@
 import React, { useContext, useState } from 'react';
-import { assets } from '../../assets/assets_admin/assets';
+import { assets } from '../assets/assets_admin/assets';
 import { toast } from 'react-toastify';
-import { AdminContext } from '../../context/AdminContext';
+// import { AdminContext } from '../context/AdminContext';
 import axios from 'axios';
 
 export default function AddDoctor() {
@@ -27,7 +27,7 @@ export default function AddDoctor() {
   const [medicalCouncilCountry, setMedicalCouncilCountry] = useState('');
   const [graduationYear, setGraduationYear] = useState('');
 
-  const { backendUrl, aToken } = useContext(AdminContext);
+  const backendUrl = import.meta.env.VITE_BACKEND_URL;
 
   const onSubmitHandler = async (event) => {
     event.preventDefault();
@@ -60,9 +60,7 @@ export default function AddDoctor() {
     formData.append('graduationYear', graduationYear);
 
     try {
-      const { data } = await axios.post(`${backendUrl}/api/admin/add-doctor`, formData, {
-        headers: { Authorization: `Bearer ${aToken}` },
-      });
+      const { data } = await axios.post(`${backendUrl}/api/reviewdoc/add-doctor`, formData);
 
       if (data.success) {
         toast.success(data.message);
@@ -96,9 +94,9 @@ export default function AddDoctor() {
 
   return (
     <form onSubmit={onSubmitHandler} className='m-5 w-full'>
-      <p className='mb-3 text-lg font-medium'>Add Doctor</p>
+      <p className='mb-3 text-lg font-medium'>Register Doctor</p>
       <div className='bg-white px-8 py-8 border rounded w-full max-w-4xl max-h-[80vh] overflow-y-scroll'>
-
+        
         {/* Upload Doctor Image */}
         <FileUploadField 
           label="Upload Doctor Picture" 
@@ -161,7 +159,7 @@ export default function AddDoctor() {
         </div>
 
         {/* New fields for additional doctor details */}
-        <div className='flex flex-col lg:flex-row flex-wrap items-start gap-10 text-gray-600'>
+        <div className='flex flex-col lg:flex-row items-start gap-10 text-gray-600'>
           <InputField label="Date of Birth" value={dateOfBirth} onChange={setDateOfBirth} type="date" required />
           <InputField label="University Name" value={universityName} onChange={setUniversityName} required />
           <InputField label="University Country" value={universityCountry} onChange={setUniversityCountry} required />
