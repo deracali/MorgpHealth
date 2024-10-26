@@ -26,6 +26,10 @@ export default function AddDoctor() {
   const [medicalCouncilName, setMedicalCouncilName] = useState('');
   const [medicalCouncilCountry, setMedicalCouncilCountry] = useState('');
   const [graduationYear, setGraduationYear] = useState('');
+  
+  // New state variables for age and region
+  const [age, setAge] = useState('');
+  const [region, setRegion] = useState('');
 
   const { backendUrl, aToken } = useContext(AdminContext);
 
@@ -53,6 +57,8 @@ export default function AddDoctor() {
     formData.append('degree', degree);
     formData.append('address', JSON.stringify({ line1: address1, line2: address2 }));
     formData.append('dateOfBirth', dateOfBirth);
+    formData.append('age', age);  // Append age
+    formData.append('region', region);  // Append region
     formData.append('universityName', universityName);
     formData.append('universityCountry', universityCountry);
     formData.append('medicalCouncilName', medicalCouncilName);
@@ -80,6 +86,8 @@ export default function AddDoctor() {
         setAbout('');
         setFees('');
         setDateOfBirth('');
+        setAge('');  // Reset age
+        setRegion('');  // Reset region
         setUniversityName('');
         setUniversityCountry('');
         setMedicalCouncilName('');
@@ -107,6 +115,38 @@ export default function AddDoctor() {
           asset={assets.upload_area} 
         />
 
+        <div className='flex flex-col lg:flex-row items-start gap-10 text-gray-600'>
+          <div className='w-full lg:flex-1 flex flex-col gap-4'>
+            <InputField label="Doctor Name" value={name} onChange={setName} required />
+            <InputField label="Doctor Email" value={email} onChange={setEmail} type="email" required />
+            <InputField label="Doctor Password" value={password} onChange={setPassword} type="password" required />
+            <SelectField label="Experience" value={experience} onChange={setExperience} options={experienceOptions} />
+            <InputField label="Fees" value={fees} onChange={setFees} required />
+            {/* New Age Field */}
+          </div>
+
+          <div className='w-full lg:flex-1 flex flex-col gap-4'>
+            <SelectField label="Speciality" value={speciality} onChange={setSpeciality} options={specialityOptions} />
+            <InputField label="Education" value={degree} onChange={setDegree} required />
+            <InputField label="Address 1" value={address1} onChange={setAddress1} required />
+            <InputField label="Address 2" value={address2} onChange={setAddress2} />
+            {/* New Region Field */}
+            <InputField label="Region" value={region} onChange={setRegion} required />
+          </div>
+        </div>
+
+        <div className='flex-1 flex flex-col gap-1'>
+          <p>About Doctor</p>
+          <textarea
+            onChange={(e) => setAbout(e.target.value)}
+            value={about}
+            className='w-full px-4 pt-2 border rounded'
+            placeholder='Write about doctor'
+            rows={5}
+            required
+          />
+        </div>
+
         {/* Upload Medical License */}
         <FileUploadField 
           label="Upload Medical License" 
@@ -131,40 +171,11 @@ export default function AddDoctor() {
           asset={assets.upload_area} 
         />
 
-        <div className='flex flex-col lg:flex-row items-start gap-10 text-gray-600'>
-          <div className='w-full lg:flex-1 flex flex-col gap-4'>
-            <InputField label="Doctor Name" value={name} onChange={setName} required />
-            <InputField label="Doctor Email" value={email} onChange={setEmail} type="email" required />
-            <InputField label="Doctor Password" value={password} onChange={setPassword} type="password" required />
-            <SelectField label="Experience" value={experience} onChange={setExperience} options={experienceOptions} />
-            <InputField label="Fees" value={fees} onChange={setFees} required />
-          </div>
-
-          <div className='w-full lg:flex-1 flex flex-col gap-4'>
-            <SelectField label="Speciality" value={speciality} onChange={setSpeciality} options={specialityOptions} />
-            <InputField label="Education" value={degree} onChange={setDegree} required />
-            <InputField label="Address 1" value={address1} onChange={setAddress1} required />
-            <InputField label="Address 2" value={address2} onChange={setAddress2} />
-          </div>
-        </div>
-
-        <div className='flex-1 flex flex-col gap-1'>
-          <p>About Doctor</p>
-          <textarea
-            onChange={(e) => setAbout(e.target.value)}
-            value={about}
-            className='w-full px-4 pt-2 border rounded'
-            placeholder='Write about doctor'
-            rows={5}
-            required
-          />
-        </div>
-
         {/* New fields for additional doctor details */}
-        <div className='flex flex-col lg:flex-row flex-wrap items-start gap-10 text-gray-600'>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 text-gray-600">
           <InputField label="Date of Birth" value={dateOfBirth} onChange={setDateOfBirth} type="date" required />
           <InputField label="University Name" value={universityName} onChange={setUniversityName} required />
-          <InputField label="University Country" value={universityCountry} onChange={setUniversityCountry} required />
+          <InputField label="University Country" value={universityCountry} onChange={setUniversityCountry} required /> 
           <InputField label="Medical Council Name" value={medicalCouncilName} onChange={setMedicalCouncilName} required />
           <InputField label="Medical Council Country" value={medicalCouncilCountry} onChange={setMedicalCouncilCountry} required />
           <InputField label="Graduation Year" value={graduationYear} onChange={setGraduationYear} required />

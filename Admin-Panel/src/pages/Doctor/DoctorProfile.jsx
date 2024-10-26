@@ -8,11 +8,13 @@ import { toast } from 'react-toastify';
 export default function DoctorsProfile() {
   const { dToken } = useContext(DoctorContext);
   const { currency } = useContext(AppContext);
+  
   const [profileData, setProfileData] = useState({
       address: { line1: '', line2: '' },
       fees: 0,
       available: false,
-      // other default values...
+      gender: '',
+      region: '', // Add region to profile data
   });
   
   const [isEdit, setIsEdit] = useState(false);
@@ -41,6 +43,8 @@ export default function DoctorsProfile() {
               address: profileData.address,
               fees: profileData.fees,
               available: profileData.available,
+              gender: profileData.gender,
+              region: profileData.region, // Include region in the update data
           };
 
           const { data } = await axios.post(`${backendUrl}/api/doctor/update-profile/${id}`, updateData, { headers: { dToken } });
@@ -53,6 +57,7 @@ export default function DoctorsProfile() {
           }
       } catch (error) {
           console.log(error);
+          toast.error('An error occurred while updating the profile.');
       }
   };
 
@@ -78,6 +83,39 @@ export default function DoctorsProfile() {
             <p className='flex items-center gap-1 text-sm font-medium text-neutral-800 mt-3'>About</p>
             <p className='text-sm text-gray-600 max-w-[700px] mt-1'>{profileData.about}</p>
           </div>
+
+          {/* Display gender */}
+          <p className='flex gap-2 py-2'>
+            Gender: 
+            <span>
+              {isEdit ? (
+                <input 
+                  type='text' 
+                  onChange={(e) => setProfileData(prev => ({ ...prev, gender: e.target.value }))} 
+                  value={profileData.gender || ''}
+                />
+              ) : (
+                profileData.gender || 'N/A'
+              )}
+            </span>
+          </p>
+
+          {/* Display region */}
+          <p className='flex gap-2 py-2'>
+            Region: 
+            <span>
+              {isEdit ? (
+                <input 
+                  type='text' 
+                  onChange={(e) => setProfileData(prev => ({ ...prev, region: e.target.value }))} 
+                  value={profileData.region || ''}
+                />
+              ) : (
+                profileData.region || 'N/A'
+              )}
+            </span>
+          </p>
+
           <p className='flex gap-2 py-2'>
             Appointment fee: 
             <span>
