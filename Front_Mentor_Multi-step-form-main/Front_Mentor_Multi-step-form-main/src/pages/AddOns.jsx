@@ -22,7 +22,7 @@ const AddOns = () => {
 
   return (
     <div className="sm:basis-[60%] w-[300px] sm:w-[100%] h-[100%] sm:pr-[80px]">
-      <h1 className="mt-10 text-3xl font-[800] mb-2 text-primary-marineBlue">
+      <h1 className="mt-3 text-3xl font-[800] mb-2 text-primary-marineBlue">
         Pick add-ons
       </h1>
       <p className="text-neutral-coolGray mb-6">
@@ -68,7 +68,7 @@ const AddOns = () => {
             </div>
           );
         })}
-        <div className="flex justify-between items-center pt-[100px] sm:pt-[47px]">
+       <div className="flex justify-between items-center pt-[50px] sm:pt-[12px]">
           <button
             onClick={() => navigate("/selectplan")}
             className="text-neutral-coolGray font-[500] capitalize transition-all duration-300 hover:text-primary-marineBlue cursor-pointer"

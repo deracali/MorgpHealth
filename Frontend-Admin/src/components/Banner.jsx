@@ -104,7 +104,7 @@ export default function Banner() {
               </div>
             </div>
           </div>
-          <Link to="" className="why-choose-us-btn">
+          <Link to="https://insurance-morgphealth.netlify.app/" className="why-choose-us-btn">
             Apply for Insurance
           </Link>
         </div>

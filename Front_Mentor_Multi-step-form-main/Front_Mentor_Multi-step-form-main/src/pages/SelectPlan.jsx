@@ -117,12 +117,13 @@ const SelectPlan = () => {
         </div>
 
         <div
-          className={`bg-neutral-alabaster flex justify-center items-center py-3 space-x-8 rounded-md ${
-            toggleYearly ? "mb-[70px]" : "mb-[77px]"
-          } ${
-            toggleYearly ? "sm:mb-[79px]" : "sm:mb-[97px]"
-          }`}
-        >
+  className={`bg-neutral-alabaster flex justify-center items-center py-3 space-x-8 rounded-md ${
+    toggleYearly ? "mb-[50px]" : "mb-[57px]" // Reduced margin here
+  } ${
+    toggleYearly ? "sm:mb-[59px]" : "sm:mb-[30px]" // Reduced margin here
+  }`}
+>
+
           <p
             className={`${
               toggleYearly ? "text-neutral-coolGray" : "text-primary-marineBlue"

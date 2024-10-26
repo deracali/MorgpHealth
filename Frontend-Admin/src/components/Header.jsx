@@ -1,5 +1,6 @@
 import React from 'react'
 import { assets } from '../assets/assets_frontend/assets'
+import { Link } from 'react-router-dom'
 
 export default function Header() {
   return (
@@ -14,9 +15,9 @@ export default function Header() {
                     schedule your appointment hassle-free.
                 </p>
             </div>
-            <a href='#speciality' className='flex items-center gap-2 bg-white px-8 py-3 rounded-full text-gray-600 text-sm m-auto md:m-0 hover:scale-105 transition-all duration-300'>
+            <Link to='/doctors' className='flex items-center gap-2 bg-white px-8 py-3 rounded-full text-gray-600 text-sm m-auto md:m-0 hover:scale-105 transition-all duration-300'>
                 Book appointment <img className='w-3' src={assets.arrow_icon} alt=''/>
-            </a>
+            </Link>
         </div>
 
         <div className='md:w-1/2 relative'>

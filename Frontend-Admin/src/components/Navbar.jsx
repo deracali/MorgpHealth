@@ -13,7 +13,7 @@ export default function Navbar() {
 
     const logout = () => {
         setToken(false)
-        localStorage.removeItem('token')
+        localStorage.removeItem('utoken')
     }
 
 

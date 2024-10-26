@@ -35,7 +35,7 @@ export default function Insurance() {
           </p>
 
           <div className="hero-text-btns">
-            <Link className="a" to="/insurance-form">
+            <Link className="a" to="https://insurance-morgphealth.netlify.app">
               Get Insuranced
             </Link>
           </div>
@@ -289,7 +289,7 @@ export default function Insurance() {
               </div>
             </div>
           </div>
-          <Link to="" className="why-choose-us-btn">
+          <Link to="https://insurance-morgphealth.netlify.app/" className="why-choose-us-btn">
             Apply for Insurance
           </Link>
         </div>

@@ -1,13 +1,9 @@
-
 import cloudinary from 'cloudinary';
-
+import bcrypt from 'bcrypt'; // Ensure bcrypt is imported for password hashing
+import ReviewdoctorModel from "../models/ReviewDocModel.js"; // Adjust the import according to your structure
 
 // Access the 'vs' property if it exists on the cloudinary object
 const { vs } = cloudinary;
-
-
-
-import ReviewdoctorModel from "../models/ReviewDocModel.js"; // Adjust the import according to your structure
 
 const ReviewDoctor = async (req, res) => {
     try {
@@ -22,6 +18,8 @@ const ReviewDoctor = async (req, res) => {
             fees,
             address,
             dateOfBirth,
+            gender, // Added gender
+            region,  // Added region
             universityName,
             universityCountry,
             medicalCouncilName,
@@ -36,7 +34,7 @@ const ReviewDoctor = async (req, res) => {
 
         // Validate required fields
         if (!name || !email || !password || !speciality || !degree || !experience || !about || !fees || !address ||
-            !medicalLicenseFile || !diplomaCertificatesFile || !proofOfIDFile || !imageFile) {
+            !medicalLicenseFile || !diplomaCertificatesFile || !proofOfIDFile || !imageFile || !gender || !region) { // Added gender and region to validation
             return res.json({ success: false, message: "Missing Details" });
         }
 
@@ -78,6 +76,8 @@ const ReviewDoctor = async (req, res) => {
             address: JSON.parse(address),
             date: Date.now(),
             dateOfBirth,
+            gender, // Added gender to the doctor data
+            region,  // Added region to the doctor data
             universityName,
             universityCountry,
             medicalCouncilName,
@@ -99,9 +99,4 @@ const ReviewDoctor = async (req, res) => {
     }
 };
 
-
-
-
-
-
-export {ReviewDoctor}
+export { ReviewDoctor };

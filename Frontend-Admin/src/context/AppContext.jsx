@@ -9,7 +9,7 @@ const AppContextProvider = (props) => {
     const backendUrl = import.meta.env.VITE_BACKEND_URL;
 
     const [doctors, setDoctors] = useState([]);
-    const [token, setToken] = useState(localStorage.getItem('token') || false);
+    const [token, setToken] = useState(localStorage.getItem('utoken') || false);
     const [userData, setUserData] = useState(null); // Changed to null
 
     // Fetch doctors data

@@ -7,31 +7,28 @@ import cloudinary from 'cloudinary';
 // Access the 'vs' property if it exists on the cloudinary object
 const { vs } = cloudinary;
 
-
 const changeAvailablity = async (req,res) => {
-    try{
-        const {docId} = req.body
+    try {
+        const {docId} = req.body;
 
-        const docData = await doctorModel.findById(docId)
-        await doctorModel.findByIdAndUpdate(docId,{available:!docData.available})
-        res.json({success:true,message:"Availability Changed"})
-    } catch (error){
-        console.log(error)
-        res.json({success:false,message:error.message})
+        const docData = await doctorModel.findById(docId);
+        await doctorModel.findByIdAndUpdate(docId,{available:!docData.available});
+        res.json({success:true,message:"Availability Changed"});
+    } catch (error) {
+        console.log(error);
+        res.json({success:false,message:error.message});
     }
 }
 
-
-const doctorList = async (req,res) =>{
-    try{
-        const doctors = await doctorModel.find({}).select(['-password','-email'])
-        res.json({success:true,doctors})
-    } catch (error){
-        console.log(error)
-        res.json({success:false,message:error.message})
+const doctorList = async (req,res) => {
+    try {
+        const doctors = await doctorModel.find({}).select(['-password','-email']);
+        res.json({success:true,doctors});
+    } catch (error) {
+        console.log(error);
+        res.json({success:false,message:error.message});
     }
 }
-
 
 const loginDoctor = async (req, res) => {
     try {
@@ -46,7 +43,7 @@ const loginDoctor = async (req, res) => {
 
         if (isMatch) {
             const token = jwt.sign({ id: doctor._id }, process.env.JWT_SECRET);
-            res.json({ success: true, email, id: doctor._id, token }); // Include the doctor ID in the response
+            res.json({ success: true, email, id: doctor._id, token });
         } else {
             res.json({ success: false, message: "Invalid credentials" });
         }
@@ -56,39 +53,32 @@ const loginDoctor = async (req, res) => {
     }
 };
 
-
-
-const appointmentsDoctor = async (req,res) =>{
-    try{
+const appointmentsDoctor = async (req,res) => {
+    try {
         const { docId } = req.params;
-        const appointments = await appointmentModel.find({docId})
+        const appointments = await appointmentModel.find({docId}).populate('userId', 'age gender region'); // Populate userId to get age, gender, and region
 
-        res.json({success:true,appointments})
-    } catch(error){
-        res.json({success:false,message:error.message})
+        res.json({success:true,appointments});
+    } catch (error) {
+        res.json({success:false,message:error.message});
     }
 }
-
 
 const appointmentComplete = async (req, res) => {
     try {
         const { docId, appointmentId } = req.body;
 
-        // Find the appointment by ID
         const appointmentData = await appointmentModel.findById(appointmentId);
 
-        // Check if the appointment exists and if it belongs to the doctor
         if (!appointmentData) {
             return res.json({ success: false, message: "Appointment not found" });
         }
 
-
-        // Update the appointment status to completed
         await appointmentModel.findByIdAndUpdate(appointmentId, { isCompleted: true });
 
         return res.json({ success: true, message: 'Appointment completed' });
     } catch (error) {
-        console.error(error); // Log the error for debugging
+        console.error(error);
         return res.json({ success: false, message: error.message });
     }
 };
@@ -97,32 +87,26 @@ const appointmentCancel = async (req, res) => {
     try {
         const { docId, appointmentId } = req.body;
 
-        // Find the appointment by ID
         const appointmentData = await appointmentModel.findById(appointmentId);
 
-        // Check if the appointment exists
         if (!appointmentData) {
             return res.json({ success: false, message: "Appointment not found" });
         }
 
-        
-        // Update the appointment status to cancelled
         await appointmentModel.findByIdAndUpdate(appointmentId, { cancelled: true });
 
         return res.json({ success: true, message: 'Appointment cancelled' });
     } catch (error) {
-        console.error(error); // Log the error for debugging
+        console.error(error);
         return res.json({ success: false, message: error.message });
     }
 };
 
-
-
 const doctorDashboard = async (req,res) => {
-    try{
-        const {docId} = req.params
+    try {
+        const {docId} = req.params;
         
-        const appointments = await appointmentModel.find({docId})
+        const appointments = await appointmentModel.find({docId}).populate('userId', 'age gender region'); // Populate userId to get patient info
 
         let earnings = 0;
 
@@ -132,31 +116,27 @@ const doctorDashboard = async (req,res) => {
             }
         });
         
+        let patients = [];
 
-    let patients = []
+        appointments.map((item) => {
+            if (!patients.includes(item.userId)) {
+                patients.push(item.userId);
+            }
+        });
 
-    appointments.map((item)=>{
-        if(!patients.includes(item.userId)){
-            patients.push(item.userId)
-        }
-    })
+        const dashData = {
+            earnings,
+            appointments: appointments.length,
+            patients: patients.length,
+            latestAppointments: appointments.reverse().slice(0,5)
+        };
 
-    const dashData = {
-        earnings,
-        appointments:appointments.length,
-        patients:patients.length,
-        latestAppointments:appointments.reverse().slice(0,5)
-    }
-
-    res.json({success:true,dashData})
-
-    }catch(error){
-        console.log(error)
-        res.json({success:false,message:error.message})
+        res.json({success: true, dashData});
+    } catch (error) {
+        console.log(error);
+        res.json({success:false,message:error.message});
     }
 }
-
-
 
 const doctorProfile = async (req, res) => {
     try {
@@ -174,27 +154,24 @@ const doctorProfile = async (req, res) => {
     }
 };
 
-
 const updateDoctorProfile = async (req, res) => {
     try {
         const { fees, address, available, balance } = req.body;
         const { docId } = req.params;
 
-        // Create an update object that only includes the fields to be updated
         const updateFields = {};
         if (fees !== undefined) updateFields.fees = fees;
         if (address !== undefined) updateFields.address = address;
         if (available !== undefined) updateFields.available = available;
 
-        // Increment the balance if it's provided
         if (balance !== undefined) {
-            updateFields.$inc = { balance: balance }; // Increment balance
+            updateFields.$inc = { balance: balance }; 
         }
 
         const updatedDoctor = await doctorModel.findByIdAndUpdate(
             docId, 
             updateFields, 
-            { new: true } // Return the updated document
+            { new: true } 
         );
 
         if (!updatedDoctor) {
@@ -208,35 +185,25 @@ const updateDoctorProfile = async (req, res) => {
     }
 };
 
-
-
-
-
-
-
 const decrementDoctorBalance = async (req, res) => {
     try {
-        const { amount } = req.body; // Amount to decrement
+        const { amount } = req.body; 
         const { docId } = req.params;
 
-        // Ensure the amount is a positive value
         if (amount === undefined || amount <= 0) {
             return res.status(400).json({ success: false, message: 'Invalid amount' });
         }
 
-        // Decrement the balance field by the provided amount
         const updatedDoctor = await doctorModel.findByIdAndUpdate(
             docId,
-            { $inc: { balance: -amount } }, // Decrement the balance by the amount
-            { new: true } // Return the updated document
+            { $inc: { balance: -amount } }, 
+            { new: true } 
         );
 
-        // If doctor is not found, return an error response
         if (!updatedDoctor) {
             return res.status(404).json({ success: false, message: 'Doctor not found' });
         }
 
-        // Return success response with updated profile data
         res.json({ success: true, message: 'Balance updated', profileData: updatedDoctor });
     } catch (error) {
         console.error(error);
@@ -244,12 +211,9 @@ const decrementDoctorBalance = async (req, res) => {
     }
 };
 
-
-
-
 const updateAppointment = async (req, res) => {
     try {
-        const { appointmentId } = req.params; // Assuming appointmentId is passed in the URL params
+        const { appointmentId } = req.params; 
         const {
             userId,
             docId,
@@ -261,7 +225,8 @@ const updateAppointment = async (req, res) => {
             testResult,
             hospitalName,
             age,
-            sex,
+            gender,
+            region, // Added region
             drugName1,
             dosage1,
             frequency1,
@@ -280,13 +245,11 @@ const updateAppointment = async (req, res) => {
             period4,
         } = req.body;
 
-        // Find the current appointment data
         const currentAppointment = await appointmentModel.findById(appointmentId);
         if (!currentAppointment) {
             return res.json({ success: false, message: "Appointment not found" });
         }
 
-        // Prepare the update object, only updating fields that are present in the request body
         const updateData = {};
         
         if (userId !== undefined) updateData.userId = userId;
@@ -299,7 +262,8 @@ const updateAppointment = async (req, res) => {
         if (testResult !== undefined) updateData.testResult = testResult;
         if (hospitalName !== undefined) updateData.hospitalName = hospitalName;
         if (age !== undefined) updateData.age = age;
-        if (sex !== undefined) updateData.sex = sex;
+        if (gender !== undefined) updateData.gender = gender;
+        if (region !== undefined) updateData.region = region; // Set region if provided
         if (drugName1 !== undefined) updateData.drugName1 = drugName1;
         if (dosage1 !== undefined) updateData.dosage1 = dosage1;
         if (frequency1 !== undefined) updateData.frequency1 = frequency1;
@@ -317,7 +281,6 @@ const updateAppointment = async (req, res) => {
         if (frequency4 !== undefined) updateData.frequency4 = frequency4;
         if (period4 !== undefined) updateData.period4 = period4;
 
-        // Update the appointment in the database
         const updatedAppointment = await appointmentModel.findByIdAndUpdate(appointmentId, updateData, { new: true });
 
         res.json({ success: true, message: "Appointment Updated", data: updatedAppointment });
@@ -326,7 +289,5 @@ const updateAppointment = async (req, res) => {
         res.json({ success: false, message: error.message });
     }
 };
-
-
 
 export {changeAvailablity,decrementDoctorBalance,doctorList,updateAppointment, loginDoctor,appointmentsDoctor,appointmentCancel,appointmentComplete,doctorDashboard, doctorProfile, updateDoctorProfile}

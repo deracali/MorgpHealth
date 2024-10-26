@@ -26,10 +26,10 @@ const Summary = () => {
     const userId = localStorage.getItem('userId') || (localStorage.getItem('userData') && JSON.parse(localStorage.getItem('userData')).userId);
 
     // Redirect to login if no userId is found
-    if (!userId) {
-      navigate("/login");
-      return;
-    }
+    // if (!userId) {
+    //   navigate("/login");
+    //   return;
+    // }
 
     const insuranceData = {
       userId,
@@ -54,25 +54,25 @@ const Summary = () => {
       })),
       totalPrice,
     };
-
-    try {
-      const response = await fetch("http://localhost:4000/insurance/post", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(insuranceData),
-      });
-
-      if (response.ok) {
-        // Redirect to thank you page after successful submission
         navigate("/thankyou");
-      } else {
-        console.error("Error submitting data", response);
-      }
-    } catch (error) {
-      console.error("Error connecting to the server", error);
-    }
+    
+    // try {
+    //   const response = await fetch("http://localhost:4000/insurance/post", {
+    //     method: "POST",
+    //     headers: {
+    //       "Content-Type": "application/json",
+    //     },
+    //     body: JSON.stringify(insuranceData),
+    //   });
+
+    //   if (response.ok) {
+    //     // Redirect to thank you page after successful submission
+    //   } else {
+    //     console.error("Error submitting data", response);
+    //   }
+    // } catch (error) {
+    //   console.error("Error connecting to the server", error);
+    // }
   };
 
   return (
@@ -80,15 +80,15 @@ const Summary = () => {
       <h1 className="mt-10 text-3xl font-[800] mb-2 text-primary-marineBlue">
         Finishing up
       </h1>
-      <p className="text-neutral-coolGray mb-6 hidden sm:block">
+      {/* <p className="text-neutral-coolGray mb-6 hidden sm:block">
         Double-check everything looks OK before confirming.
       </p>
       <p className="text-neutral-coolGray mb-6 sm:hidden">
         Double-check everything <br /> looks OK before confirming.
-      </p>
+      </p> */}
 
       {/* Display Personal Info */}
-      <div className="bg-neutral-alabaster rounded-lg p-5 mb-6">
+      {/* <div className="bg-neutral-alabaster rounded-lg p-5 mb-6">
         <div className="mb-4">
           <span className="text-primary-marineBlue font-[800]">Name:</span>
           <p className="text-neutral-coolGray">{personalInfo.name}</p>
@@ -101,7 +101,7 @@ const Summary = () => {
           <span className="text-primary-marineBlue font-[800]">Age:</span>
           <p className="text-neutral-coolGray">{personalInfo.age}</p>
         </div>
-      </div>
+      </div> */}
 
       {/* Display Plan Info */}
       <div className="bg-neutral-alabaster rounded-lg p-5">

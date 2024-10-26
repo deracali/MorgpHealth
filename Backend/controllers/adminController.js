@@ -1,16 +1,14 @@
-import validator from "validator"
-import bcrypt from 'bcrypt'
-import jwt from 'jsonwebtoken'
-import doctorsModel from '../models/doctorsModel.js'
+import validator from "validator";
+import bcrypt from 'bcrypt';
+import jwt from 'jsonwebtoken';
+import doctorsModel from '../models/doctorsModel.js';
 import doctorModel from "../models/doctorsModel.js";
 import cloudinary from 'cloudinary';
 import appointmentModel from "../models/appointmentModel.js";
 import userModel from "../models/userModel.js";
 
-
 // Access the 'vs' property if it exists on the cloudinary object
 const { vs } = cloudinary;
-
 
 const addDoctor = async (req, res) => {
     try {
@@ -25,6 +23,9 @@ const addDoctor = async (req, res) => {
             fees,
             address,
             dateOfBirth,
+            gender, // Added gender here
+            region, // Added region here
+            age, // Added age here
             universityName,
             universityCountry,
             medicalCouncilName,
@@ -39,7 +40,7 @@ const addDoctor = async (req, res) => {
 
         // Validate required fields
         if (!name || !email || !password || !speciality || !degree || !experience || !about || !fees || !address ||
-            !medicalLicenseFile || !diplomaCertificatesFile || !proofOfIDFile || !imageFile) {
+            !medicalLicenseFile || !diplomaCertificatesFile || !proofOfIDFile || !imageFile || !gender || !region || !age) { // Check for age and region
             return res.json({ success: false, message: "Missing Details" });
         }
 
@@ -49,6 +50,13 @@ const addDoctor = async (req, res) => {
         }
 
         // Validate email format, password strength, etc. (you can add your own logic here)
+        if (!validator.isEmail(email)) {
+            return res.json({ success: false, message: "Invalid email format" });
+        }
+
+        if (age < 0) { // Assuming age cannot be negative
+            return res.json({ success: false, message: "Age must be a positive number" });
+        }
 
         // Hash the password
         const salt = await bcrypt.genSalt(10);
@@ -81,6 +89,9 @@ const addDoctor = async (req, res) => {
             address: JSON.parse(address),
             date: Date.now(),
             dateOfBirth,
+            gender, // Include gender in the doctor data
+            region, // Include region in the doctor data
+            age, // Include age in the doctor data
             universityName,
             universityCountry,
             medicalCouncilName,
@@ -102,97 +113,142 @@ const addDoctor = async (req, res) => {
     }
 };
 
-
-
-
-
-
-
-const loginAdmin = async (req,res) => {
-    try{
-        const {email,password} = req.body
-        if(email === process.env.ADMIN_EMAIL && password === process.env.ADMIN_PASSWORD){
-            const token = jwt.sign(email+password,process.env.JWT_SECRET)
-            res.json({success:true,token})
-        } else{
-            res.json({success:false,message:"Invalid credentials"})
+const loginAdmin = async (req, res) => {
+    try {
+        const { email, password } = req.body;
+        if (email === process.env.ADMIN_EMAIL && password === process.env.ADMIN_PASSWORD) {
+            const token = jwt.sign(email + password, process.env.JWT_SECRET);
+            res.json({ success: true, token });
+        } else {
+            res.json({ success: false, message: "Invalid credentials" });
         }
-        
-    } catch (error){
-        console.log(error)
-        res.json({success:false,message:error.message})
+    } catch (error) {
+        console.log(error);
+        res.json({ success: false, message: error.message });
     }
-}
+};
 
-// Api to get all doctors list for admin panel
-const allDoctors = async (req,res) => {
-    try{
-        const doctors = await doctorModel.find({}).select('-password')
-        res.json({success:true,doctors})
-    } catch(error){
-        console.log(error)
-        res.json({success:false,message:error.message})
+// API to get all doctors list for admin panel
+const allDoctors = async (req, res) => {
+    try {
+        const doctors = await doctorModel.find({}).select('-password');
+        res.json({ success: true, doctors });
+    } catch (error) {
+        console.log(error);
+        res.json({ success: false, message: error.message });
     }
-}
+};
 
-
-
-const appointmentsAdmin = async (req,res) => {
-    try{
-        const appointments = await appointmentModel.find({})
-        res.json({success:true, appointments})
-    } catch (error){
-        console.log(error)
-        res.json({success:false,message:error.message})
+const appointmentsAdmin = async (req, res) => {
+    try {
+        const appointments = await appointmentModel.find({});
+        res.json({ success: true, appointments });
+    } catch (error) {
+        console.log(error);
+        res.json({ success: false, message: error.message });
     }
-}
+};
 
-const appointmentCancel = async (req,res)=>{
-    try{
-        const {appointmentId} = req.body
+const appointmentCancel = async (req, res) => {
+    try {
+        const { appointmentId } = req.body;
 
-        const appointmentData = await appointmentModel.findById(appointmentId)
+        const appointmentData = await appointmentModel.findById(appointmentId);
+        await appointmentModel.findByIdAndUpdate(appointmentId, { cancelled: true });
 
-      
-        await appointmentModel.findByIdAndUpdate(appointmentId,{cancelled:true})
+        const { docId, slotDate, slotTime } = appointmentData;
+        const doctorData = await doctorModel.findById(docId);
 
-        const {docId,slotDate,slotTime} = appointmentData
+        let slots_booked = doctorData.slots_booked;
+        slots_booked[slotDate] = slots_booked[slotDate].filter(e => e !== slotTime);
 
-        const doctorData = await doctorModel.findById(docId)
+        await doctorModel.findByIdAndUpdate(docId, { slots_booked });
 
-        let slots_booked = doctorData.slots_booked
-
-        slots_booked[slotDate] = slots_booked[slotDate].filter(e => e !== slotTime)
-
-        await doctorModel.findByIdAndUpdate(docId, {slots_booked})
-
-        res.json({success:true,message:'Appointment Cancelled'})
-
-    }catch(error){
-        console.log(error)
+        res.json({ success: true, message: 'Appointment Cancelled' });
+    } catch (error) {
+        console.log(error);
     }
-}
+};
 
 
+const adminDashboard = async (req, res) => {
+    try {
+        const doctors = await doctorModel.find({});
+        const users = await userModel.find({});
+        const appointments = await appointmentModel.find({});
 
-const adminDashboard = async (req,res) => {
-    try{
-        const doctors = await doctorModel.find({})
-        const users = await userModel.find({})
-        const appointments = await appointmentModel.find({})
+        // Calculate total sales and prepare data for earnings chart
+        const totalSales = appointments.reduce((acc, appointment) => {
+            return acc + appointment.amount; // Sum up the total amount from all appointments
+        }, 0);
+
+        const totalEarningsData = appointments.map(appointment => {
+            const netAmount = appointment.amount * 0.35; // 35% of the original amount
+            return {
+                timestamp: appointment.createdAt, // Assuming 'createdAt' is the timestamp field
+                earnings: netAmount
+            };
+        });
+
+        // Prepare total earnings and sales
+        const totalEarnings = totalEarningsData.reduce((acc, item) => {
+            return acc + item.earnings;
+        }, 0);
+
+        // Function to count gender and region distribution
+        const countGenderAndRegion = (data) => {
+            const genderRegionCount = {};
+
+            data.forEach(item => {
+                const gender = item.gender || 'other';
+                const region = item.region || 'unknown'; // Assuming region field exists
+
+                if (!genderRegionCount[gender]) {
+                    genderRegionCount[gender] = {};
+                }
+
+                if (!genderRegionCount[gender][region]) {
+                    genderRegionCount[gender][region] = 0;
+                }
+
+                genderRegionCount[gender][region]++;
+            });
+
+            return genderRegionCount;
+        };
+
+        // Get users' and doctors' gender and region distribution
+        const usersGenderRegionCount = countGenderAndRegion(users);
+        const doctorsGenderRegionCount = countGenderAndRegion(doctors);
 
         const dashData = {
-            doctors : doctors.length,
-            appointments:appointments.length,
+            doctors: doctors.length,
+            appointments: appointments.length,
             patients: users.length,
-            latestAppointments: appointments.reverse().slice(0,5)
-        }
+            latestAppointments: appointments.reverse().slice(0, 5),
+            totalEarnings: totalEarnings.toFixed(2), // Earnings rounded to 2 decimal places
+            totalSales: totalSales.toFixed(2), // Total sales rounded to 2 decimal places
+            earningsChartData: totalEarningsData, // Add earnings data for the chart
+            userCount: users.length, // Add the total user count
+            doctorsGender: {
+                male: await doctorModel.countDocuments({ gender: 'male' }),
+                female: await doctorModel.countDocuments({ gender: 'female' }),
+                other: await doctorModel.countDocuments({ gender: { $ne: 'male', $ne: 'female' } })
+            },
+            usersGender: {
+                male: await userModel.countDocuments({ gender: 'male' }),
+                female: await userModel.countDocuments({ gender: 'female' }),
+                other: await userModel.countDocuments({ gender: { $ne: 'male', $ne: 'female' } })
+            },
+            usersGenderRegion: usersGenderRegionCount, // Add users' gender and region data
+            doctorsGenderRegion: doctorsGenderRegionCount // Add doctors' gender and region data
+        };
 
-        res.json({success:true,dashData})
-    } catch (error){
-        console.log(error)
-        res.json({success:false,message:error.message})
+        res.json({ success: true, dashData });
+    } catch (error) {
+        console.error(error);
+        res.json({ success: false, message: error.message });
     }
-}
+};
 
-export {addDoctor,loginAdmin,allDoctors,appointmentsAdmin,appointmentCancel, adminDashboard}
+export { addDoctor, loginAdmin, allDoctors, appointmentsAdmin, appointmentCancel, adminDashboard };

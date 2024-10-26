@@ -14,7 +14,8 @@ const App = () => {
     <PlansProvider>
       <AddOnsProvider>
         <BrowserRouter>
-          <div className="bg-white sm:w-[60rem] h-[45rem] mt-[100px] sm:mt-0 rounded-xl shadow-xl p-4 flex flex-col sm:flex sm:flex-row justify-between">
+        <div className="bg-white w-full sm:w-[40rem] md:w-[50rem] lg:w-[60rem] h-auto sm:h-[30rem] mt-[100px] sm:mt-0 rounded-xl shadow-xl p-4 flex flex-col sm:flex-row justify-between">
+
             <Sidebar />
             <Routes>
               <Route path="/" element={<PersonalInfo />} />

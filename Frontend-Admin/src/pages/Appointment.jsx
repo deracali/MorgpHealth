@@ -9,7 +9,7 @@ import {toast} from 'react-toastify'
 export default function Appointment() {
 
   const {docId} = useParams()
-  const {doctors, currencySymbol, backendUrl, token, getDoctorsData} = useContext(AppContext)
+  const {doctors, currencySymbol, backendUrl, token, getDoctorsData,userData} = useContext(AppContext)
   const daysOfWeek = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 
 
@@ -98,7 +98,7 @@ export default function Appointment() {
 
       if(data.success){
         getDoctorsData()
-        navigate('/my-appointments')
+        navigate(`/my-appointments/${userData._id}`)
         toast.success("Session Booked")
       }else{
 

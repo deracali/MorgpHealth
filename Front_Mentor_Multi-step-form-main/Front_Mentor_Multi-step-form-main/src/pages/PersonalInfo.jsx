@@ -1,9 +1,12 @@
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { PersonalInfoContext } from "../context/PersonalInfoContext";
 
 const InsuranceForm = () => {
-  const [formData, setFormData] = useState({
+  const { setPersonalInfo } = useContext(PersonalInfoContext); // Get the context function to set personal info
+  const navigate = useNavigate(); // Get navigate function
+  const [formData, setLocalFormData] = useState({
     name: "",
-    userId: "",
     spouseName: "",
     spouseAge: "",
     motherName: "",
@@ -19,7 +22,7 @@ const InsuranceForm = () => {
 
   const handleInputChange = (e) => {
     const { name, value, type, checked } = e.target;
-    setFormData({
+    setLocalFormData({
       ...formData,
       [name]: type === "checkbox" ? checked : value,
     });
@@ -27,16 +30,23 @@ const InsuranceForm = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    // Handle form submission (e.g., send the data to a backend or save it in context)
-    console.log(formData);
+    
+    // Set personal info to context
+    setPersonalInfo((prev) => ({
+      ...prev,
+      name: formData.name,
+      location: formData.location, // Assuming you want to save location too
+    }));
+
+    // Navigate to the next page
+    navigate('/selectplan'); // Update the path accordingly
   };
 
   return (
-<form
-  onSubmit={handleSubmit}
-  className="flex flex-col space-y-6 p-4 sm:p-6 bg-white shadow-lg rounded-lg max-w-full sm:max-w-xl mx-auto overflow-y-scroll max-h-[80vh] sm:max-h-[90vh]"
->
-
+    <form
+      onSubmit={handleSubmit}
+      className="flex flex-col space-y-6 p-4 sm:p-6 bg-white shadow-lg rounded-lg w-full sm:w-[25rem] md:w-[35rem] lg:w-[45rem] mx-auto overflow-y-scroll max-h-[80vh] sm:max-h-[90vh]"
+    >
       {/* Name Field */}
       <div className="form-group">
         <label className="block text-primary-marineBlue font-semibold mb-2">Name</label>
@@ -47,19 +57,6 @@ const InsuranceForm = () => {
           onChange={handleInputChange}
           className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-marineBlue"
           placeholder="Enter your name"
-        />
-      </div>
-
-      {/* User ID Field */}
-      <div className="form-group">
-        <label className="block text-primary-marineBlue font-semibold mb-2">User ID</label>
-        <input
-          type="text"
-          name="userId"
-          value={formData.userId}
-          onChange={handleInputChange}
-          className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-marineBlue"
-          placeholder="Enter your user ID"
         />
       </div>
 
@@ -198,13 +195,14 @@ const InsuranceForm = () => {
       </div>
 
       <button
-        type="submit"
-        className="w-full bg-primary-marineBlue text-white py-3 rounded-lg font-semibold hover:bg-opacity-90 transition duration-200"
+        className="bg-primary-marineBlue text-white border-0 rounded-md px-6 py-3 transition-all duration-300 hover:opacity-75"
+        type="submit" // Corrected from "sumbit" to "submit"
       >
-        Submit
+        Next Step
       </button>
     </form>
   );
 };
+
 
 export default InsuranceForm;
