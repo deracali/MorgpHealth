@@ -13,7 +13,7 @@ const registerUser = async (req, res) => {
     try {
         const { name, email, password, age, region } = req.body; // Added age and region
 
-        if (!name || !password || !email || !age || !region) { // Check for age and region
+        if (!name || !password || !email) { // Check for age and region
             return res.json({ success: false, message: "Missing Details" });
         }
 
@@ -44,8 +44,9 @@ const registerUser = async (req, res) => {
         const user = await newUser.save();
 
         const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET);
-
-        res.json({ success: true, token });
+        const insured = user.insured; 
+        const userId = user._id; 
+        res.json({ success: true, token, userId,insured });
 
     } catch (error) {
         console.log(error);
@@ -66,7 +67,10 @@ const loginUser = async (req, res) => {
 
         if (isMatch) {
             const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET);
-            res.json({ success: true, token });
+         
+            const insured = user.insured; 
+            const userId = user._id; 
+            res.json({ success: true, token, insured, userId });
         } else {
             res.json({ success: false, message: "Invalid credentials" });
         }
@@ -87,6 +91,27 @@ const getProfile = async (req, res) => {
         res.json({ success: false, message: error.message });
     }
 };
+
+const getProfileId = async (req, res) => {
+    try {
+        // Extract userId from the request parameters
+        const { userId } = req.params; 
+        const userData = await userModel.findById(userId).select('-password');
+        
+        // Check if userData exists
+        if (!userData) {
+            return res.json({ success: false, message: 'User not found' });
+        }
+
+        // Change the key to 'user' to match your frontend access
+        res.json({ success: true, user: userData }); // Change 'userData' to 'user'
+    } catch (error) {
+        console.log(error);
+        res.json({ success: false, message: error.message });
+    }
+};
+
+
 
 const updateProfile = async (req, res) => {
     try {
@@ -232,4 +257,4 @@ const cancelAppointment = async (req, res) => {
     }
 };
 
-export { registerUser, loginUser, getProfile, updateProfile, bookAppointment, listAppointment, cancelAppointment };
+export { registerUser,getProfileId, loginUser, getProfile, updateProfile, bookAppointment, listAppointment, cancelAppointment };

@@ -108,6 +108,8 @@ export default function MyProfile() {
                         ? <input className='bg-gray-100' type='number' onChange={(e) => setUserData(prev => ({ ...prev, age: e.target.value }))} value={userData.age} />
                         : <p className='text-gray-400'>{userData.age}</p>
                     }
+                    <p className='font-medium'>E Id:</p>
+                         <p className='text-gray-400'>{userData._id}</p>
                 </div>
             </div>
 

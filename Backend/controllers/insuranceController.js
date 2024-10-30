@@ -20,12 +20,14 @@ const addInsurance = async (req, res) => {
             title,
             price,
             value,
-            price2
+            price2,
+            insured,
+            plan,
+            planType,
+            planPrice,
+            addOns,
+            totalPrice,
         } = req.body;
-
-        if (!name || !spouseName || !motherName || !fatherName || !childName || !age || !spouseAge || !motherAge || !fatherAge || !childAge || !country || !location) {
-            return res.json({ success: false, message: "Missing Details" });
-        }
 
         const insuranceData = {
             name,
@@ -44,7 +46,13 @@ const addInsurance = async (req, res) => {
             title,
             price,
             value,
-            price2
+            price2,
+            insured: insured || false,
+            plan,
+            planType,
+            planPrice,
+            addOns: addOns || [],
+            totalPrice,
         };
 
         const newInsurance = new insuranceModel(insuranceData);
@@ -56,6 +64,26 @@ const addInsurance = async (req, res) => {
         res.json({ success: false, message: error.message });
     }
 };
+
+
+const getAllInsurance = async (req, res) => {
+    try {
+        // Fetch all insurance records
+        const insuranceData = await insuranceModel.find();
+
+        if (!insuranceData || insuranceData.length === 0) {
+            return res.json({ success: false, message: "No insurance records found" });
+        }
+
+        res.json({ success: true, insuranceData });
+    } catch (error) {
+        console.log(error);
+        res.json({ success: false, message: error.message });
+    }
+};
+
+export { getAllInsurance };
+
 
 // Get Insurance by userId
 const getInsurance = async (req, res) => {
@@ -80,11 +108,10 @@ const updateInsurance = async (req, res) => {
         const { insuranceId } = req.params;
         const updateFields = req.body;
 
-        // Use $set to only update the fields that are passed in req.body
         const updatedInsurance = await insuranceModel.findByIdAndUpdate(
             insuranceId,
             { $set: updateFields },
-            { new: true } // Return the updated document
+            { new: true }
         );
 
         if (!updatedInsurance) {

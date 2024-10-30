@@ -18,6 +18,8 @@ import DoctorsDiagnosis from "./pages/DoctorsDiagnosis"
 import User from "./pages/Admin/User"
 import AddDoctor from "./pages/RegisterDoctor"
 import Session from "./pages/Admin/Session"
+import VideoCall from "./pages/Admin/VideoCall"
+
 
 function App() {
 
@@ -41,7 +43,7 @@ function App() {
          <Route path="/doctors-prescription/:sessionId" element={<DoctorsPrescription/> } />    
          <Route path="/doctors-diagnosis/:sessionId" element={<DoctorsDiagnosis/> } />    
          <Route path="/insurance" element={<Insurance/> } />    
-
+         <Route path="/video-call/:appointmentId" element={<VideoCall />} />
 
 
 

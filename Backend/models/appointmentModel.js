@@ -15,6 +15,9 @@ const appointmentSchema = new mongoose.Schema({
     hospitalName: { type: String, required: false },
     age: { type: String, required: false },
     sex: { type: String, required: false },
+    meetingStart: { type: Date, required: false },      // Start time of the meeting
+    meetingEnd: { type: Date, required: false },        // End time of the meeting
+    meetingDuration: { type: Number, required: false }, // Duration in seconds
     drugName1: { type: String, required: false },
     dosage1: { type: String, required: false },
     frequency1: { type: String, required: false },

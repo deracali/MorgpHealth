@@ -213,7 +213,7 @@ const decrementDoctorBalance = async (req, res) => {
 
 const updateAppointment = async (req, res) => {
     try {
-        const { appointmentId } = req.params; 
+        const { appointmentId } = req.params;
         const {
             userId,
             docId,
@@ -226,7 +226,7 @@ const updateAppointment = async (req, res) => {
             hospitalName,
             age,
             gender,
-            region, // Added region
+            region,
             drugName1,
             dosage1,
             frequency1,
@@ -243,6 +243,9 @@ const updateAppointment = async (req, res) => {
             dosage4,
             frequency4,
             period4,
+            meetingStart,   // New field for meeting start time
+            meetingEnd,     // New field for meeting end time
+            meetingDuration // New field for meeting duration
         } = req.body;
 
         const currentAppointment = await appointmentModel.findById(appointmentId);
@@ -263,7 +266,7 @@ const updateAppointment = async (req, res) => {
         if (hospitalName !== undefined) updateData.hospitalName = hospitalName;
         if (age !== undefined) updateData.age = age;
         if (gender !== undefined) updateData.gender = gender;
-        if (region !== undefined) updateData.region = region; // Set region if provided
+        if (region !== undefined) updateData.region = region;
         if (drugName1 !== undefined) updateData.drugName1 = drugName1;
         if (dosage1 !== undefined) updateData.dosage1 = dosage1;
         if (frequency1 !== undefined) updateData.frequency1 = frequency1;
@@ -280,6 +283,11 @@ const updateAppointment = async (req, res) => {
         if (dosage4 !== undefined) updateData.dosage4 = dosage4;
         if (frequency4 !== undefined) updateData.frequency4 = frequency4;
         if (period4 !== undefined) updateData.period4 = period4;
+        
+        // Add new meeting-related fields if they are present in the request
+        if (meetingStart !== undefined) updateData.meetingStart = meetingStart;
+        if (meetingEnd !== undefined) updateData.meetingEnd = meetingEnd;
+        if (meetingDuration !== undefined) updateData.meetingDuration = meetingDuration;
 
         const updatedAppointment = await appointmentModel.findByIdAndUpdate(appointmentId, updateData, { new: true });
 
@@ -289,5 +297,6 @@ const updateAppointment = async (req, res) => {
         res.json({ success: false, message: error.message });
     }
 };
+
 
 export {changeAvailablity,decrementDoctorBalance,doctorList,updateAppointment, loginDoctor,appointmentsDoctor,appointmentCancel,appointmentComplete,doctorDashboard, doctorProfile, updateDoctorProfile}

@@ -29,7 +29,7 @@ export default function Login() {
           setAToken(data.token);
           setDoctorId(data.id);
           toast.success(`${state} Successful`); // Feedback based on state
-          navigate('/admin-dashboard')
+          navigate('/dashboard')
         } else {
           toast.error(data.message);
         }

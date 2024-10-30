@@ -1,36 +1,47 @@
 import mongoose from 'mongoose';
 
 const doctorSchema = new mongoose.Schema({
-    name: { type: String, required: true },
-    email: { type: String, required: true, unique: true },
-    password: { type: String, required: true },
-    age: { type: String, required: true },
-    region: { type: String, required: true },
-    gender: { type: String, required: true },
-    image: { type: String, required: true },
-    speciality: { type: [String], required: true }, // Changed to an array of strings
-    degree: { type: String, required: true },
-    experience: { type: String, required: true },
-    about: { type: String, required: true },
+     name: { type: String }, // Optional field
+    email: { type: String, unique: true, required: true }, // Required
+    password: { type: String, required: true }, // Required
+    image: { 
+        type: String,
+        default: 'https://example.com/placeholder-image.jpg' // Placeholder image
+    }, // Optional field
+    speciality: { type: [String] }, // Optional field
+    degree: { type: String }, // Optional field
+    experience: { type: String }, // Optional field
+    about: { type: String }, // Optional field
     available: { type: Boolean, default: true },
-    fees: { type: Number, required: true },
-    balance: { type: Number, required: true },
-    address: { type: Object, required: true },
-    date: { type: Number, required: true },
-    slots_booked: { type: Object },
-
-    // New fields added to the schema
-    dateOfBirth: { type: Date, required: true }, // Date of birth
-    universityName: { type: String, required: true }, // University name
-    universityCountry: { type: String, required: true }, // University country
-    medicalCouncilName: { type: String, required: true }, // Medical council name
-    medicalCouncilCountry: { type: String, required: true }, // Medical council country
-    graduationYear: { type: Number, required: true }, // Graduation year
-    medicalLicense: { type: String, required: true }, // Path to uploaded medical license
-    diplomaCertificates: { type: String, required: true }, // Path to uploaded diploma certificates
-    proofOfID: { type: String, required: true } // Path to uploaded proof of ID
+    fees: { type: Number }, // Optional field
+    balance: { type: Number, default: 0 }, // Optional field
+    address: { type: Object }, // Optional field
+    slots_booked: { type: Object }, // Optional field
+    region: { type: String }, // Optional field
+    age: { type: String }, // Optional field
+    universityName: { type: String }, // Optional field
+    universityCountry: { type: String }, // Optional field
+    medicalCouncilName: { type: String }, // Optional field
+    medicalCouncilCountry: { type: String }, // Optional field
+    graduationYear: { type: Number }, // Optional field
+    medicalLicense: { type: String,   default: 'https://example.com/placeholder-image.jpg' }, // Optional field
+    diplomaCertificates: { type: String,   default: 'https://example.com/placeholder-image.jpg' },
+    proofOfID: { type: String,   default: 'https://example.com/placeholder-image.jpg' }, 
 }, { minimize: false });
 
 const doctorModel = mongoose.models.doctor || mongoose.model('doctor', doctorSchema);
 
 export default doctorModel;
+
+
+
+
+
+
+
+
+
+
+
+
+

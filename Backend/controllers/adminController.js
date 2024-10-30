@@ -1,117 +1,98 @@
 import validator from "validator";
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
-import doctorsModel from '../models/doctorsModel.js';
 import doctorModel from "../models/doctorsModel.js";
 import cloudinary from 'cloudinary';
 import appointmentModel from "../models/appointmentModel.js";
 import userModel from "../models/userModel.js";
 
 // Access the 'vs' property if it exists on the cloudinary object
-const { vs } = cloudinary;
+
+const { v2: cloudinaryV2 } = cloudinary; 
 
 const addDoctor = async (req, res) => {
     try {
-        const {
-            name,
-            email,
-            password,
-            speciality, // This will be an array of strings
-            degree,
-            experience,
-            about,
-            fees,
-            address,
-            dateOfBirth,
-            gender, // Added gender here
-            region, // Added region here
-            age, // Added age here
-            universityName,
-            universityCountry,
-            medicalCouncilName,
-            medicalCouncilCountry,
-            graduationYear
-        } = req.body;
-
-        const imageFile = req.files['image'] ? req.files['image'][0] : null; // Doctor's profile image
-        const medicalLicenseFile = req.files['medicalLicense'] ? req.files['medicalLicense'][0] : null; // Medical license image
-        const diplomaCertificatesFile = req.files['diplomaCertificates'] ? req.files['diplomaCertificates'][0] : null; // Diploma certificates image
-        const proofOfIDFile = req.files['proofOfID'] ? req.files['proofOfID'][0] : null; // Proof of ID image
-
-        // Validate required fields
-        if (!name || !email || !password || !speciality || !degree || !experience || !about || !fees || !address ||
-            !medicalLicenseFile || !diplomaCertificatesFile || !proofOfIDFile || !imageFile || !gender || !region || !age) { // Check for age and region
-            return res.json({ success: false, message: "Missing Details" });
-        }
-
-        // Additional validations
-        if (!Array.isArray(speciality)) {
-            return res.json({ success: false, message: "Speciality must be an array" });
-        }
-
-        // Validate email format, password strength, etc. (you can add your own logic here)
-        if (!validator.isEmail(email)) {
-            return res.json({ success: false, message: "Invalid email format" });
-        }
-
-        if (age < 0) { // Assuming age cannot be negative
-            return res.json({ success: false, message: "Age must be a positive number" });
-        }
-
-        // Hash the password
-        const salt = await bcrypt.genSalt(10);
-        const hashedPassword = await bcrypt.hash(password, salt);
-
-        // Upload images to Cloudinary
-        const imageUpload = await cloudinary.uploader.upload(imageFile.path, { resource_type: "image" });
-        const imageUrl = imageUpload.secure_url;
-
-        const medicalLicenseUpload = await cloudinary.uploader.upload(medicalLicenseFile.path, { resource_type: "image" });
-        const medicalLicenseUrl = medicalLicenseUpload.secure_url;
-
-        const diplomaCertificatesUpload = await cloudinary.uploader.upload(diplomaCertificatesFile.path, { resource_type: "image" });
-        const diplomaCertificatesUrl = diplomaCertificatesUpload.secure_url;
-
-        const proofOfIDUpload = await cloudinary.uploader.upload(proofOfIDFile.path, { resource_type: "image" });
-        const proofOfIDUrl = proofOfIDUpload.secure_url;
-
-        // Create doctor data object
-        const doctorData = {
-            name,
-            email,
-            image: imageUrl,
-            password: hashedPassword, // Now the hashed password is included
-            speciality, // This is an array
-            degree,
-            experience,
-            about,
-            fees,
-            address: JSON.parse(address),
-            date: Date.now(),
-            dateOfBirth,
-            gender, // Include gender in the doctor data
-            region, // Include region in the doctor data
-            age, // Include age in the doctor data
-            universityName,
-            universityCountry,
-            medicalCouncilName,
-            medicalCouncilCountry,
-            graduationYear,
-            medicalLicense: medicalLicenseUrl,
-            diplomaCertificates: diplomaCertificatesUrl,
-            proofOfID: proofOfIDUrl
-        };
-
-        // Save new doctor to the database
-        const newDoctor = new doctorsModel(doctorData);
-        await newDoctor.save();
-
-        res.json({ success: true, message: "Doctor Added" });
+      const {
+        name,
+        email,
+        password,
+        speciality,
+        degree,
+        experience,
+        about,
+        fees,
+        address,
+        age,
+        gender,
+        region,
+        universityName,
+        universityCountry,
+        medicalCouncilName,
+        medicalCouncilCountry,
+        graduationYear,
+        balance
+      } = req.body;
+  
+      // Destructure files from req.files
+      const { image, medicalLicense, diplomaCertificates, proofOfID } = req.files || {};
+  
+      // Hash the password
+      const salt = await bcrypt.genSalt(10);
+      const hashedPassword = await bcrypt.hash(password, salt);
+  
+      // Define a placeholder image URL
+      const placeholderImageUrl = 'https://example.com/placeholder-image.jpg';
+  
+      // Upload images to Cloudinary and handle potential errors
+      const uploadImage = async (file) => {
+        if (!file) return null;
+        const uploadResult = await cloudinaryV2.uploader.upload(file.path, { resource_type: 'image' });
+        return uploadResult.secure_url;
+      };
+  
+      // Upload files and store their URLs, if files exist
+      const imageUrl = await uploadImage(image && image[0] ? image[0] : null) || placeholderImageUrl;
+      const medicalLicenseUrl = await uploadImage(medicalLicense && medicalLicense[0] ? medicalLicense[0] : null);
+      const diplomaCertificatesUrl = await uploadImage(diplomaCertificates && diplomaCertificates[0] ? diplomaCertificates[0] : null);
+      const proofOfIDUrl = await uploadImage(proofOfID && proofOfID[0] ? proofOfID[0] : null);
+  
+      // Create doctor data object
+      const doctorData = {
+        name: name || null,
+        email: email || null,
+        password: hashedPassword,
+        speciality: speciality || [],
+        degree: degree || null,
+        experience: experience || null,
+        about: about || null,
+        fees: fees || null,
+        address: address || null,
+        age: age || null,
+        gender: gender || null,
+        region: region || null,
+        universityName: universityName || null,
+        universityCountry: universityCountry || null,
+        medicalCouncilName: medicalCouncilName || null,
+        medicalCouncilCountry: medicalCouncilCountry || null,
+        graduationYear: graduationYear || null,
+        image: imageUrl,
+        medicalLicense: medicalLicenseUrl,
+        diplomaCertificates: diplomaCertificatesUrl,
+        proofOfID: proofOfIDUrl,
+        balance: balance || 0
+      };
+  
+      // Save new doctor to the database
+      const newDoctor = new doctorModel(doctorData);
+      await newDoctor.save();
+  
+      res.json({ success: true, message: 'Doctor Added Successfully' });
     } catch (error) {
-        console.log(error);
-        res.json({ success: false, message: error.message });
+      console.error(error);
+      res.json({ success: false, message: error.message });
     }
-};
+  };
+  
 
 const loginAdmin = async (req, res) => {
     try {

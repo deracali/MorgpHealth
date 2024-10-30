@@ -14,6 +14,8 @@ export default function Navbar() {
     const logout = () => {
         setToken(false)
         localStorage.removeItem('utoken')
+        localStorage.removeItem('insured')
+        localStorage.removeItem('userId')
     }
 
 

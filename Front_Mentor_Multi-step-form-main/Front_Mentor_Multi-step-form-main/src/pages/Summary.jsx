@@ -54,25 +54,25 @@ const Summary = () => {
       })),
       totalPrice,
     };
-        navigate("/thankyou");
+        // navigate("/thankyou");
     
-    // try {
-    //   const response = await fetch("http://localhost:4000/insurance/post", {
-    //     method: "POST",
-    //     headers: {
-    //       "Content-Type": "application/json",
-    //     },
-    //     body: JSON.stringify(insuranceData),
-    //   });
+    try {
+      const response = await fetch("http://localhost:4000/api/insurance/insurance/post", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(insuranceData),
+      });
 
-    //   if (response.ok) {
-    //     // Redirect to thank you page after successful submission
-    //   } else {
-    //     console.error("Error submitting data", response);
-    //   }
-    // } catch (error) {
-    //   console.error("Error connecting to the server", error);
-    // }
+      if (response.ok) {
+        // Redirect to thank you page after successful submission
+      } else {
+        console.error("Error submitting data", response);
+      }
+    } catch (error) {
+      console.error("Error connecting to the server", error);
+    }
   };
 
   return (

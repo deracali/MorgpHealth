@@ -2,7 +2,7 @@
 import express from 'express';
 import multer from 'multer'; // Ensure multer is imported
 import upload from '../middlewares/multer.js'; // This remains as 'upload'
-import { ReviewDoctor } from '../controllers/reviewDocController.js';
+import { deleteReviewDoctor, getAllReviewDocs, getSingleReviewDoc, ReviewController } from '../controllers/reviewController.js';
 
 const reviewDocRouter = express.Router();
 
@@ -14,6 +14,9 @@ const doctorUpload = upload.fields([
     { name: 'proofOfID', maxCount: 1 } // Proof of ID image
 ]);
 
-reviewDocRouter.post('/add-doctor', doctorUpload, ReviewDoctor);
+reviewDocRouter.post('/reviewDoc', doctorUpload, ReviewController);
+reviewDocRouter.get('/review-docs', getAllReviewDocs);
+reviewDocRouter.get('/review-docs/:id', getSingleReviewDoc)
+reviewDocRouter.delete('/review-doctor/:doctorId', deleteReviewDoctor)
 
 export default reviewDocRouter;

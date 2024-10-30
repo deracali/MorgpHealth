@@ -21,6 +21,8 @@ import Session from "./pages/Doctor/Session";
 import DoctorsProfile from "./pages/Doctor/DoctorProfile";
 import DoctorReview from "./pages/Admin/DoctorReview";
 import DoctorDetail from "./pages/Admin/DoctorDetail";
+import VideoCall from "./pages/VideoCall";
+import Insurance from "./pages/Admin/Insurance";
 
 
 function App() {
@@ -35,16 +37,18 @@ function App() {
        <div className="flex items-start">
         <SideBar/>
         <Routes>
-          <Route path='/' element={<Dashboard/>}/>
+          <Route path='/dashboard' element={<Dashboard/>}/>
           <Route path='/all-appointment' element={<AllAppointment/>}/>
           <Route path='/add-doctor' element={<AddDoctor/>}/>
           <Route path='/doctor-list' element={<DoctorList/>}/>
           <Route path='/doctor-review' element={<DoctorReview/>}/>
-          <Route path='/doctor-review/:id' element={<DoctorDetail/>}/>
-          <Route path='/doctor-profile/:id' element={<DoctorProf/>}/>       
+          <Route path='/doctor-details/:id' element={<DoctorDetail/>}/>
+          <Route path='/doctor-profile/:id' element={<DoctorProf/>}/>
+          <Route path='/insurance' element={<Insurance/>}/>
           
           
           
+          <Route path="/video-call/:appointmentId" element={<VideoCall />} />       
           <Route path='/doctor-dashboard/:id' element={<DoctorDashboard/>}/>       
           <Route path='/doctor-appointment/:id' element={<DoctorAppointment/>}/>       
           <Route path='/session/:appointmentId' element={<Session/>}/>       

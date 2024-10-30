@@ -3,9 +3,10 @@ import { useNavigate } from "react-router-dom";
 import { PersonalInfoContext } from "../context/PersonalInfoContext";
 
 const InsuranceForm = () => {
-  const { setPersonalInfo } = useContext(PersonalInfoContext); // Get the context function to set personal info
-  const navigate = useNavigate(); // Get navigate function
+  const { setPersonalInfo } = useContext(PersonalInfoContext);
+  const navigate = useNavigate();
   const [formData, setLocalFormData] = useState({
+    userId: "",       // Added userId field
     name: "",
     spouseName: "",
     spouseAge: "",
@@ -31,15 +32,14 @@ const InsuranceForm = () => {
   const handleSubmit = (e) => {
     e.preventDefault();
     
-    // Set personal info to context
     setPersonalInfo((prev) => ({
       ...prev,
+      userId: formData.userId,  // Added userId field to context
       name: formData.name,
-      location: formData.location, // Assuming you want to save location too
+      location: formData.location,
     }));
 
-    // Navigate to the next page
-    navigate('/selectplan'); // Update the path accordingly
+    navigate('/selectplan');
   };
 
   return (
@@ -47,6 +47,19 @@ const InsuranceForm = () => {
       onSubmit={handleSubmit}
       className="flex flex-col space-y-6 p-4 sm:p-6 bg-white shadow-lg rounded-lg w-full sm:w-[25rem] md:w-[35rem] lg:w-[45rem] mx-auto overflow-y-scroll max-h-[80vh] sm:max-h-[90vh]"
     >
+      {/* User ID Field */}
+      <div className="form-group">
+        <label className="block text-primary-marineBlue font-semibold mb-2">User E ID</label>
+        <input
+          type="text"
+          name="userId"
+          value={formData.userId}
+          onChange={handleInputChange}
+          className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-marineBlue"
+          placeholder="Enter your user ID"
+        />
+      </div>
+
       {/* Name Field */}
       <div className="form-group">
         <label className="block text-primary-marineBlue font-semibold mb-2">Name</label>
@@ -196,13 +209,12 @@ const InsuranceForm = () => {
 
       <button
         className="bg-primary-marineBlue text-white border-0 rounded-md px-6 py-3 transition-all duration-300 hover:opacity-75"
-        type="submit" // Corrected from "sumbit" to "submit"
+        type="submit"
       >
         Next Step
       </button>
     </form>
   );
 };
-
 
 export default InsuranceForm;
