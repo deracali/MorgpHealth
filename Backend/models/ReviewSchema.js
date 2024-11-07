@@ -27,7 +27,7 @@ const ReviewdoctorSchema = new mongoose.Schema({
     medicalLicense: { type: String,   default: 'https://example.com/placeholder-image.jpg' }, // Optional field
     diplomaCertificates: { type: String,   default: 'https://example.com/placeholder-image.jpg' },
     proofOfID: { type: String,   default: 'https://example.com/placeholder-image.jpg' }, 
-}, { minimize: false });
+}, { timestamps: true });
 
 const ReviewdocModel = mongoose.model('Reviewdoctor', ReviewdoctorSchema);
 
