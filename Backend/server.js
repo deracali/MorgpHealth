@@ -19,7 +19,11 @@ connectDB();
 connectCloudinary();
 
 app.use(express.json());
-app.use(cors());
+app.use(cors({
+    origin: '*', // or the correct frontend URL
+    methods: ['GET', 'POST'],
+    allowedHeaders: ['Content-Type'],
+  }));
 
 // Define your routes
 app.use('/api/admin', adminRouter);

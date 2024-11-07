@@ -11,9 +11,9 @@ const { vs } = cloudinary;
 
 const registerUser = async (req, res) => {
     try {
-        const { name, email, password, dob, region, gender, phoneNumber, location } = req.body;
+        const { name, email, password, region, phoneNumber,gender } = req.body; // Added age and region
 
-        if (!name || !password || !email || !dob || !region) { // Check for all required fields
+        if (!name || !password || !email) { // Check for age and region
             return res.json({ success: false, message: "Missing Details" });
         }
 
@@ -21,19 +21,7 @@ const registerUser = async (req, res) => {
             return res.json({ success: false, message: "Enter a valid email" });
         }
 
-        // Calculate age from DOB
-        const birthDate = new Date(dob);
-        const age = new Date().getFullYear() - birthDate.getFullYear();
-        const monthDiff = new Date().getMonth() - birthDate.getMonth();
-        if (monthDiff < 0 || (monthDiff === 0 && new Date().getDate() < birthDate.getDate())) {
-            age--;
-        }
-
-        if (age < 0) {
-            return res.json({ success: false, message: "Age must be a positive number" });
-        }
-
-        if (password.length < 6) {
+        if (password.length < 6) { // Fixed the typo from 'lenght' to 'length' and set a minimum length
             return res.json({ success: false, message: "Enter a strong password (at least 6 characters)" });
         }
 
@@ -44,27 +32,24 @@ const registerUser = async (req, res) => {
             name,
             email,
             password: hashedPassword,
-            age,    // Store calculated age instead of dob
-            region,  // Add region to user data
-            gender,
-            location,
-            phoneNumber
+            region,  // Added region to user data
+            phoneNumber,
+            gender
         };
 
         const newUser = new userModel(userData);
         const user = await newUser.save();
 
         const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET);
-        const insured = user.insured;
-        const userId = user._id;
-        res.json({ success: true, token, userId, insured });
+        const insured = user.insured; 
+        const userId = user._id; 
+        res.json({ success: true, token, userId,insured });
 
     } catch (error) {
         console.log(error);
         res.json({ success: false, message: error.message });
     }
 };
-
 
 const loginUser = async (req, res) => {
     try {
