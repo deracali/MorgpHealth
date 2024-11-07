@@ -11,7 +11,7 @@ const { vs } = cloudinary;
 
 const registerUser = async (req, res) => {
     try {
-        const { name, email, password, dob, region, gender, phoneNumber } = req.body;
+        const { name, email, password, dob, region, gender, phoneNumber, location } = req.body;
 
         if (!name || !password || !email || !dob || !region) { // Check for all required fields
             return res.json({ success: false, message: "Missing Details" });
@@ -47,6 +47,7 @@ const registerUser = async (req, res) => {
             age,    // Store calculated age instead of dob
             region,  // Add region to user data
             gender,
+            location,
             phoneNumber
         };
 
