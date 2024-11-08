@@ -49,27 +49,30 @@ const doctorFilter = async (req, res) => {
   
   const doctorFilterController = async (req, res) => {
     try {
-      const { specialty, gender, consultationFee } = req.body;  // Extract filter criteria from the request body
+      const { speciality, gender, fees, available } = req.body;  // Extract filter criteria from the request body
   
       // Build the query based on the filters provided
       const query = {};
   
-      if (specialty) {
-        query.specialty = specialty;  // Filter by specialty
+      if (speciality) {
+        query.specialty = speciality;  // Filter by specialty
+      }
+      if (available) {
+        query.specialty = speciality;  // Filter by specialty
       }
       if (gender) {
         query.gender = gender;  // Filter by gender
       }
-      if (consultationFee) {
-        const feeRange = consultationFee.split(' - ');
+      if (fees) {
+        const feeRange = fees.split(' - ');
         if (feeRange.length === 2) {
-          query.consultationFee = { $gte: parseFloat(feeRange[0].replace('$', '')), $lte: parseFloat(feeRange[1].replace('$', '')) };
+          query.fees = { $gte: parseFloat(feeRange[0].replace('$', '')), $lte: parseFloat(feeRange[1].replace('$', '')) };
         } else {
           // Handle the case for a single fee range, e.g., 'Below $200'
-          if (consultationFee === 'Below $200') {
-            query.consultationFee = { $lt: 200 };
-          } else if (consultationFee === 'Above $500') {
-            query.consultationFee = { $gt: 500 };
+          if (fees === 'Below $200') {
+            query.fees = { $lt: 200 };
+          } else if (fees === 'Above $500') {
+            query.fees = { $gt: 500 };
           }
         }
       }
