@@ -32,32 +32,32 @@ const doctorList = async (req,res) => {
 
 const doctorFilter = async (req, res) => {
     try {
-        // Get the speciality from query parameters
-        const { speciality } = req.query; // Expects something like ?speciality=Cardiologist or ?speciality=Cardiologist,Neurologist
-        
-        // Prepare filter object for querying doctors
-        let filter = {};
-
-        // If speciality is provided, apply filtering
-        if (speciality) {
-            // If speciality is a string, convert it into an array (for consistency)
-            const specialitiesArray = typeof speciality === 'string' ? [speciality] : speciality;
-
-            // Check that all items in the speciality array are strings
-            if (specialitiesArray.every(sp => typeof sp === 'string')) {
-                filter.specialty = { $in: specialitiesArray };  // Use $in to match any of the specialities
-            }
+      const { speciality } = req.query;  // Query parameter can be a string or comma-separated list
+      
+      let filter = {};
+  
+      if (speciality) {
+        // If speciality is a string, convert it into an array by splitting on commas
+        const specialitiesArray = typeof speciality === 'string' 
+          ? speciality.split(',').map(sp => sp.trim()) // Split by comma and trim spaces
+          : speciality;
+  
+        // Ensure every item in the array is a string
+        if (specialitiesArray.every(sp => typeof sp === 'string')) {
+          filter.specialty = { $in: specialitiesArray };  // Use $in to match any of the specialities
         }
-
-        // Fetch the doctors with the applied filter (if any)
-        const doctors = await doctorModel.find(filter).select(['-password', '-email']);  // Exclude password and email fields
-        
-        res.json({ success: true, doctors });
+      }
+  
+      // Fetch the doctors with the applied filter
+      const doctors = await doctorModel.find(filter).select(['-password', '-email']);  // Exclude password and email fields
+      
+      res.json({ success: true, doctors });
     } catch (error) {
-        console.log(error);
-        res.json({ success: false, message: error.message });
+      console.log(error);
+      res.json({ success: false, message: error.message });
     }
-};
+  };
+  
 
 
 const loginDoctor = async (req, res) => {
