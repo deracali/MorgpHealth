@@ -58,7 +58,7 @@ const doctorFilter = async (req, res) => {
         query.specialty = speciality;  // Filter by specialty
       }
       if (available) {
-        query.specialty = speciality;  // Filter by specialty
+        query.available = available;  // Filter by available
       }
       if (gender) {
         query.gender = gender;  // Filter by gender
