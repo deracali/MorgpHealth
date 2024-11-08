@@ -32,7 +32,8 @@ const doctorList = async (req,res) => {
 
 const doctorFilter = async (req, res) => {
     try {
-      const { speciality } = req.query;  // Query parameter can be a string or comma-separated list
+      // Extract speciality from URL params
+      const { speciality } = req.params;  // URL parameter can be a string or comma-separated list
       
       let filter = {};
   
