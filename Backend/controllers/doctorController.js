@@ -35,9 +35,10 @@ const doctorFilter = async (req, res) => {
       // Extract speciality from URL params
       const { speciality } = req.params;  // URL parameter can be a string or comma-separated list
      
-      // Fetch the doctors with the applied filter
-      const doctors = await doctorModel.find(speciality).select(['-password']);  // Exclude password and email fields
-      
+      const doctors = speciality
+      ? await doctorModel.where('speciality').equals(speciality).select('-password')
+      : await doctorModel.find().select('-password');
+
       res.json({ success: true, doctors });
     } catch (error) {
       console.log(error);
