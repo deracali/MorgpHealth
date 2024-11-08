@@ -5,7 +5,7 @@ import { appointmentCancel, appointmentComplete, appointmentsDoctor, decrementDo
 const doctorRouter = express.Router()
 
 doctorRouter.get('/list',doctorList)
-doctorRouter.get('docfilter/:speciality',doctorFilter)
+doctorRouter.get('/docfilter/:speciality',doctorFilter)
 doctorRouter.post('/login',loginDoctor)
 doctorRouter.get('/appointments/:docId',appointmentsDoctor)
 doctorRouter.post('/cancel-appointment',appointmentCancel)
