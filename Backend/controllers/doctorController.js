@@ -47,7 +47,48 @@ const doctorFilter = async (req, res) => {
   };
   
   
-
+  const doctorFilterController = async (req, res) => {
+    try {
+      const { specialty, gender, consultationFee } = req.body;  // Extract filter criteria from the request body
+  
+      // Build the query based on the filters provided
+      const query = {};
+  
+      if (specialty) {
+        query.specialty = specialty;  // Filter by specialty
+      }
+      if (gender) {
+        query.gender = gender;  // Filter by gender
+      }
+      if (consultationFee) {
+        const feeRange = consultationFee.split(' - ');
+        if (feeRange.length === 2) {
+          query.consultationFee = { $gte: parseFloat(feeRange[0].replace('$', '')), $lte: parseFloat(feeRange[1].replace('$', '')) };
+        } else {
+          // Handle the case for a single fee range, e.g., 'Below $200'
+          if (consultationFee === 'Below $200') {
+            query.consultationFee = { $lt: 200 };
+          } else if (consultationFee === 'Above $500') {
+            query.consultationFee = { $gt: 500 };
+          }
+        }
+      }
+  
+      // Fetch the doctors from the database using the constructed query
+      const doctors = await doctorModel.find(query);  // Assuming you're using Mongoose for MongoDB
+  
+      if (doctors.length === 0) {
+        return res.status(404).json({ success: false, message: 'No doctors found matching the criteria.' });
+      }
+  
+      res.status(200).json({ success: true, doctors });
+    } catch (error) {
+      console.log(error);
+      res.status(500).json({ success: false, message: 'Internal server error' });
+    }
+  };
+  
+  
 
 const loginDoctor = async (req, res) => {
     try {
@@ -318,4 +359,4 @@ const updateAppointment = async (req, res) => {
 };
 
 
-export {changeAvailablity,decrementDoctorBalance,doctorList,updateAppointment,doctorFilter, loginDoctor,appointmentsDoctor,appointmentCancel,appointmentComplete,doctorDashboard, doctorProfile, updateDoctorProfile}
+export {changeAvailablity,decrementDoctorBalance,doctorList,doctorFilterController,updateAppointment,doctorFilter, loginDoctor,appointmentsDoctor,appointmentCancel,appointmentComplete,doctorDashboard, doctorProfile, updateDoctorProfile}
