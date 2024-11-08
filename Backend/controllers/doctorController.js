@@ -34,25 +34,9 @@ const doctorFilter = async (req, res) => {
     try {
       // Extract speciality from URL params
       const { speciality } = req.params;  // URL parameter can be a string or comma-separated list
-      
-      let filter = {};
-  
-      if (speciality) {
-        // If speciality is a string, convert it into an array by splitting on commas
-        const specialitiesArray = typeof speciality === 'string' 
-          ? speciality.split(',').map(sp => sp.trim().toLowerCase())  // Convert each speciality to lowercase
-          : speciality.map(sp => sp.trim().toLowerCase());  // For array input, convert each to lowercase
-  
-        // Ensure every item in the array is a string
-        if (specialitiesArray.every(sp => typeof sp === 'string')) {
-          filter.specialty = { 
-            $in: specialitiesArray.map(sp => sp.toLowerCase())  // Convert to lowercase for comparison
-          };
-        }
-      }
-  
+     
       // Fetch the doctors with the applied filter
-      const doctors = await doctorModel.find(filter).select(['-password', '-email']);  // Exclude password and email fields
+      const doctors = await doctorModel.find(speciality).select(['-password']);  // Exclude password and email fields
       
       res.json({ success: true, doctors });
     } catch (error) {
