@@ -49,30 +49,33 @@ const doctorFilter = async (req, res) => {
   
   const doctorFilterController = async (req, res) => {
     try {
-      const { speciality, gender, fees, available } = req.body;  // Extract filter criteria from the request body
+      const { speciality, gender, fees, available } = req.query;  // Extract filter criteria from the query string
   
       // Build the query based on the filters provided
       const query = {};
   
       if (speciality) {
-        query.specialty = speciality;  // Filter by specialty
+        query.specialty = speciality.toLowerCase();  // Filter by specialty (case-insensitive)
       }
-      if (available) {
-        query.available = available;  // Filter by available
+      if (available !== undefined) {  // Ensure availability is handled properly (it may be a boolean string 'false')
+        query.available = available === 'true';  // Convert 'true'/'false' string to a boolean
       }
       if (gender) {
-        query.gender = gender;  // Filter by gender
+        query.gender = gender.toLowerCase();  // Filter by gender (case-insensitive)
       }
       if (fees) {
-        const feeRange = fees.split(' - ');
-        if (feeRange.length === 2) {
-          query.fees = { $gte: parseFloat(feeRange[0].replace('$', '')), $lte: parseFloat(feeRange[1].replace('$', '')) };
+        let feeRange;
+  
+        // Handling the 'Below $200' or 'Above $500' cases
+        if (fees === 'Below $200') {
+          query.fees = { $lt: 200 };
+        } else if (fees === 'Above $500') {
+          query.fees = { $gt: 500 };
         } else {
-          // Handle the case for a single fee range, e.g., 'Below $200'
-          if (fees === 'Below $200') {
-            query.fees = { $lt: 200 };
-          } else if (fees === 'Above $500') {
-            query.fees = { $gt: 500 };
+          // Handling ranges like '100 - 200'
+          feeRange = fees.split(' - ');
+          if (feeRange.length === 2) {
+            query.fees = { $gte: parseFloat(feeRange[0].replace('$', '')), $lte: parseFloat(feeRange[1].replace('$', '')) };
           }
         }
       }
