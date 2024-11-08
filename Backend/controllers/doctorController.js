@@ -64,18 +64,22 @@ const doctorFilter = async (req, res) => {
         query.gender = gender.toLowerCase();  // Filter by gender (case-insensitive)
       }
       if (fees) {
-        let feeRange;
-  
         // Handling the 'Below $200' or 'Above $500' cases
         if (fees === 'Below $200') {
-          query.fees = { $lt: 200 };
+          query.fees = { $lt: 200 };  // Fees strictly less than 200
         } else if (fees === 'Above $500') {
-          query.fees = { $gt: 500 };
+          query.fees = { $gt: 500 };  // Fees greater than 500
         } else {
-          // Handling ranges like '100 - 200'
-          feeRange = fees.split(' - ');
+          // Handle a specific fee range like '100 - 200'
+          const feeRange = fees.split(' - ');
           if (feeRange.length === 2) {
-            query.fees = { $gte: parseFloat(feeRange[0].replace('$', '')), $lte: parseFloat(feeRange[1].replace('$', '')) };
+            query.fees = {
+              $gte: parseFloat(feeRange[0]),  // Fees greater than or equal to first value
+              $lte: parseFloat(feeRange[1])   // Fees less than or equal to second value
+            };
+          } else {
+            // Handle a single fee value
+            query.fees = { $eq: parseFloat(fees) };  // Exact match for a specific fee
           }
         }
       }
@@ -93,6 +97,7 @@ const doctorFilter = async (req, res) => {
       res.status(500).json({ success: false, message: 'Internal server error' });
     }
   };
+  
   
   
 
