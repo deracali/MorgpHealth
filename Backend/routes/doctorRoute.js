@@ -1,10 +1,11 @@
 import express from 'express'
-import { appointmentCancel, appointmentComplete, appointmentsDoctor, decrementDoctorBalance, doctorDashboard, doctorList,doctorProfile,loginDoctor, updateAppointment, updateDoctorProfile } from '../controllers/doctorController.js'
+import { appointmentCancel, appointmentComplete, appointmentsDoctor, decrementDoctorBalance, doctorDashboard, doctorFilter, doctorList,doctorProfile,loginDoctor, updateAppointment, updateDoctorProfile } from '../controllers/doctorController.js'
 
 
 const doctorRouter = express.Router()
 
 doctorRouter.get('/list',doctorList)
+doctorRouter.get('/docfilter',doctorFilter)
 doctorRouter.post('/login',loginDoctor)
 doctorRouter.get('/appointments/:docId',appointmentsDoctor)
 doctorRouter.post('/cancel-appointment',appointmentCancel)
