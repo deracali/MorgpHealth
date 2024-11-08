@@ -49,49 +49,57 @@ const doctorFilter = async (req, res) => {
   
   const doctorFilterController = async (req, res) => {
     try {
-      const { speciality, gender, fees, available } = req.query;  // Extract filter criteria from the query string
+      const { speciality, gender, fees, available } = req.query; // Extract filter criteria from the query string
   
       // Build the query based on the filters provided
       const query = {};
   
+      // Filter by speciality
       if (speciality) {
-        query.specialty = speciality.toLowerCase();  // Filter by specialty (case-insensitive)
+        query.speciality = { $regex: new RegExp(speciality, 'i') };  // Case-insensitive filter for specialty
       }
-      if (available !== undefined) {  // Ensure availability is handled properly (it may be a boolean string 'false')
-        query.available = available === 'true';  // Convert 'true'/'false' string to a boolean
-      }
+  
+      // Filter by gender
       if (gender) {
-        query.gender = gender.toLowerCase();  // Filter by gender (case-insensitive)
+        query.gender = gender.toLowerCase();  // Case-insensitive filter for gender
       }
+  
+      // Handle fees filter
       if (fees) {
-        // Handling the 'Below $200' or 'Above $500' cases
         if (fees === 'Below $200') {
-          query.fees = { $lt: 200 };  // Fees strictly less than 200
+          query.fees = { $lt: 200 };  // Find doctors with fees less than 200
         } else if (fees === 'Above $500') {
-          query.fees = { $gt: 500 };  // Fees greater than 500
+          query.fees = { $gt: 500 };  // Find doctors with fees greater than 500
         } else {
-          // Handle a specific fee range like '100 - 200'
+          // For ranges like '100 - 200'
           const feeRange = fees.split(' - ');
           if (feeRange.length === 2) {
-            query.fees = {
-              $gte: parseFloat(feeRange[0]),  // Fees greater than or equal to first value
-              $lte: parseFloat(feeRange[1])   // Fees less than or equal to second value
+            query.fees = { 
+              $gte: parseFloat(feeRange[0].replace('$', '')), 
+              $lte: parseFloat(feeRange[1].replace('$', ''))
             };
-          } else {
-            // Handle a single fee value
-            query.fees = { $eq: parseFloat(fees) };  // Exact match for a specific fee
           }
         }
       }
   
+      // Handle availability
+    //   if (available !== undefined) {
+    //     query.available = available === 'true';  // Convert 'true'/'false' string to a boolean
+    //   }
+  
+      // Log the query for debugging
+      console.log('Query:', query);
+  
       // Fetch the doctors from the database using the constructed query
       const doctors = await doctorModel.find(query);  // Assuming you're using Mongoose for MongoDB
   
+      // Return a response
       if (doctors.length === 0) {
         return res.status(404).json({ success: false, message: 'No doctors found matching the criteria.' });
       }
   
       res.status(200).json({ success: true, doctors });
+  
     } catch (error) {
       console.log(error);
       res.status(500).json({ success: false, message: 'Internal server error' });
