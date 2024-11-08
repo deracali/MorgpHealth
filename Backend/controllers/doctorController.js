@@ -39,12 +39,14 @@ const doctorFilter = async (req, res) => {
       if (speciality) {
         // If speciality is a string, convert it into an array by splitting on commas
         const specialitiesArray = typeof speciality === 'string' 
-          ? speciality.split(',').map(sp => sp.trim()) // Split by comma and trim spaces
-          : speciality;
+          ? speciality.split(',').map(sp => sp.trim().toLowerCase())  // Convert each speciality to lowercase
+          : speciality.map(sp => sp.trim().toLowerCase());  // For array input, convert each to lowercase
   
         // Ensure every item in the array is a string
         if (specialitiesArray.every(sp => typeof sp === 'string')) {
-          filter.specialty = { $in: specialitiesArray };  // Use $in to match any of the specialities
+          filter.specialty = { 
+            $in: specialitiesArray.map(sp => sp.toLowerCase())  // Convert to lowercase for comparison
+          };
         }
       }
   
@@ -57,6 +59,7 @@ const doctorFilter = async (req, res) => {
       res.json({ success: false, message: error.message });
     }
   };
+  
   
 
 
