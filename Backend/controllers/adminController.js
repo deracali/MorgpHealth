@@ -61,7 +61,7 @@ const addDoctor = async (req, res) => {
         name: name || null,
         email: email || null,
         password: hashedPassword,
-        speciality: speciality || [],
+        speciality: speciality || '',
         degree: degree || null,
         experience: experience || null,
         about: about || null,

@@ -8,7 +8,7 @@ const doctorSchema = new mongoose.Schema({
         type: String,
         default: 'https://example.com/placeholder-image.jpg' // Placeholder image
     }, // Optional field
-    speciality: { type: [String] }, // Optional field
+    speciality: { type: String }, // Optional field
     degree: { type: String }, // Optional field
     experience: { type: String }, // Optional field
     about: { type: String }, // Optional field
