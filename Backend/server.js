@@ -23,7 +23,6 @@ app.use(cors({
     origin: ['https://admin-morgphealth.netlify.app', 'http://localhost:5173', 'http://localhost:5174'],  // Remove trailing slashes
     methods: ['GET', 'POST'],
     allowedHeaders: ['Content-Type', 'Authorization', 'token'],
-    credentials: true, // Allow credentials (cookies or authorization headers)
   }));
   
 // Define your routes
