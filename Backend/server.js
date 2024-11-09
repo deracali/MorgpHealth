@@ -22,7 +22,7 @@ app.use(express.json());
 app.use(cors({
     origin: '*', // or the correct frontend URL
     methods: ['GET', 'POST'],
-    allowedHeaders: ['Content-Type'],
+    allowedHeaders: ['Content-Type', 'Authorization', 'token'], 
   }));
 
 // Define your routes
