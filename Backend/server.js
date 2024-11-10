@@ -12,6 +12,8 @@ import reviewDocRouter from './routes/reviewDocRoute.js';
 import chatRoute from './routes/chatRoute.js';
 import http from 'http'; // Import http module
 import { Server } from 'socket.io'; // Import Socket.IO
+import videoRouter from './routes/videoRoute.js';
+import staffRouter from './routes/staffRoute.js';
 
 const app = express();
 const port = process.env.PORT || 4000;
@@ -20,9 +22,9 @@ connectCloudinary();
 
 app.use(express.json());
 app.use(cors({
-    origin: 'http://localhost:5173', // or the correct frontend URL
+    origin: '*', // or the correct frontend URL
     methods: ['GET', 'POST'],
-     allowedHeaders: ['Content-Type', 'Authorization', 'token', 'dtoken'], 
+     allowedHeaders: ['Content-Type', 'Authorization', 'token', 'dtoken', 'atoken'], 
   }));
 
 // Define your routes
@@ -33,6 +35,8 @@ app.use('/api/insurance', insuranceRouter);
 app.use('/api/withdraws', WithdrawalRouter);
 app.use('/api/addDoc', reviewDocRouter);
 app.use('/api/chat', chatRoute);
+app.use('/api/videos', videoRouter);
+app.use('/api/staff', staffRouter);
 
 app.get('/', (req, res) => {
     res.send('API WORKING');
