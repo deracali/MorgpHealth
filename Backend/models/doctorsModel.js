@@ -19,6 +19,7 @@ const doctorSchema = new mongoose.Schema({
     slots_booked: { type: Object }, // Optional field
     region: { type: String }, // Optional field
     age: { type: String }, // Optional field
+    gender: { type: String }, // Optional field
     universityName: { type: String }, // Optional field
     universityCountry: { type: String }, // Optional field
     medicalCouncilName: { type: String }, // Optional field
