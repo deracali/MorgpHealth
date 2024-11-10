@@ -1,28 +1,43 @@
-import React from 'react'
-import { assets } from '../assets/assets_frontend/assets'
-import { Link } from 'react-router-dom'
+import React from 'react';
+import { Link } from 'react-router-dom';
+import { assets } from '../assets/assets_frontend/assets';
 
 export default function Header() {
   return (
-    <div className='flex flex-col md:flex-row flex-wrap bg-indigo-200 rounded-lg px-6 md:px-10 lg:px-20'>
-        
-        <div className='md:w-1/2 flex flex-col items-start justify-center gap-4 py-10 m-auto md:py-[10vw] md:mb-[-30px]'>
-            
-            <p className='text-3xl md:text-4xl lg-text-5xl text-white font-semibold leading-tight md:leading-tight lg:leading-tight'>Book Appointment <br/> With Trusted Doctors</p>
-            <div className='flex flex-col md:flex-row items-center gap-3 text-white text-sm font-light'>
-                <img className='w-28' src={assets.group_profiles} alt=''/>
-                <p>Simply browse through our extensive list of trusted doctors, <br className='hidden sm:block'/>
-                    schedule your appointment hassle-free.
-                </p>
-            </div>
-            <Link to='/doctors' className='flex items-center gap-2 bg-white px-8 py-3 rounded-full text-gray-600 text-sm m-auto md:m-0 hover:scale-105 transition-all duration-300'>
-                Book appointment <img className='w-3' src={assets.arrow_icon} alt=''/>
-            </Link>
+    <div className="flex flex-col lg:flex-row items-center justify-between bg-white px-6 lg:px-16 py-10 gap-10">
+      {/* Left Side - Text and Buttons */}
+      <div className="lg:w-1/2 flex flex-col items-start justify-center gap-6">
+        <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold leading-snug">
+          Insurance, <span className="text-blue-500">Appointments,</span> <br /> Prescriptions.
+        </h1>
+        <p className="text-gray-600 text-sm sm:text-base">
+          All in One Place
+        </p>
+        {/* Buttons */}
+        <div className="flex gap-4 mt-4">
+          <Link
+            to="/insurance"
+            className="bg-blue-600 hover:bg-blue-700 text-white py-3 px-6 rounded-full transition duration-300"
+          >
+            Buy Insurance
+          </Link>
+          <Link
+            to="/doctors"
+            className="border-2 border-blue-600 text-blue-600 hover:text-white hover:bg-blue-600 py-3 px-6 rounded-full transition duration-300"
+          >
+            Book Appointment
+          </Link>
         </div>
+      </div>
 
-        <div className='md:w-1/2 relative'>
-            <img className='w-full md:absolute bottom-0 h-auto rounded-lg' src={assets.header_img} alt=''/>
-        </div>
+      {/* Right Side - Image */}
+      <div className="lg:w-1/2 flex items-center justify-center">
+        <img
+          src={assets.heroimg}
+          alt="Doctors"
+          className="w-full h-auto rounded-lg shadow-lg"
+        />
+      </div>
     </div>
-  )
+  );
 }

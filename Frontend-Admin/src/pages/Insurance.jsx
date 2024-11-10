@@ -9,8 +9,6 @@ import "swiper/css/scrollbar";
 import { Link } from "react-router-dom";
 import DocImg from "../images/main-bg.png";
 import StoryImg from "../images/our-story.jpg";
-import TestImg from "../images/testimonials-img.png";
-import TProfile from "../images/t1.jpg";
 import { FaCapsules } from "react-icons/fa";
 import { AiFillMessage } from "react-icons/ai";
 import { FaEye } from "react-icons/fa";
@@ -20,7 +18,7 @@ import { FaSquarePollHorizontal } from "react-icons/fa6";
 import { FaTooth } from "react-icons/fa";
 import { FaPhone } from "react-icons/fa";
 import { MdOutlineMessage } from "react-icons/md";
-import { CiStar } from "react-icons/ci";
+
 
 export default function Insurance() {
   return (
@@ -138,8 +136,8 @@ export default function Insurance() {
             navigation
             pagination={{ clickable: true }}
             scrollbar={{ draggable: true }}
-            onSwiper={(swiper) => console.log(swiper)}
-            onSlideChange={() => console.log("slide change")}
+            // onSwiper={(swiper) => console.log(swiper)}
+            // onSlideChange={() => }
           >
             <SwiperSlide>
               <div className="services-box s-box1">
@@ -154,9 +152,7 @@ export default function Insurance() {
                   Doloremque aliquid ut perspiciatis! Voluptatem, sed adipisci?
                 </p>
 
-                <Link className="link" to="">
-                  Read More
-                </Link>
+               
               </div>
             </SwiperSlide>
             <SwiperSlide>
@@ -172,9 +168,7 @@ export default function Insurance() {
                   Doloremque aliquid ut perspiciatis! Voluptatem, sed adipisci?
                 </p>
 
-                <Link className="link" to="">
-                  Read More
-                </Link>
+              
               </div>
             </SwiperSlide>
             <SwiperSlide>
@@ -190,9 +184,7 @@ export default function Insurance() {
                   Doloremque aliquid ut perspiciatis! Voluptatem, sed adipisci?
                 </p>
 
-                <Link className="link" to="">
-                  Read More
-                </Link>
+               
               </div>
             </SwiperSlide>
             <SwiperSlide>
@@ -208,9 +200,7 @@ export default function Insurance() {
                   Doloremque aliquid ut perspiciatis! Voluptatem, sed adipisci?
                 </p>
 
-                <Link className="link" to="">
-                  Read More
-                </Link>
+               
               </div>
             </SwiperSlide>
             ...
@@ -359,84 +349,7 @@ export default function Insurance() {
         </div>
       </div>
 
-      <div className="testimonials">
-        <div className="testimonials-heading">
-          <h3>Our Patients FeedBack About</h3>
-          <p>
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Totam
-            reiciendis rerum possimus pariatur fugit. Voluptatibus,
-            reprehenderit praesentium! Quisquam, labore molestias?
-          </p>
-        </div>
-
-        <div className="testimonials-content">
-          <div className="testimonials-img">
-            <img src={TestImg} alt="" />
-          </div>
-
-          <div className="testimonials-box-container">
-            <div className="testimonials-box">
-              <div className="t-profile">
-                <div className="t-profile-img">
-                  <img src={TProfile} alt="" />
-                </div>
-
-                <div className="t-profile-text">
-                  <strong>Client Name</strong>
-                  <span>From China</span>
-                  <div style={{ display: "flex" }}>
-                    <CiStar
-                      style={{
-                        fontSize: "0.8rem",
-                        color: "gold",
-                        marginTop: "5px",
-                      }}
-                    />
-
-                    <CiStar
-                      style={{
-                        fontSize: "0.8rem",
-                        color: "gold",
-                        marginTop: "5px",
-                      }}
-                    />
-
-                    <CiStar
-                      style={{
-                        fontSize: "0.8rem",
-                        color: "gold",
-                        marginTop: "5px",
-                      }}
-                    />
-
-                    <CiStar
-                      style={{
-                        fontSize: "0.8rem",
-                        color: "gold",
-                        marginTop: "5px",
-                      }}
-                    />
-
-                    <CiStar
-                      style={{
-                        fontSize: "0.8rem",
-                        color: "gold",
-                        marginTop: "5px",
-                      }}
-                    />
-                  </div>
-
-                  <p>
-                    Lorem ipsum dolor sit amet consectetur, adipisicing elit.
-                    Eligendi modi consequuntur tempora dolore magni aliquam
-                    autem? Veniam ipsam optio dolorum.
-                  </p>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
+      
     </>
   );
 }

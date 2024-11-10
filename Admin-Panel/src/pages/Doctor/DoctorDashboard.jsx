@@ -323,13 +323,22 @@ export default function DoctorDashboard() {
                     <h3 className='text-lg font-semibold cursor-pointer'>
                         Chat with {userProfiles[chats.find(chat => chat._id === selectedChatId)?.user]?.name}
                     </h3>
-                    <div className='chat-messages border-t mt-2'>
-                        {chatMessages.map((msg, index) => (
-                            <div key={index} className={`message ${msg.senderModel === 'Doctor' ? 'doctor-message' : 'user-message'} p-2`}>
-                                <p>{msg.content}</p>
-                            </div>
-                        ))}
-                    </div>
+                    <div className="chat-messages border-t mt-2">
+  {chatMessages.map((msg, index) => (
+    <div
+      key={index}
+      className={`flex ${msg.senderModel === 'Doctor' ? 'justify-start' : 'justify-end'} p-2`}
+    >
+      <div
+        className={`max-w-xs rounded-lg p-3 ${
+          msg.senderModel === 'Doctor' ? 'bg-gray-200 text-black' : 'bg-blue-500 text-white'
+        }`}
+      >
+        <p>{msg.content}</p>
+      </div>
+    </div>
+  ))}
+</div>s
                     <div className='chat-input flex mt-2'>
                         <input
                             type='text'

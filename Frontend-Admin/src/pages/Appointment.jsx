@@ -169,7 +169,7 @@ export default function Appointment() {
     }
 
     // Set senderModel to match the schema's enum values
-    const senderModel = userData.role === 'doctor' ? 'Doctor' : 'User'; // Adjust logic based on your application
+    const senderModel = 'User'; // Adjust logic based on your application
 
     // Emit message through WebSocket
     socket.emit('sendMessage', { chatId, senderId: userData._id, content: messageContent });
@@ -283,31 +283,51 @@ export default function Appointment() {
 
       {/* Chat Popup */}
       {showChatPopup && (
-  <div className='fixed inset-0 bg-gray-500 bg-opacity-50 flex justify-center items-center'>
-    <div className='bg-white rounded-lg shadow-lg p-4 w-80'>
-      <div className='h-60 overflow-y-scroll'>
-        {chatMessages.map((msg, index) => (
-          <div key={index} className={`p-2 ${msg.senderId === userData._id ? 'bg-blue-100 text-right' : 'bg-gray-100 text-left'}`}>
-            <p>{msg.content}</p>
-            {/* Render a green tick for the latest message */}
-            {index === chatMessages.length - 1 && <span className='text-green-500'> ✔️</span>}
-          </div>
-        ))}
-      </div>
+    <div className="fixed inset-0 bg-gray-500 bg-opacity-50 flex justify-center items-center">
+    <div className="bg-white rounded-lg shadow-lg p-4 w-80 max-w-sm">
+    <div className="h-60 overflow-y-scroll flex flex-col gap-4">
+    {chatMessages.map((msg, index) => (
+  <div
+    key={index}
+    className={`flex ${
+      msg.senderModel === 'User' ? 'justify-end' : 'justify-start'
+    } mb-4`}
+  >
+    <div
+      className={`p-3 rounded-lg max-w-xs ${
+        msg.senderModel === 'User'
+          ? 'bg-[#03A9F4] text-white text-right' // User message styling (right)
+          : 'bg-[#000] text-white text-left'    // Doctor message styling (left)
+      }`}
+    >
+      <p>{msg.content}</p>
+    </div>
+  </div>
+))}
+</div>
+
 
       <input
-        type='text'
+        type="text"
         value={messageContent}
         onChange={(e) => setMessageContent(e.target.value)}
-        placeholder='Type your message...'
-        className='border border-gray-300 rounded-lg w-full p-2 mt-2'
+        placeholder="Type your message..."
+        className="border border-gray-300 rounded-lg w-full p-2 mt-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
       />
-      <button onClick={sendMessage} className='mt-2 bg-blue-500 text-white py-2 px-4 rounded-full'>
-        Send
-      </button>
-      <button onClick={() => setShowChatPopup(false)} className='mt-2 bg-red-500 text-white py-2 px-4 rounded-full'>
-        Close
-      </button>
+      <div className="flex justify-between mt-2">
+        <button
+          onClick={sendMessage}
+          className="bg-[#03A9F4] text-white py-2 px-4 rounded-full hover:bg-blue-600"
+        >
+          Send
+        </button>
+        <button
+          onClick={() => setShowChatPopup(false)}
+          className="bg-[#000] text-white py-2 px-4 rounded-full hover:bg-red-600"
+        >
+          Close
+        </button>
+      </div>
     </div>
   </div>
 )}

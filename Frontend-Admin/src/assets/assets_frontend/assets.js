@@ -38,6 +38,12 @@ import Gynecologist from './Gynecologist.svg'
 import Neurologist from './Neurologist.svg'
 import Pediatricians from './Pediatricians.svg'
 import upload_doc from './document.jpg'
+import heroimg from './heroimg.png'
+import iphone13 from './iphone13.png'
+import rectangle from './Rectangle.png'
+import insurancedoc from './pagedoc.png'
+import appstore from './appstore.png'
+import googleplay from './googleplay.png'
 
 export const assets = {
     appointment_img,
@@ -58,7 +64,13 @@ export const assets = {
     upload_icon,
     upload_doc,
     stripe_logo,
-    razorpay_logo
+    razorpay_logo,
+    heroimg,
+    iphone13,
+    rectangle,
+    insurancedoc,
+    appstore,
+    googleplay
 }
 
 export const specialityData = [

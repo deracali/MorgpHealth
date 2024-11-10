@@ -6,30 +6,55 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import axios from 'axios';
 
+const debounce = (fn, delay) => {
+  let timeout;
+  return (...args) => {
+    clearTimeout(timeout);
+    timeout = setTimeout(() => fn(...args), delay);
+  };
+};
+
 export default function DoctorAppointment() {
     const { dToken, cancelAppointment, completeAppointment } = useContext(DoctorContext);
     const { calculateAge, slotDateFormat, currency } = useContext(AppContext);
     const [appointments, setAppointments] = useState([]);
-
+    const [loading, setLoading] = useState(false); // Loading state for appointments
+    const [page, setPage] = useState(1); // Page number for infinite scroll
+    const [error, setError] = useState(null); // Error state
     const navigate = useNavigate();
     const { id } = useParams();
     const backendUrl = import.meta.env.VITE_BACKEND_URL;
 
     const getAppointments = async () => {
+        setLoading(true);
         try {
-            const { data } = await axios.get(`${backendUrl}/api/doctor/appointments/${id}`, {
+            const { data } = await axios.get(`${backendUrl}/api/doctor/appointments/${id}?page=${page}`, {
                 headers: { dToken }
             });
             if (data.success) {
-                setAppointments(data.appointments);
+                if (page === 1) {
+                    setAppointments(data.appointments); // First page, overwrite
+                } else {
+                    setAppointments((prev) => [...prev, ...data.appointments]); // Append subsequent pages
+                }
             } else {
                 toast.error(data.message);
             }
         } catch (error) {
             console.error('Error fetching appointments:', error);
-            toast.error(error.response?.data?.message || 'An error occurred while fetching appointments.');
+            setError(error.response?.data?.message || 'An error occurred while fetching appointments.');
+        } finally {
+            setLoading(false);
         }
     };
+
+    const handleScroll = debounce((e) => {
+        const threshold = 100; // Trigger load more when near bottom
+        const bottom = e.target.scrollHeight - e.target.scrollTop <= e.target.clientHeight + threshold;
+        if (bottom && !loading) {
+            setPage((prev) => prev + 1); // Load next page
+        }
+    }, 200); // Debounced scroll event
 
     const startVideoCall = (appointmentId) => {
         navigate(`/video-call/${appointmentId}`);
@@ -37,12 +62,21 @@ export default function DoctorAppointment() {
 
     useEffect(() => {
         if (dToken) {
-            getAppointments();
+            getAppointments(); // Fetch appointments when token is available
         }
-    }, [dToken]);
+    }, [dToken, page]); // Re-fetch when page number changes
+
+    if (error) {
+        return (
+            <div className="w-full max-w-6xl m-5">
+                <p className="text-red-600">{error}</p>
+                <button onClick={() => { setError(null); setPage(1); }} className="text-blue-500">Retry</button>
+            </div>
+        );
+    }
 
     return (
-        <div className='w-full max-w-6xl m-5'>
+        <div onScroll={handleScroll} className='w-full max-w-6xl m-5'>
             <p className='mb-3 text-lg font-medium'>Appointment Details</p>
 
             <div className='bg-white border rounded text-sm max-h-[80vh] min-h-[50vh] overflow-y-scroll'>
@@ -85,6 +119,10 @@ export default function DoctorAppointment() {
                         }
                     </div>
                 ))}
+
+                {loading && <div className="spinner">Loading...</div>}
+
+                {!loading && appointments.length === 0 && <p>No appointments found.</p>}
             </div>
         </div>
     );

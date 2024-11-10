@@ -30,12 +30,12 @@ const AppContextProvider = (props) => {
     const loadUserProfileData = async () => {
         try {
             if (token) { // Only fetch if token is available
-                console.log("Fetching user profile with token:", token); // Debugging line
+                // console.log("Fetching user profile with token:", token); // Debugging line
                 const { data } = await axios.get(backendUrl + 'api/user/get-profile', {
                     headers: { token },
                 });
 
-                console.log('User profile data:', data); // Debugging line
+                // console.log('User profile data:', data); // Debugging line
 
                 if (data.success) {
                     setUserData(data.userData);

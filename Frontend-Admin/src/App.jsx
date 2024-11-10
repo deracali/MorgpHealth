@@ -25,7 +25,7 @@ function App() {
 
 
   return (
-    <div className='mx-4 sm:mx-[10%]'>
+    <div className='mx-2 sm:mx-[5%]'>
       <Navbar/>
         <Routes>
          <Route path="/" exact element={<Home/> } />    

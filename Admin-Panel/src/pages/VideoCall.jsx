@@ -7,7 +7,24 @@ export default function VideoCall() {
     const [meetingStart, setMeetingStart] = useState(null);
     const [meetingEnd, setMeetingEnd] = useState(null);
     const [meetingDuration, setMeetingDuration] = useState(null);
+    const [doctorId, setDoctorId] = useState(null);  // State for doctor ID
+    const [patientId, setPatientId] = useState(null);  // State for patient ID
     const backendUrl = import.meta.env.VITE_BACKEND_URL; // Ensure you have the backend URL
+
+    // Fetch doctor and patient information, assuming it's available in the appointment data
+    useEffect(() => {
+        // Fetch appointment data to get doctorId and patientId
+        const fetchAppointmentData = async () => {
+            try {
+                const response = await axios.get(`${backendUrl}/api/appointments/${appointmentId}`);
+                setDoctorId(response.data.doctorId);
+                setPatientId(response.data.patientId);
+            } catch (error) {
+                console.error('Error fetching appointment data:', error);
+            }
+        };
+        fetchAppointmentData();
+    }, [appointmentId]);
 
     useEffect(() => {
         const loadJitsiScript = () => {
@@ -44,7 +61,7 @@ export default function VideoCall() {
                         setMeetingEnd(end);
                         const duration = Math.round((end - meetingStart) / 1000);  // Duration in seconds
                         setMeetingDuration(duration);
-                        updateAppointmentDuration(duration);
+                        updateVideoCallDuration(duration);  // Call function to update video duration in the backend
                     }
                 });
 
@@ -57,14 +74,19 @@ export default function VideoCall() {
         });
     }, [appointmentId, meetingStart]);
 
-    const updateAppointmentDuration = async (duration) => {
+    // Function to update the video duration in the backend
+    const updateVideoCallDuration = async (duration) => {
         try {
-            const response = await axios.put(`${backendUrl}/update-appointment/${appointmentId}`, {
+            const videoId = appointmentId;  // Assuming the videoId is the same as the appointmentId, update if needed
+            const response = await axios.put(`${backendUrl}/api/video/update-video/${videoId}`, {
+                doctorId,
+                patientId,
+                appointmentId,  // Send appointmentId to be stored in the backend
                 meetingDuration: duration,
             });
-            console.log('Appointment updated:', response.data);
+            console.log('Video duration updated:', response.data);
         } catch (error) {
-            console.error('Error updating appointment:', error);
+            console.error('Error updating video duration:', error);
         }
     };
 

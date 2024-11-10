@@ -1,51 +1,52 @@
-import React, { useContext, useState } from 'react'
-import { NavLink, useNavigate } from 'react-router-dom'
-import { assets } from '../assets/assets_frontend/assets'
+import React, { useContext, useState } from 'react';
+import { NavLink, useNavigate } from 'react-router-dom';
+import { assets } from '../assets/assets_frontend/assets';
 import { AppContext } from '../context/AppContext';
 
 export default function Navbar() {
+  const navigate = useNavigate();
+  const { token, setToken, userData } = useContext(AppContext);
+  const [showMenu, setShowMenu] = useState(false);
 
-    const navigate = useNavigate();
-
-    const {token,setToken,userData} = useContext(AppContext)
-
-    const [showMenu, setShowMenu] = useState(false)
-
-    const logout = () => {
-        setToken(false)
-        localStorage.removeItem('utoken')
-        localStorage.removeItem('insured')
-        localStorage.removeItem('userId')
-    }
-
+  const logout = () => {
+    setToken(false);
+    localStorage.removeItem('utoken');
+    localStorage.removeItem('insured');
+    localStorage.removeItem('userId');
+  };
 
   return (
-    <div className='flex items-center justify-between text-sm py-4 mb-5 border-b border-b-gray-400'>
-       <img onClick={()=>navigate('/')} className='w-44 cursor-pointer' src={assets.MorgpLogo} alt=''/>
-        <ul className='hidden md:flex items-start gap-5 font-medium'>
-            <NavLink to='/'>
-                <li className='py-1'>HOME</li>
-                <hr className='border-none outline-none h-0.5 bg-primary w-3/5 m-auto hidden'/>
-            </NavLink>
-            <NavLink to='/doctors'>
-                <li className='py-1'>ALL DOCTORS</li>
-                <hr className='border-none outline-none h-0.5 bg-primary w-3/5 m-auto hidden'/>
-            </NavLink>
-            <NavLink to='/about'>
-                <li className='py-1'>ABOUT</li>
-                <hr className='border-none outline-none h-0.5 bg-primary w-3/5 m-auto hidden'/>
-            </NavLink>
-            <NavLink to='/insurance'>
-                <li className='py-1'>INSURANCE</li>
-                <hr className='border-none outline-none h-0.5 bg-primary w-3/5 m-auto hidden'/>
-            </NavLink>
-            <NavLink to='/contact'>
-                <li className='py-1'>CONTACT</li>
-                <hr className='border-none outline-none h-0.5 bg-primary w-3/5 m-auto hidden'/>
-            </NavLink>
-        </ul>
-        <div className='flex items-center gap-4'>
-            {
+    <div className="flex items-center justify-between px-6 lg:px-12 py-4 border-b border-gray-200">
+      {/* Logo */}
+      <img
+        onClick={() => navigate('/')}
+        className="w-36 cursor-pointer"
+        src={assets.MorgpLogo}
+        alt="Logo"
+      />
+
+      {/* Desktop Navigation Links */}
+      <ul className="hidden md:flex items-center gap-8 font-medium text-gray-700">
+        <NavLink to="/" className="hover:text-blue-600 transition">
+          HOME
+        </NavLink>
+        <NavLink to="/doctors" className="hover:text-blue-600 transition">
+          FIND A DOCTOR
+        </NavLink>
+        <NavLink to="/insurance" className="hover:text-blue-600 transition">
+          INSURANCE
+        </NavLink>
+        <NavLink to="/about" className="hover:text-blue-600 transition">
+          ABOUT US
+        </NavLink>
+        <NavLink to="/contact" className="hover:text-blue-600 transition">
+          CONTACT US
+        </NavLink>
+      </ul>
+
+      {/* Right Side - Buttons and User Menu */}
+      <div className="flex items-center gap-4">
+      {
                 token && userData
                 ? <div className='flex items-center gap-2 cursor-pointer group relative'>
                     <img className='w-8 rounded-full' src={userData?.image} alt=''/>
@@ -76,5 +77,5 @@ export default function Navbar() {
             </div>
         </div>
     </div>
-  )
+  );
 }

@@ -41,7 +41,7 @@ export default function Login() {
           setDToken(data.token);
           setDoctorId(data.id);
           toast.success(`${state} Successful`);  
-          navigate('/doctor-dashboard')
+          navigate(`/doctor-dashboard/${doctorId}`)
         } else {
           toast.error(data.message);
         }

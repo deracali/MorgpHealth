@@ -57,7 +57,7 @@ const Summary = () => {
         // navigate("/thankyou");
     
     try {
-      const response = await fetch("http://localhost:4000/api/insurance/insurance/post", {
+      const response = await fetch("https://morgphealth.onrender.com/api/insurance/insurance/post", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

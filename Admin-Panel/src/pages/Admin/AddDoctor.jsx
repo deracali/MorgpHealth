@@ -16,7 +16,7 @@ export default function AddDoctor() {
   const [experience, setExperience] = useState('1 Year');
   const [fees, setFees] = useState('');
   const [about, setAbout] = useState('');
-  const [speciality, setSpeciality] = useState([]);
+  const [speciality, setSpeciality] = useState('');
   const [degree, setDegree] = useState('');
   const [address1, setAddress1] = useState('');
   const [address2, setAddress2] = useState('');
@@ -52,7 +52,7 @@ export default function AddDoctor() {
     formData.append('experience', experience);
     formData.append('fees', Number(fees));
     formData.append('about', about);
-    formData.append('speciality', JSON.stringify(speciality));
+    formData.append('speciality', speciality);
     formData.append('degree', degree);
     formData.append('address', JSON.stringify({ line1: address1, line2: address2 }));
     formData.append('dateOfBirth', dateOfBirth);
@@ -92,7 +92,7 @@ export default function AddDoctor() {
     setEmail('');
     setPassword('');
     setGender('');
-    setSpeciality([]);
+    setSpeciality('');
     setAddress1('');
     setAddress2('');
     setDegree('');
@@ -140,12 +140,7 @@ export default function AddDoctor() {
           </div>
 
           <div className='w-full lg:flex-1 flex flex-col gap-4'>
-            <CheckboxGroup 
-              label="Speciality" 
-              options={specialityOptions} 
-              selectedOptions={speciality} 
-              onChange={setSpeciality} 
-            />
+          <InputField label="Speciality" value={degree} onChange={setSpeciality} required />
             <InputField label="Education" value={degree} onChange={setDegree} required />
             <InputField label="Address 1" value={address1} onChange={setAddress1} required />
             <InputField label="Address 2" value={address2} onChange={setAddress2} />

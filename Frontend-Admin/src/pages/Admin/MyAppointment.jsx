@@ -44,7 +44,7 @@ export default function MyAppointment() {
     }, []);
 
     return (
-        <div>
+        <div className='mb-12 mt-12'>
             <p className="pb-3 mt-12 font-medium text-zinc-700 border-b">My Appointments</p>
             <div>
                 {appointments.slice(0, 3).map((item, index) => (
