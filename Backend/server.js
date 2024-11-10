@@ -22,7 +22,7 @@ app.use(express.json());
 app.use(cors({
     origin: 'http://localhost:5173', // or the correct frontend URL
     methods: ['GET', 'POST'],
-     allowedHeaders: ['Content-Type', 'Authorization', 'token'], 
+     allowedHeaders: ['Content-Type', 'Authorization', 'token', 'dtoken'], 
   }));
 
 // Define your routes
