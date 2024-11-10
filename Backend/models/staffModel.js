@@ -1,5 +1,7 @@
 import mongoose from 'mongoose';
-import bcrypt from 'bcryptjs';
+import bcrypt from 'bcrypt';
+
+
 
 // Staff Schema
 const staffSchema = new mongoose.Schema({
