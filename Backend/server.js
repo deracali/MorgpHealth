@@ -20,11 +20,11 @@ connectCloudinary();
 
 app.use(express.json());
 app.use(cors({
-    origin: ['https://admin-morgphealth.netlify.app', 'http://localhost:5173', 'http://localhost:5174'],  // Remove trailing slashes
+    origin: '*', // or the correct frontend URL
     methods: ['GET', 'POST'],
-    allowedHeaders: ['Content-Type', 'Authorization', 'token'],
+    allowedHeaders: ['Content-Type', 'Authorization', 'token'], 
   }));
-  
+
 // Define your routes
 app.use('/api/admin', adminRouter);
 app.use('/api/doctor', doctorRouter);
