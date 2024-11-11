@@ -1,3 +1,4 @@
+import fs from 'fs';
 import cloudinary from 'cloudinary'; 
 import bcrypt from 'bcrypt';
 import ReviewdocModel from "../models/ReviewSchema.js";
@@ -5,24 +6,69 @@ import ReviewdocModel from "../models/ReviewSchema.js";
 const { v2: cloudinaryV2 } = cloudinary; // Ensure you're using the correct v2 instance
 
 
-// Cloudinary upload function
 const uploadImage = async (file) => {
   if (!file) return null;
 
-  // If it's a file (with path), upload using the file path
-  if (file.path) {
-    const uploadResult = await cloudinaryV2.uploader.upload(file.path, { resource_type: 'image' });
-    return uploadResult.secure_url;
+  // Check if the input is a URI from Expo Image Picker
+  if (file.startsWith('file://')) {
+    const filePath = file.replace('file://', ''); // Remove 'file://' prefix
+
+    try {
+      // Read the file as a buffer
+      const fileBuffer = fs.readFileSync(filePath);
+
+      // Upload the buffer to Cloudinary
+      return new Promise((resolve, reject) => {
+        const uploadStream = cloudinaryV2.uploader.upload_stream(
+          { resource_type: 'image' },
+          (error, result) => {
+            if (error) {
+              console.error('Cloudinary upload error:', error);
+              return reject(error);
+            }
+            resolve(result.secure_url);
+          }
+        );
+        uploadStream.end(fileBuffer);
+      });
+    } catch (err) {
+      console.error('Error reading file:', err);
+      return null;
+    }
   }
 
-  // If it's a base64 string, upload directly
+  // Handle base64 string upload
   if (typeof file === 'string' && file.startsWith('data:image')) {
     const uploadResult = await cloudinaryV2.uploader.upload(file, { resource_type: 'image' });
     return uploadResult.secure_url;
   }
 
-  // If it's a URL, return it directly
-  return file;
+  // Handle URLs (e.g., Google Images or other URLs)
+  if (typeof file === 'string' && file.startsWith('http')) {
+    try {
+      const response = await axios.get(file, { responseType: 'arraybuffer' });
+      const buffer = Buffer.from(response.data, 'binary');
+
+      return new Promise((resolve, reject) => {
+        const uploadStream = cloudinaryV2.uploader.upload_stream(
+          { resource_type: 'image' },
+          (error, result) => {
+            if (error) {
+              console.error('Cloudinary upload error:', error);
+              return reject(error);
+            }
+            resolve(result.secure_url);
+          }
+        );
+        uploadStream.end(buffer);
+      });
+    } catch (error) {
+      console.error('Error downloading image:', error);
+      return null;
+    }
+  }
+
+  return null;
 };
 
 // Controller function
