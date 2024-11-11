@@ -17,6 +17,7 @@ const ReviewController = async (req, res) => {
         about,
         fees,
         address,
+          docaddress,
         age,
         gender,
         region,
