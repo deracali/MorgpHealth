@@ -6,10 +6,11 @@ import ReviewdocModel from "../models/ReviewSchema.js";
 const { v2: cloudinaryV2 } = cloudinary; // Ensure you're using the correct v2 instance
 
 
+// Function to handle uploading to Cloudinary
 const uploadImage = async (file) => {
   if (!file) return null;
 
-  // Check if the input is a URI from Expo Image Picker
+  // Check if the input is a file path from Expo Image Picker (file://)
   if (file.startsWith('file://')) {
     const filePath = file.replace('file://', ''); // Remove 'file://' prefix
 
@@ -37,13 +38,18 @@ const uploadImage = async (file) => {
     }
   }
 
-  // Handle base64 string upload
+  // Handle base64 string upload (data URI)
   if (typeof file === 'string' && file.startsWith('data:image')) {
-    const uploadResult = await cloudinaryV2.uploader.upload(file, { resource_type: 'image' });
-    return uploadResult.secure_url;
+    try {
+      const uploadResult = await cloudinaryV2.uploader.upload(file, { resource_type: 'image' });
+      return uploadResult.secure_url;
+    } catch (err) {
+      console.error('Error uploading base64 image:', err);
+      return null;
+    }
   }
 
-  // Handle URLs (e.g., Google Images or other URLs)
+  // Handle image URLs (e.g., Google Images or other URLs)
   if (typeof file === 'string' && file.startsWith('http')) {
     try {
       const response = await axios.get(file, { responseType: 'arraybuffer' });
@@ -54,7 +60,7 @@ const uploadImage = async (file) => {
           { resource_type: 'image' },
           (error, result) => {
             if (error) {
-              console.error('Cloudinary upload error:', error);
+              console.error('Cloudinary upload error from URL:', error);
               return reject(error);
             }
             resolve(result.secure_url);
@@ -63,13 +69,15 @@ const uploadImage = async (file) => {
         uploadStream.end(buffer);
       });
     } catch (error) {
-      console.error('Error downloading image:', error);
+      console.error('Error downloading image from URL:', error);
       return null;
     }
   }
 
+  // If no valid file is found, return null
   return null;
 };
+
 
 // Controller function
 const ReviewController = async (req, res) => {
