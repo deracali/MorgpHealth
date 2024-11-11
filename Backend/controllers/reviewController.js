@@ -6,25 +6,20 @@ import ReviewdocModel from "../models/ReviewSchema.js";
 const { v2: cloudinaryV2 } = cloudinary; // Ensure you're using the correct v2 instance
 
 
-// Function to handle uploading to Cloudinary
 const uploadImage = async (file) => {
   if (!file) return null;
 
-  // Check if the input is a file path from Expo Image Picker (file://)
+  // Handle file path (file://) from Expo Image Picker
   if (file.startsWith('file://')) {
     const filePath = file.replace('file://', ''); // Remove 'file://' prefix
-
     try {
-      // Read the file as a buffer
       const fileBuffer = fs.readFileSync(filePath);
-
-      // Upload the buffer to Cloudinary
       return new Promise((resolve, reject) => {
         const uploadStream = cloudinaryV2.uploader.upload_stream(
           { resource_type: 'image' },
           (error, result) => {
             if (error) {
-              console.error('Cloudinary upload error:', error);
+              console.error('Cloudinary upload error (file://):', error);
               return reject(error);
             }
             resolve(result.secure_url);
@@ -33,12 +28,12 @@ const uploadImage = async (file) => {
         uploadStream.end(fileBuffer);
       });
     } catch (err) {
-      console.error('Error reading file:', err);
+      console.error('Error reading file (file://):', err);
       return null;
     }
   }
 
-  // Handle base64 string upload (data URI)
+  // Handle base64 string or data URI
   if (typeof file === 'string' && file.startsWith('data:image')) {
     try {
       const uploadResult = await cloudinaryV2.uploader.upload(file, { resource_type: 'image' });
@@ -49,37 +44,31 @@ const uploadImage = async (file) => {
     }
   }
 
-  // Handle image URLs (e.g., Google Images or other URLs)
-  if (typeof file === 'string' && file.startsWith('http')) {
+  // Handle file uploads directly (for regular file objects in req.files)
+  if (file && file.buffer) {
     try {
-      const response = await axios.get(file, { responseType: 'arraybuffer' });
-      const buffer = Buffer.from(response.data, 'binary');
-
-      return new Promise((resolve, reject) => {
-        const uploadStream = cloudinaryV2.uploader.upload_stream(
-          { resource_type: 'image' },
-          (error, result) => {
-            if (error) {
-              console.error('Cloudinary upload error from URL:', error);
-              return reject(error);
-            }
-            resolve(result.secure_url);
+      const uploadResult = await cloudinaryV2.uploader.upload_stream(
+        { resource_type: 'image' },
+        (error, result) => {
+          if (error) {
+            console.error('Cloudinary upload error (file object):', error);
+            return null;
           }
-        );
-        uploadStream.end(buffer);
-      });
+          return result.secure_url;
+        }
+      );
+      uploadResult.end(file.buffer);
     } catch (error) {
-      console.error('Error downloading image from URL:', error);
+      console.error('Error uploading file:', error);
       return null;
     }
   }
 
-  // If no valid file is found, return null
+  // If the file is not recognized, return null
   return null;
 };
 
 
-// Controller function
 const ReviewController = async (req, res) => {
   try {
     const {
@@ -118,7 +107,7 @@ const ReviewController = async (req, res) => {
     // Define a placeholder image URL
     const placeholderImageUrl = 'https://example.com/placeholder-image.jpg';
 
-    // Upload files if they exist, otherwise use strings from req.body
+    // Handle images based on their type (file:// or uploaded file)
     const imageUrl = await uploadImage(image ? image[0] : imageFromBody) || placeholderImageUrl;
     const medicalLicenseUrl = await uploadImage(medicalLicense ? medicalLicense[0] : medicalLicenseFromBody) || null;
     const diplomaCertificatesUrl = await uploadImage(diplomaCertificates ? diplomaCertificates[0] : diplomaCertificatesFromBody) || null;
