@@ -5,90 +5,115 @@ import ReviewdocModel from "../models/ReviewSchema.js";
 const { v2: cloudinaryV2 } = cloudinary; // Ensure you're using the correct v2 instance
 
 
+const bcrypt = require('bcrypt');
+const cloudinaryV2 = require('cloudinary').v2;
+const ReviewdocModel = require('../models/ReviewdocModel');
+
+// Cloudinary upload function
+const uploadImage = async (file) => {
+  if (!file) return null;
+
+  // If it's a file (with path), upload using the file path
+  if (file.path) {
+    const uploadResult = await cloudinaryV2.uploader.upload(file.path, { resource_type: 'image' });
+    return uploadResult.secure_url;
+  }
+
+  // If it's a base64 string, upload directly
+  if (typeof file === 'string' && file.startsWith('data:image')) {
+    const uploadResult = await cloudinaryV2.uploader.upload(file, { resource_type: 'image' });
+    return uploadResult.secure_url;
+  }
+
+  // If it's a URL, return it directly
+  return file;
+};
+
+// Controller function
 const ReviewController = async (req, res) => {
-    try {
-      const {
-        name,
-        email,
-        password,
-        speciality,
-        degree,
-        experience,
-        about,
-        fees,
-        address,
-          docaddress,
-        age,
-        gender,
-        region,
-        universityName,
-        universityCountry,
-        medicalCouncilName,
-        medicalCouncilCountry,
-        graduationYear,
-        balance
-      } = req.body;
-  
-      // Destructure files from req.files
-      const { image, medicalLicense, diplomaCertificates, proofOfID } = req.files || {};
-  
-      // Hash the password
-      const salt = await bcrypt.genSalt(10);
-      const hashedPassword = await bcrypt.hash(password, salt);
-  
-      // Define a placeholder image URL
-      const placeholderImageUrl = 'https://example.com/placeholder-image.jpg';
-  
-      // Upload images to Cloudinary and handle potential errors
-      const uploadImage = async (file) => {
-        if (!file) return null;
-        const uploadResult = await cloudinaryV2.uploader.upload(file.path, { resource_type: 'image' });
-        return uploadResult.secure_url;
-      };
-  
-      // Upload files and store their URLs, if files exist
-      const imageUrl = await uploadImage(image && image[0] ? image[0] : null) || placeholderImageUrl;
-      const medicalLicenseUrl = await uploadImage(medicalLicense && medicalLicense[0] ? medicalLicense[0] : null);
-      const diplomaCertificatesUrl = await uploadImage(diplomaCertificates && diplomaCertificates[0] ? diplomaCertificates[0] : null);
-      const proofOfIDUrl = await uploadImage(proofOfID && proofOfID[0] ? proofOfID[0] : null);
-  
-      // Create doctor data object
-      const doctorData = {
-        name: name || null,
-        email: email || null,
-        password: hashedPassword,
-        speciality: speciality || null,
-        degree: degree || null,
-        experience: experience || null,
-        about: about || null,
-        fees: fees || null,
-        address: address || null,
-          docaddress: docaddress || null,
-        age: age || null,
-        gender: gender || null,
-        region: region || null,
-        universityName: universityName || null,
-        universityCountry: universityCountry || null,
-        medicalCouncilName: medicalCouncilName || null,
-        medicalCouncilCountry: medicalCouncilCountry || null,
-        graduationYear: graduationYear || null,
-        image: imageUrl,
-        medicalLicense: medicalLicenseUrl,
-        diplomaCertificates: diplomaCertificatesUrl,
-        proofOfID: proofOfIDUrl,
-        balance: balance || 0
-      };
-  
-      // Save new doctor to the database
-      const newDoctor = new ReviewdocModel(doctorData);
-      await newDoctor.save();
-  
-      res.json({ success: true, message: 'Doctor Added Successfully' });
-    } catch (error) {
-      console.error(error);
-      res.json({ success: false, message: error.message });
-    }
-  };
+  try {
+    const {
+      name,
+      email,
+      password,
+      speciality,
+      degree,
+      experience,
+      about,
+      fees,
+      address,
+      docaddress,
+      age,
+      gender,
+      region,
+      universityName,
+      universityCountry,
+      medicalCouncilName,
+      medicalCouncilCountry,
+      graduationYear,
+      balance,
+      image: imageFromBody,
+      medicalLicense: medicalLicenseFromBody,
+      diplomaCertificates: diplomaCertificatesFromBody,
+      proofOfID: proofOfIDFromBody
+    } = req.body;
+
+    // Hash the password
+    const salt = await bcrypt.genSalt(10);
+    const hashedPassword = await bcrypt.hash(password, salt);
+
+    // Destructure files from req.files (if they exist)
+    const { image, medicalLicense, diplomaCertificates, proofOfID } = req.files || {};
+
+    // Define a placeholder image URL
+    const placeholderImageUrl = 'https://example.com/placeholder-image.jpg';
+
+    // Upload files if they exist, otherwise use strings from req.body
+    const imageUrl = await uploadImage(image ? image[0] : imageFromBody) || placeholderImageUrl;
+    const medicalLicenseUrl = await uploadImage(medicalLicense ? medicalLicense[0] : medicalLicenseFromBody) || null;
+    const diplomaCertificatesUrl = await uploadImage(diplomaCertificates ? diplomaCertificates[0] : diplomaCertificatesFromBody) || null;
+    const proofOfIDUrl = await uploadImage(proofOfID ? proofOfID[0] : proofOfIDFromBody) || null;
+
+    // Create doctor data object
+    const doctorData = {
+      name: name || null,
+      email: email || null,
+      password: hashedPassword,
+      speciality: speciality || null,
+      degree: degree || null,
+      experience: experience || null,
+      about: about || null,
+      fees: fees || null,
+      address: address || null,
+      docaddress: docaddress || null,
+      age: age || null,
+      gender: gender || null,
+      region: region || null,
+      universityName: universityName || null,
+      universityCountry: universityCountry || null,
+      medicalCouncilName: medicalCouncilName || null,
+      medicalCouncilCountry: medicalCouncilCountry || null,
+      graduationYear: graduationYear || null,
+      image: imageUrl,
+      medicalLicense: medicalLicenseUrl,
+      diplomaCertificates: diplomaCertificatesUrl,
+      proofOfID: proofOfIDUrl,
+      balance: balance || 0
+    };
+
+    // Save the new doctor to the database
+    const newDoctor = new ReviewdocModel(doctorData);
+    await newDoctor.save();
+
+    res.json({ success: true, message: 'Doctor added successfully' });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+
+
   
 
 
