@@ -11,6 +11,7 @@ const ReviewdoctorSchema = new mongoose.Schema({
     speciality: { type: String }, // Optional field
     degree: { type: String }, // Optional field
     experience: { type: String }, // Optional field
+    gender: { type: String }, // Optional field
     about: { type: String }, // Optional field
     available: { type: Boolean, default: true },
     fees: { type: Number }, // Optional field
