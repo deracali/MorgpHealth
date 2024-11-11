@@ -5,10 +5,6 @@ import ReviewdocModel from "../models/ReviewSchema.js";
 const { v2: cloudinaryV2 } = cloudinary; // Ensure you're using the correct v2 instance
 
 
-const bcrypt = require('bcrypt');
-const cloudinaryV2 = require('cloudinary').v2;
-const ReviewdocModel = require('../models/ReviewdocModel');
-
 // Cloudinary upload function
 const uploadImage = async (file) => {
   if (!file) return null;
