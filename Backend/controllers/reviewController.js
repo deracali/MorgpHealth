@@ -5,28 +5,6 @@ import ReviewdocModel from "../models/ReviewSchema.js";
 
 const { v2: cloudinaryV2 } = cloudinary; // Ensure you're using the correct v2 instance
 
-
-// Cloudinary upload function
-const uploadImage = async (file) => {
-  if (!file) return null;
-
-  // If it's a file (with path), upload using the file path
-  if (file.path) {
-    const uploadResult = await cloudinaryV2.uploader.upload(file.path, { resource_type: 'image' });
-    return uploadResult.secure_url;
-  }
-
-  // If it's a base64 string, upload directly
-  if (typeof file === 'string' && file.startsWith('data:image')) {
-    const uploadResult = await cloudinaryV2.uploader.upload(file, { resource_type: 'image' });
-    return uploadResult.secure_url;
-  }
-
-  // If it's a URL, return it directly
-  return file;
-};
-
-// Controller function
 const ReviewController = async (req, res) => {
   try {
     const {
@@ -49,27 +27,45 @@ const ReviewController = async (req, res) => {
       medicalCouncilCountry,
       graduationYear,
       balance,
-      image: imageFromBody,
-      medicalLicense: medicalLicenseFromBody,
-      diplomaCertificates: diplomaCertificatesFromBody,
-      proofOfID: proofOfIDFromBody
+      image: imageBody,
+      medicalLicense: licenseBody,
+      diplomaCertificates: diplomaBody,
+      proofOfID: proofIDBody
     } = req.body;
+
+    // Destructure files from req.files if available
+    const { image, medicalLicense, diplomaCertificates, proofOfID } = req.files || {};
 
     // Hash the password
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(password, salt);
 
-    // Destructure files from req.files (if they exist)
-    const { image, medicalLicense, diplomaCertificates, proofOfID } = req.files || {};
-
-    // Define a placeholder image URL
+    // Placeholder image URL
     const placeholderImageUrl = 'https://example.com/placeholder-image.jpg';
 
-    // Upload files if they exist, otherwise use strings from req.body
-    const imageUrl = await uploadImage(image ? image[0] : imageFromBody) || placeholderImageUrl;
-    const medicalLicenseUrl = await uploadImage(medicalLicense ? medicalLicense[0] : medicalLicenseFromBody) || null;
-    const diplomaCertificatesUrl = await uploadImage(diplomaCertificates ? diplomaCertificates[0] : diplomaCertificatesFromBody) || null;
-    const proofOfIDUrl = await uploadImage(proofOfID ? proofOfID[0] : proofOfIDFromBody) || null;
+    // Function to upload files to Cloudinary
+    const uploadToCloudinary = async (file) => {
+      if (!file) return null;
+
+      // Check if the file is a path, HTTPS URL, or base64 string
+      if (file.path) {
+        const uploadResult = await cloudinaryV2.uploader.upload(file.path, { resource_type: 'image' });
+        return uploadResult.secure_url;
+      } else if (file.startsWith('http')) {
+        const uploadResult = await cloudinaryV2.uploader.upload(file, { resource_type: 'image' });
+        return uploadResult.secure_url;
+      } else if (file.startsWith('data:image')) {
+        const uploadResult = await cloudinaryV2.uploader.upload(file, { resource_type: 'image' });
+        return uploadResult.secure_url;
+      }
+      return null;
+    };
+
+    // Upload images based on availability (files or body data)
+    const imageUrl = await uploadToCloudinary(image && image[0] ? image[0] : imageBody) || placeholderImageUrl;
+    const medicalLicenseUrl = await uploadToCloudinary(medicalLicense && medicalLicense[0] ? medicalLicense[0] : licenseBody);
+    const diplomaCertificatesUrl = await uploadToCloudinary(diplomaCertificates && diplomaCertificates[0] ? diplomaCertificates[0] : diplomaBody);
+    const proofOfIDUrl = await uploadToCloudinary(proofOfID && proofOfID[0] ? proofOfID[0] : proofIDBody);
 
     // Create doctor data object
     const doctorData = {
@@ -98,17 +94,16 @@ const ReviewController = async (req, res) => {
       balance: balance || 0
     };
 
-    // Save the new doctor to the database
+    // Save new doctor to the database
     const newDoctor = new ReviewdocModel(doctorData);
     await newDoctor.save();
 
-    res.json({ success: true, message: 'Doctor added successfully' });
+    res.json({ success: true, message: 'Doctor Added Successfully' });
   } catch (error) {
     console.error(error);
-    res.status(500).json({ success: false, message: error.message });
+    res.json({ success: false, message: error.message });
   }
 };
-
 
 
 
