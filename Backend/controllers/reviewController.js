@@ -43,23 +43,36 @@ const ReviewController = async (req, res) => {
     // Placeholder image URL
     const placeholderImageUrl = 'https://example.com/placeholder-image.jpg';
 
-    // Function to upload files to Cloudinary
-    const uploadToCloudinary = async (file) => {
-      if (!file) return null;
+  const uploadToCloudinary = async (file) => {
+  if (!file) return null;
 
-      // Check if the file is a path, HTTPS URL, or base64 string
-      if (file.path) {
-        const uploadResult = await cloudinaryV2.uploader.upload(file.path, { resource_type: 'image' });
-        return uploadResult.secure_url;
-      } else if (file.startsWith('http')) {
-        const uploadResult = await cloudinaryV2.uploader.upload(file, { resource_type: 'image' });
-        return uploadResult.secure_url;
-      } else if (file.startsWith('data:image')) {
-        const uploadResult = await cloudinaryV2.uploader.upload(file, { resource_type: 'image' });
-        return uploadResult.secure_url;
-      }
-      return null;
-    };
+  try {
+    // If it's a base64 string
+    if (file.startsWith('data:image')) {
+      const uploadResult = await cloudinaryV2.uploader.upload(file, {
+        resource_type: 'image'
+      });
+      return uploadResult.secure_url;
+    }
+    // If it's a direct URL
+    else if (file.startsWith('http')) {
+      const uploadResult = await cloudinaryV2.uploader.upload(file, {
+        resource_type: 'image'
+      });
+      return uploadResult.secure_url;
+    }
+    // If it's a file path (uploaded file)
+    else if (file.path) {
+      const uploadResult = await cloudinaryV2.uploader.upload(file.path, {
+        resource_type: 'image'
+      });
+      return uploadResult.secure_url;
+    }
+  } catch (error) {
+    console.error('Cloudinary upload error:', error);
+    return null;
+  }
+};
 
     // Upload images based on availability (files or body data)
     const imageUrl = await uploadToCloudinary(image && image[0] ? image[0] : imageBody) || placeholderImageUrl;
