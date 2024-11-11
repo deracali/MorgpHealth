@@ -63,6 +63,7 @@ const ReviewController = async (req, res) => {
         about: about || null,
         fees: fees || null,
         address: address || null,
+          docaddress: docaddress || null,
         age: age || null,
         gender: gender || null,
         region: region || null,
