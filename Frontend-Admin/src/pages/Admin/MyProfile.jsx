@@ -64,7 +64,7 @@ export default function MyProfile() {
                     <p className='text-medium'>{userData.email}</p>
                     <p className='font-medium'>Phone:</p>
                     {isEdit
-                        ? <input className='bg-gray-100 max-w-52' value={userData.phoneNumber} type="text" onChange={e => setUserData(prev => ({ ...prev, phone: e.target.value }))} />
+                        ? <input className='bg-gray-100 max-w-52' value={userData.phoneNumber} type="text" onChange={e => setUserData(prev => ({ ...prev, phoneNumber: e.target.value }))} />
                         : <p className='text-blue-400'>{userData.phoneNumber}</p>
                     }
                     <p className='font-medium'>Address</p>
