@@ -35,6 +35,5 @@ const insuranceSchema = new mongoose.Schema({
 
 const insuranceModel = mongoose.models.insurance || mongoose.model('insurance', insuranceSchema);
 
-export default insuranceModel;
 
 export default insuranceModel;
