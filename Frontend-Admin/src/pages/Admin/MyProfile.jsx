@@ -15,7 +15,7 @@ export default function MyProfile() {
             const formData = new FormData();
 
             formData.append('name', userData.name);
-            formData.append('phone', userData.phone);
+            formData.append('phoneNumber', userData.phoneNumber);
             formData.append('address', JSON.stringify(userData.address));
             formData.append('gender', userData.gender);
             formData.append('dob', userData.dob);
@@ -64,8 +64,8 @@ export default function MyProfile() {
                     <p className='text-medium'>{userData.email}</p>
                     <p className='font-medium'>Phone:</p>
                     {isEdit
-                        ? <input className='bg-gray-100 max-w-52' value={userData.phone} type="text" onChange={e => setUserData(prev => ({ ...prev, phone: e.target.value }))} />
-                        : <p className='text-blue-400'>{userData.phone}</p>
+                        ? <input className='bg-gray-100 max-w-52' value={userData.phoneNumber} type="text" onChange={e => setUserData(prev => ({ ...prev, phone: e.target.value }))} />
+                        : <p className='text-blue-400'>{userData.phoneNumber}</p>
                     }
                     <p className='font-medium'>Address</p>
                     {isEdit
