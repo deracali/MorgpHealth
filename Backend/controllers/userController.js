@@ -135,6 +135,29 @@ const updateProfile = async (req, res) => {
         res.json({ success: false, message: error.message });
     }
 };
+const updateProfileMobile = async (req, res) => {
+    try {
+        const { userId, name, phone,email, gender,region } = req.body; // Added age and region
+        const imageFile = req.file;
+
+        
+
+        await userModel.findByIdAndUpdate(userId, { name,email, phone,gender, region }); // Update age and region
+        
+        if (imageFile) {
+            const imageUpload = await cloudinary.uploader.upload(imageFile.path, { resource_type: "image" });
+            const imageUrl = imageUpload.secure_url;
+
+            await userModel.findByIdAndUpdate(userId, { image: imageUrl });
+        }
+
+        res.json({ success: true, message: "Profile Updated" });
+
+    } catch (error) {
+        console.log(error);
+        res.json({ success: false, message: error.message });
+    }
+};
 
 const bookAppointment = async (req, res) => {
     try {
@@ -254,4 +277,4 @@ const cancelAppointment = async (req, res) => {
     }
 };
 
-export { registerUser,getProfileId, loginUser, getProfile, updateProfile, bookAppointment, listAppointment, cancelAppointment };
+export { registerUser,getProfileId,updateProfileMobile, loginUser, getProfile, updateProfile, bookAppointment, listAppointment, cancelAppointment };
