@@ -115,9 +115,9 @@ const updateProfile = async (req, res) => {
         const { userId, name, phone, address, dob, gender, age, region } = req.body; // Added age and region
         const imageFile = req.file;
 
-        if (!name || !phone || !dob || !gender || !age || !region) { // Check for age and region
-            return res.json({ success: false, message: "Data Missing" });
-        }
+        // if (!name || !phone || !dob || !gender || !age || !region) { // Check for age and region
+        //     return res.json({ success: false, message: "Data Missing" });
+        // }
 
         await userModel.findByIdAndUpdate(userId, { name, phone, address: JSON.parse(address), dob, gender, age, region }); // Update age and region
         
