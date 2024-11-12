@@ -115,7 +115,7 @@ const updateProfile = async (req, res) => {
         const { userId, name, phone, address, dob, gender, age, region } = req.body; // Added age and region
         const imageFile = req.file;
 
-        // if (!name || !phone || !dob || !gender || !age || !region) { // Check for age and region
+        // if (!name || !phoneNumber || !gender || !age || !region) { // Check for age and region
         //     return res.json({ success: false, message: "Data Missing" });
         // }
 
