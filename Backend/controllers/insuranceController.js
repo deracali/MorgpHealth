@@ -27,6 +27,9 @@ const addInsurance = async (req, res) => {
             planPrice,
             addOns,
             totalPrice,
+            type,
+            cover,
+            policyTerm
         } = req.body;
 
         const insuranceData = {
@@ -53,6 +56,9 @@ const addInsurance = async (req, res) => {
             planPrice,
             addOns: addOns || [],
             totalPrice,
+            type,
+            cover,
+            policyTerm
         };
 
         const newInsurance = new insuranceModel(insuranceData);
