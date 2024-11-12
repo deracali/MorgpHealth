@@ -136,28 +136,32 @@ const updateProfile = async (req, res) => {
     }
 };
 const updateProfileMobile = async (req, res) => {
-    try {
-        const { userId, name, phone,email, gender,region } = req.body; // Added age and region
-        const imageFile = req.file;
+  try {
+      const { userId, name, phone, email, gender, region } = req.body; // Added age and region
+      const imageFile = req.file;
 
-        
+      // Update the user's profile data
+      const updatedUser = await userModel.findByIdAndUpdate(userId, 
+        { name, email, phone, gender, region }, 
+        { new: true } // Make sure to return the updated user
+      );
 
-        await userModel.findByIdAndUpdate(userId, { name,email, phone,gender, region }); // Update age and region
-        
-        if (imageFile) {
-            const imageUpload = await cloudinary.uploader.upload(imageFile.path, { resource_type: "image" });
-            const imageUrl = imageUpload.secure_url;
+      // If there's an image, upload it to Cloudinary and update the user's image
+      if (imageFile) {
+          const imageUpload = await cloudinary.uploader.upload(imageFile.path, { resource_type: "image" });
+          const imageUrl = imageUpload.secure_url;
+          updatedUser.image = imageUrl;
+          await updatedUser.save(); // Save the updated image URL
+      }
 
-            await userModel.findByIdAndUpdate(userId, { image: imageUrl });
-        }
-
-        res.json({ success: true, message: "Profile Updated" });
-
-    } catch (error) {
-        console.log(error);
-        res.json({ success: false, message: error.message });
-    }
+      // Return the updated user in the response
+      res.json({ success: true, message: "Profile Updated", user: updatedUser });
+  } catch (error) {
+      console.log(error);
+      res.json({ success: false, message: error.message });
+  }
 };
+
 
 const bookAppointment = async (req, res) => {
     try {
