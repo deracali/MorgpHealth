@@ -1,8 +1,9 @@
 import mongoose from 'mongoose';
 
 const insuranceSchema = new mongoose.Schema({
-    userId: { type: String},
+    userId: { type: String },
     name: { type: String },
+    gender: { type: String },
     spouseName: { type: String },
     motherName: { type: String },
     fatherName: { type: String },
@@ -26,9 +27,14 @@ const insuranceSchema = new mongoose.Schema({
     title: { type: String }, // Added title field
     price: { type: Number }, // Added price field
     value: { type: String },
-    price2: { type: String }
+    price2: { type: String },
+    type: { type: String }, // e.g. 'Gold cover'
+    cover: { type: String }, // e.g. '50 Lakhs'
+    policyTerm: { type: String } // e.g. '1 year'
 }, { timestamps: true });
 
 const insuranceModel = mongoose.models.insurance || mongoose.model('insurance', insuranceSchema);
+
+export default insuranceModel;
 
 export default insuranceModel;
