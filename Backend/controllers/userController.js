@@ -137,12 +137,12 @@ const updateProfile = async (req, res) => {
 };
 const updateProfileMobile = async (req, res) => {
   try {
-      const { userId, name, phone, email, gender, region } = req.body; // Added age and region
+      const { userId, name, phoneNumber, email, gender, region } = req.body; // Added age and region
       const imageFile = req.file;
 
       // Update the user's profile data
       const updatedUser = await userModel.findByIdAndUpdate(userId, 
-        { name, email, phone, gender, region }, 
+        { name, email, phoneNumber, gender, region }, 
         { new: true } // Make sure to return the updated user
       );
 
