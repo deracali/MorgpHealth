@@ -15,5 +15,6 @@ userRouter.post('/update-profilemobile',upload.single("image"),updateProfileMobi
 userRouter.post('/book-appointment',bookAppointment)
 userRouter.get('/appointments/:userId',listAppointment)
 userRouter.post('/cancel-appointment',cancelAppointment)
+userRouter.get('/appointments/user/:userId', appointmentsByUser);
 
 export default userRouter
