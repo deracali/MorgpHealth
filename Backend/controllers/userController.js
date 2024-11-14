@@ -300,7 +300,7 @@ const getAppointmentById = async (req, res) => {
   }
 };
 
-};
+
 
 
 
