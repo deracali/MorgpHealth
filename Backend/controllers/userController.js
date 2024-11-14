@@ -285,9 +285,7 @@ const cancelAppointment = async (req, res) => {
 const appointmentsByUser = async (req, res) => {
   try {
     const { userId } = req.params;
-    const appointments = await appointmentModel
-      .find({ userId })
-      .populate('docId', 'name speciality image'); // Populate docId to get doctor details
+    const appointments = await appointmentModel.find({ userId })
 
     res.json({ success: true, appointments });
   } catch (error) {
