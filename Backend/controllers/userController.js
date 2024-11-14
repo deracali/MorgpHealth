@@ -282,23 +282,26 @@ const cancelAppointment = async (req, res) => {
 };
 
 
-const getAppointmentByUser = async (req, res) => {
+const getAppointmentById = async (req, res) => {
   try {
-    const { userId, appointmentId } = req.params;
+    const { appointmentId } = req.params;
 
-    // Find a specific appointment by userId and appointmentId
-    const appointment = await appointmentModel.findOne({ _id: appointmentId, userId });
+    // Find a specific appointment by its appointmentId
+    const appointment = await appointmentModel.findById(appointmentId);
 
     if (!appointment) {
       return res.status(404).json({ success: false, message: "Appointment not found" });
     }
 
+    // Return the found appointment
     res.json({ success: true, appointment });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
   }
 };
 
+};
 
 
-export { registerUser,getProfileId,getAppointmentByUser, updateProfileMobile, loginUser, getProfile, updateProfile, bookAppointment, listAppointment, cancelAppointment };
+
+export { registerUser,getProfileId,getAppointmentById, updateProfileMobile, loginUser, getProfile, updateProfile, bookAppointment, listAppointment, cancelAppointment };
