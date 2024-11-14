@@ -281,4 +281,19 @@ const cancelAppointment = async (req, res) => {
     }
 };
 
-export { registerUser,getProfileId,updateProfileMobile, loginUser, getProfile, updateProfile, bookAppointment, listAppointment, cancelAppointment };
+
+const appointmentsByUser = async (req, res) => {
+  try {
+    const { userId } = req.params;
+    const appointments = await appointmentModel
+      .find({ userId })
+      .populate('docId', 'name speciality image'); // Populate docId to get doctor details
+
+    res.json({ success: true, appointments });
+  } catch (error) {
+    res.json({ success: false, message: error.message });
+  }
+};
+
+
+export { registerUser,getProfileId,appointmentsByUser, updateProfileMobile, loginUser, getProfile, updateProfile, bookAppointment, listAppointment, cancelAppointment };
