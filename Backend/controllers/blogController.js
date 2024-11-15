@@ -68,7 +68,7 @@ const createBlog = async (req, res) => {
 // Get All Blogs Controller
 const getBlogs = async (req, res) => {
   try {
-    const blogs = await Blog.find();
+    const blogs = await Blog.find().sort({ date: -1 });
     return res.status(200).json(blogs);
   } catch (error) {
     console.error('Error fetching blogs:', error);
