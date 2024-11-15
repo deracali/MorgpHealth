@@ -1,16 +1,34 @@
 import Blog from '../models/blogModel.js';
 import { v2 as cloudinaryV2 } from 'cloudinary';
 
-// Function to upload the image to Cloudinary
+
+// Function to upload image from file path
 const uploadToCloudinary = async (file) => {
   try {
+    console.log('Uploading image from file path:', file.path); // Debug log
     const result = await cloudinaryV2.uploader.upload(file.path, {
-      resource_type: 'image', // Specify that the file is an image
+      resource_type: 'image', // Specify the file type as image
     });
+    console.log('Cloudinary Upload Response:', result); // Log Cloudinary response
     return result.secure_url; // Return the Cloudinary URL
   } catch (error) {
-    console.error('Cloudinary upload error:', error);
-    throw new Error('Failed to upload image');
+    console.error('Cloudinary upload error:', error); // Log error
+    throw new Error('Failed to upload image from file path');
+  }
+};
+
+// Function to upload image from URL
+const uploadFromUrlToCloudinary = async (imageUrl) => {
+  try {
+    console.log('Uploading image from URL:', imageUrl); // Debug log
+    const result = await cloudinaryV2.uploader.upload(imageUrl, {
+      resource_type: 'image', // Specify the file type as image
+    });
+    console.log('Cloudinary Upload Response:', result); // Log Cloudinary response
+    return result.secure_url; // Return the Cloudinary URL
+  } catch (error) {
+    console.error('Cloudinary URL upload error:', error); // Log error
+    throw new Error('Failed to upload image from URL');
   }
 };
 
@@ -19,22 +37,22 @@ const createBlog = async (req, res) => {
   try {
     const { title, content, author, imageUrl } = req.body;
 
-    // Check if the required fields are provided
+    // Ensure required fields are provided
     if (!title || !content || !author) {
       return res.status(400).json({ error: 'Title, content, and author are required' });
     }
 
     let image = '';
-    
-    // If an image file is uploaded, use Cloudinary to get the URL
+
+    // If an image file is uploaded via Multer
     if (req.file) {
-      image = await uploadToCloudinary(req.file); // Upload file to Cloudinary
+      image = await uploadToCloudinary(req.file); // Upload the file to Cloudinary
     } else if (imageUrl) {
-      // If an image URL is provided in the body, use that URL
-      image = imageUrl;
+      // If image URL is provided in the request body, upload from the URL
+      image = await uploadFromUrlToCloudinary(imageUrl);
     }
 
-    // Create a new blog entry
+    // Create and save a new blog entry
     const newBlog = new Blog({ title, content, author, imageUrl: image });
     await newBlog.save();
 
@@ -44,6 +62,8 @@ const createBlog = async (req, res) => {
     return res.status(500).json({ error: 'Failed to create blog' });
   }
 };
+
+
 
 // Get All Blogs Controller
 const getBlogs = async (req, res) => {
