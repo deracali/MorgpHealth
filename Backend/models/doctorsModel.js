@@ -61,14 +61,11 @@ const doctorSchema = new mongoose.Schema({
         }
     }],
 
-    // Like system
-    likes: {
-        type: Number,
-        default: 0 // Default to 0 likes
-    },
-     likedBy: [{
-        userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User' }  // User ID who liked the doctor
-    }],
+   // Track which users have liked this doctor
+  likes: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }], 
+
+  // Total count of likes (for efficiency)
+  likeCount: { type: Number, default: 0 },
 }, { minimize: false });
 
 const doctorModel = mongoose.models.doctor || mongoose.model('doctor', doctorSchema);
