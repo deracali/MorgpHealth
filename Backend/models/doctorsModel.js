@@ -14,6 +14,7 @@ const doctorSchema = new mongoose.Schema({
     gender: { type: String }, // Optional field
     about: { type: String }, // Optional field
     available: { type: Boolean, default: true },
+   timer: { type: Boolean, default: true },
     fees: { type: Number }, // Optional field
     balance: { type: Number, default: 0 }, // Optional field
     address: { type: Object }, // Optional field
