@@ -16,8 +16,8 @@ doctorRouter.get('/profile/:docId', doctorProfile)
 doctorRouter.post('/update-profile/:docId', updateDoctorProfile)
 doctorRouter.put('/update-appointment/:appointmentId',updateAppointment)
 doctorRouter.put('/balance/decrement/:docId', decrementDoctorBalance);
-doctorRouter.post('/like/:doctorId', likeDoctor);  
-doctorRouter.post('/unlike/:doctorId', unlikeDoctor);
+doctorRouter.post('/like', likeDoctor);  
+doctorRouter.post('/unlike', unlikeDoctor);
 
 
 
