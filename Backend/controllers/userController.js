@@ -135,33 +135,49 @@ const updateProfile = async (req, res) => {
         res.json({ success: false, message: error.message });
     }
 };
+
+
+
 const updateProfileMobile = async (req, res) => {
   try {
-      const { userId, name, phoneNumber, email, gender, region } = req.body; // Added age and region
-      const imageFile = req.file;
+    // Extract fields from request body (image is handled via file or Base64)
+    const { userId, name, phoneNumber, email, gender, region } = req.body; 
 
-      // Update the user's profile data
-      const updatedUser = await userModel.findByIdAndUpdate(userId, 
-        { name, email, phoneNumber, gender, region }, 
-        { new: true } // Make sure to return the updated user
-      );
+    // Find and update the user's profile data
+    const updatedUser = await userModel.findByIdAndUpdate(
+      userId,
+      { name, phoneNumber, email, gender, region },
+      { new: true } // Return the updated user
+    );
 
-      // If there's an image, upload it to Cloudinary and update the user's image
-      if (imageFile) {
-          const imageUpload = await cloudinary.uploader.upload(imageFile.path, { resource_type: "image" });
-          const imageUrl = imageUpload.secure_url;
-          updatedUser.image = imageUrl;
-          await updatedUser.save(); // Save the updated image URL
+    // Handle image upload if file or Base64 data is provided
+    if (req.body.image) { // If a Base64 image is provided in the body
+      let imageUrl = updatedUser.image; // Preserve current image URL if no new image is provided
+
+      // Check if the image is a Base64 string (starts with 'data:image')
+      if (req.body.image.startsWith('data:image')) {
+        // Upload Base64 image to Cloudinary
+        const imageUpload = await cloudinary.uploader.upload(req.body.image, { resource_type: "image" });
+        imageUrl = imageUpload.secure_url;
       }
 
-      // Return the updated user in the response
-      res.json({ success: true, message: "Profile Updated", user: updatedUser });
+      // Update user's image field with the Cloudinary image URL
+      updatedUser.image = imageUrl;
+      await updatedUser.save(); // Save the updated image URL
+    } else if (req.file) { // If a file image is uploaded
+      const imageFile = req.file;
+      const imageUpload = await cloudinary.uploader.upload(imageFile.path, { resource_type: "image" });
+      updatedUser.image = imageUpload.secure_url;
+      await updatedUser.save(); // Save the updated image URL
+    }
+
+    // Return the updated user in the response
+    res.json({ success: true, message: "Profile Updated", user: updatedUser });
   } catch (error) {
-      console.log(error);
-      res.json({ success: false, message: error.message });
+    console.log(error);
+    res.json({ success: false, message: error.message });
   }
 };
-
 
 const bookAppointment = async (req, res) => {
     try {
