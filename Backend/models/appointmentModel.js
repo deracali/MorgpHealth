@@ -44,6 +44,7 @@ const appointmentSchema = new mongoose.Schema({
     frequency4: { type: String, required: false },
     period4: { type: String, required: false },
     isCompleted: { type: Boolean, required: false },
+    timer: { type: Boolean, default: true },
     status: { type: String, default: 'pending' }
 }, { timestamps: true }); // This adds createdAt and updatedAt
 
