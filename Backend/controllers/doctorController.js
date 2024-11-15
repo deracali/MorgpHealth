@@ -3,6 +3,7 @@ import doctorModel from '../models/doctorsModel.js'
 import bcrypt from 'bcrypt'
 import jwt from 'jsonwebtoken'
 import cloudinary from 'cloudinary';
+import { broadcastDoctorUpdate } from '../websocket.js';
 
 // Access the 'vs' property if it exists on the cloudinary object
 const { vs } = cloudinary;
@@ -382,26 +383,25 @@ const updateAppointment = async (req, res) => {
 const likeDoctor = async (req, res) => {
   try {
     const { doctorId, userId } = req.body;
-
-    // Find the doctor by ID
     const doctor = await doctorModel.findById(doctorId);
+
     if (!doctor) {
       return res.status(404).json({ success: false, message: 'Doctor not found' });
     }
 
-    // Check if the user has already liked the doctor
     if (doctor.likes.includes(userId)) {
-      return res.status(400).json({ success: false, message: 'You have already liked this doctor' });
+      return res.status(400).json({ success: false, message: 'Already liked' });
     }
 
-    // Add the user to the doctor’s likes array and increment the like count
     doctor.likes.push(userId);
-    doctor.likeCount += 1; // Increment the like count
+    doctor.likeCount += 1;
     await doctor.save();
 
-    res.json({ success: true, message: 'Doctor liked successfully', doctor });
+    // Broadcast like update
+    broadcastDoctorUpdate({ type: 'like', doctorId, likeCount: doctor.likeCount });
+
+    res.json({ success: true, doctor });
   } catch (error) {
-    console.error(error);
     res.status(500).json({ success: false, message: error.message });
   }
 };
@@ -410,29 +410,27 @@ const likeDoctor = async (req, res) => {
 const unlikeDoctor = async (req, res) => {
   try {
     const { doctorId, userId } = req.body;
-
-    // Find the doctor by ID
     const doctor = await doctorModel.findById(doctorId);
+
     if (!doctor) {
       return res.status(404).json({ success: false, message: 'Doctor not found' });
     }
 
-    // Check if the user has liked the doctor
     if (!doctor.likes.includes(userId)) {
-      return res.status(400).json({ success: false, message: 'You have not liked this doctor yet' });
+      return res.status(400).json({ success: false, message: 'Not liked yet' });
     }
 
-    // Remove the user from the doctor’s likes array and decrement the like count
-    doctor.likes = doctor.likes.filter(like => like.toString() !== userId.toString());
-    doctor.likeCount -= 1; // Decrement the like count
+    doctor.likes = doctor.likes.filter(id => id !== userId);
+    doctor.likeCount -= 1;
     await doctor.save();
 
-    res.json({ success: true, message: 'Doctor unliked successfully', doctor });
+    // Broadcast unlike update
+    broadcastDoctorUpdate({ type: 'unlike', doctorId, likeCount: doctor.likeCount });
+
+    res.json({ success: true, doctor });
   } catch (error) {
-    console.error(error);
     res.status(500).json({ success: false, message: error.message });
   }
 };
-
 
 export {changeAvailablity,unlikeDoctor,likeDoctor,decrementDoctorBalance,doctorList,doctorFilterController,updateAppointment,doctorFilter, loginDoctor,appointmentsDoctor,appointmentCancel,appointmentComplete,doctorDashboard, doctorProfile, updateDoctorProfile}
