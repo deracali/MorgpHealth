@@ -10,6 +10,7 @@ const userSchema = new mongoose.Schema({
     address: {type: Object, default: {line1:'',line2:''}},
     gender: {type: String, default:"Not Selected"},
     insured: { type: Boolean, default: false },
+    timer: { type: Boolean, default:true },
 },{minimize:false})
 
 const userModel = mongoose.models.user || mongoose.model('user', userSchema)
