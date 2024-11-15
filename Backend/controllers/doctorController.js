@@ -293,7 +293,7 @@ const decrementDoctorBalance = async (req, res) => {
 
 const updateAppointment = async (req, res) => {
     try {
-        const { appointmentId } = req.params;
+        const { appointmentId } = req.params; // Extract appointmentId from request params
         const {
             userId,
             docId,
@@ -304,6 +304,10 @@ const updateAppointment = async (req, res) => {
             payment,
             testResult,
             hospitalName,
+            labTestName,
+            labTestResult,
+            labTestDate,
+            labTestDetails,
             age,
             gender,
             region,
@@ -334,7 +338,8 @@ const updateAppointment = async (req, res) => {
         }
 
         const updateData = {};
-        
+
+        // Add conditional checks and update fields if present in the request body
         if (userId !== undefined) updateData.userId = userId;
         if (docId !== undefined) updateData.docId = docId;
         if (slotDate !== undefined) updateData.slotDate = slotDate;
@@ -344,6 +349,10 @@ const updateAppointment = async (req, res) => {
         if (payment !== undefined) updateData.payment = payment;
         if (testResult !== undefined) updateData.testResult = testResult;
         if (hospitalName !== undefined) updateData.hospitalName = hospitalName;
+        if (labTestName !== undefined) updateData.labTestName = labTestName;
+        if (labTestResult !== undefined) updateData.labTestResult = labTestResult;
+        if (labTestDate !== undefined) updateData.labTestDate = labTestDate;
+        if (labTestDetails !== undefined) updateData.labTestDetails = labTestDetails;
         if (age !== undefined) updateData.age = age;
         if (gender !== undefined) updateData.gender = gender;
         if (region !== undefined) updateData.region = region;
