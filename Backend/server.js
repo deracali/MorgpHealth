@@ -12,6 +12,7 @@ import reviewDocRouter from './routes/reviewDocRoute.js';
 import chatRoute from './routes/chatRoute.js';
 import http from 'http'; // Import http module
 import { Server } from 'socket.io'; // Import Socket.IO
+import { initializeWebSocket } from './websocket.js';
 import videoRouter from './routes/videoRoute.js';
 import staffRouter from './routes/staffRoute.js';
 import blogRouter from './routes/blogRoute.js';
@@ -46,6 +47,7 @@ app.get('/', (req, res) => {
 
 // Create an HTTP server and bind it to your Express app
 const server = http.createServer(app);
+initializeWebSocket(server);
 
 // Initialize Socket.IO and attach it to the HTTP server
 const io = new Server(server, {
