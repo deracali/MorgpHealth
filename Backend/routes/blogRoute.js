@@ -7,7 +7,8 @@ const blogRouter = express.Router();
 // Multer configuration to accept only image files
 const storage = multer.diskStorage({
   filename: (req, file, callback) => {
-    callback(null, file.originalname);
+    // Add timestamp to avoid file name collisions
+    callback(null, Date.now() + '-' + file.originalname);
   },
 });
 
