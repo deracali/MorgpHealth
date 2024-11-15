@@ -327,6 +327,7 @@ const updateAppointment = async (req, res) => {
             dosage4,
             frequency4,
             period4,
+            timer,
             meetingStart,   // New field for meeting start time
             meetingEnd,     // New field for meeting end time
             meetingDuration // New field for meeting duration
@@ -354,6 +355,7 @@ const updateAppointment = async (req, res) => {
         if (labTestDate !== undefined) updateData.labTestDate = labTestDate;
         if (labTestDetails !== undefined) updateData.labTestDetails = labTestDetails;
         if (age !== undefined) updateData.age = age;
+        if (timer !== undefined) updateData.timer = timer;
         if (gender !== undefined) updateData.gender = gender;
         if (region !== undefined) updateData.region = region;
         if (drugName1 !== undefined) updateData.drugName1 = drugName1;
