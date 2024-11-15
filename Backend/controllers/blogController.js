@@ -7,7 +7,7 @@ const uploadToCloudinary = async (file) => {
     const result = await cloudinaryV2.uploader.upload(file.path, {
       resource_type: 'image', // Specify that the file is an image
     });
-    return result.secure_url;
+    return result.secure_url; // Return the Cloudinary URL
   } catch (error) {
     console.error('Cloudinary upload error:', error);
     throw new Error('Failed to upload image');
@@ -19,8 +19,13 @@ const createBlog = async (req, res) => {
   try {
     const { title, content, author } = req.body;
 
+    // Check if the required fields are provided
+    if (!title || !content || !author) {
+      return res.status(400).json({ error: 'Title, content, and author are required' });
+    }
+
     // Upload image if provided
-    let imageUrl = '';
+    let imageUrl = ''; // Default to empty string if no image is provided
     if (req.file) {
       imageUrl = await uploadToCloudinary(req.file);
     }
@@ -35,6 +40,7 @@ const createBlog = async (req, res) => {
     return res.status(500).json({ error: 'Failed to create blog' });
   }
 };
+
 
 // Get All Blogs Controller
 const getBlogs = async (req, res) => {
