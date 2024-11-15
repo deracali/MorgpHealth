@@ -378,63 +378,60 @@ const updateAppointment = async (req, res) => {
 };
 
 
- const likeDoctor = async (req, res) => {
-    const { doctorId } = req.params;  // Get doctorId from URL params
+// Controller to like a doctor
+const likeDoctor = async (req, res) => {
+  try {
+    const { doctorId, userId } = req.body;
 
-    try {
-        // Find the doctor by ID
-        const doctor = await doctorModel.findById(doctorId);
-
-        if (!doctor) {
-            return res.status(404).json({ message: 'Doctor not found' });
-        }
-
-        // Increment the like count
-        doctor.likes += 1;
-
-        // Save the updated doctor document
-        await doctor.save();
-
-        // Return the updated doctor with the new like count
-        res.status(200).json({ message: 'Doctor liked successfully', likes: doctor.likes });
-    } catch (error) {
-        console.error(error);
-        res.status(500).json({ message: 'Server error' });
+    // Find the doctor by ID
+    const doctor = await doctorModel.findById(doctorId);
+    if (!doctor) {
+      return res.status(404).json({ success: false, message: 'Doctor not found' });
     }
+
+    // Check if the user has already liked the doctor
+    if (doctor.likes.includes(userId)) {
+      return res.status(400).json({ success: false, message: 'You have already liked this doctor' });
+    }
+
+    // Add the user to the doctor’s likes array and increment the like count
+    doctor.likes.push(userId);
+    doctor.likeCount += 1; // Increment the like count
+    await doctor.save();
+
+    res.json({ success: true, message: 'Doctor liked successfully', doctor });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ success: false, message: error.message });
+  }
 };
 
+// Controller to unlike a doctor
+const unlikeDoctor = async (req, res) => {
+  try {
+    const { doctorId, userId } = req.body;
 
-
- const unlikeDoctor = async (req, res) => {
-    const { doctorId } = req.params;  // Get doctorId from URL params
-    const { userId } = req.body;  // Get userId from request body (assumes the user is logged in)
-
-    try {
-        // Find the doctor by ID
-        const doctor = await doctorModel.findById(doctorId);
-
-        if (!doctor) {
-            return res.status(404).json({ message: 'Doctor not found' });
-        }
-
-        // Check if the doctor has already been liked (for decrement)
-        if (doctor.likes > 0) {
-            doctor.likes -= 1;  // Decrement the like count
-        }
-
-        // Remove the user from the likedBy array if it's being tracked
-        // (Only if you have a likedBy array to track who liked the doctor)
-        doctor.likedBy = doctor.likedBy.filter(user => user.userId.toString() !== userId.toString());
-
-        // Save the updated doctor document
-        await doctor.save();
-
-        // Return the updated doctor with the new like count
-        res.status(200).json({ message: 'Doctor unliked successfully', likes: doctor.likes });
-    } catch (error) {
-        console.error(error);
-        res.status(500).json({ message: 'Server error' });
+    // Find the doctor by ID
+    const doctor = await doctorModel.findById(doctorId);
+    if (!doctor) {
+      return res.status(404).json({ success: false, message: 'Doctor not found' });
     }
+
+    // Check if the user has liked the doctor
+    if (!doctor.likes.includes(userId)) {
+      return res.status(400).json({ success: false, message: 'You have not liked this doctor yet' });
+    }
+
+    // Remove the user from the doctor’s likes array and decrement the like count
+    doctor.likes = doctor.likes.filter(like => like.toString() !== userId.toString());
+    doctor.likeCount -= 1; // Decrement the like count
+    await doctor.save();
+
+    res.json({ success: true, message: 'Doctor unliked successfully', doctor });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ success: false, message: error.message });
+  }
 };
 
 
