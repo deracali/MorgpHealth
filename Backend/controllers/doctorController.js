@@ -378,4 +378,64 @@ const updateAppointment = async (req, res) => {
 };
 
 
-export {changeAvailablity,decrementDoctorBalance,doctorList,doctorFilterController,updateAppointment,doctorFilter, loginDoctor,appointmentsDoctor,appointmentCancel,appointmentComplete,doctorDashboard, doctorProfile, updateDoctorProfile}
+ const likeDoctor = async (req, res) => {
+    const { doctorId } = req.params;  // Get doctorId from URL params
+
+    try {
+        // Find the doctor by ID
+        const doctor = await doctorModel.findById(doctorId);
+
+        if (!doctor) {
+            return res.status(404).json({ message: 'Doctor not found' });
+        }
+
+        // Increment the like count
+        doctor.likes += 1;
+
+        // Save the updated doctor document
+        await doctor.save();
+
+        // Return the updated doctor with the new like count
+        res.status(200).json({ message: 'Doctor liked successfully', likes: doctor.likes });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Server error' });
+    }
+};
+
+
+
+ const unlikeDoctor = async (req, res) => {
+    const { doctorId } = req.params;  // Get doctorId from URL params
+    const { userId } = req.body;  // Get userId from request body (assumes the user is logged in)
+
+    try {
+        // Find the doctor by ID
+        const doctor = await doctorModel.findById(doctorId);
+
+        if (!doctor) {
+            return res.status(404).json({ message: 'Doctor not found' });
+        }
+
+        // Check if the doctor has already been liked (for decrement)
+        if (doctor.likes > 0) {
+            doctor.likes -= 1;  // Decrement the like count
+        }
+
+        // Remove the user from the likedBy array if it's being tracked
+        // (Only if you have a likedBy array to track who liked the doctor)
+        doctor.likedBy = doctor.likedBy.filter(user => user.userId.toString() !== userId.toString());
+
+        // Save the updated doctor document
+        await doctor.save();
+
+        // Return the updated doctor with the new like count
+        res.status(200).json({ message: 'Doctor unliked successfully', likes: doctor.likes });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Server error' });
+    }
+};
+
+
+export {changeAvailablity,unlikeDoctor,likeDoctor,decrementDoctorBalance,doctorList,doctorFilterController,updateAppointment,doctorFilter, loginDoctor,appointmentsDoctor,appointmentCancel,appointmentComplete,doctorDashboard, doctorProfile, updateDoctorProfile}
