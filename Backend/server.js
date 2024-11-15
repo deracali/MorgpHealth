@@ -14,6 +14,7 @@ import http from 'http'; // Import http module
 import { Server } from 'socket.io'; // Import Socket.IO
 import videoRouter from './routes/videoRoute.js';
 import staffRouter from './routes/staffRoute.js';
+import blogRouter from './routes/blogRoute.js';
 
 const app = express();
 const port = process.env.PORT || 4000;
@@ -37,6 +38,7 @@ app.use('/api/addDoc', reviewDocRouter);
 app.use('/api/chat', chatRoute);
 app.use('/api/videos', videoRouter);
 app.use('/api/staff', staffRouter);
+app.use('/api/blogs', blogRouter);
 
 app.get('/', (req, res) => {
     res.send('API WORKING');
