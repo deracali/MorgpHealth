@@ -1,4 +1,4 @@
-import Blog from '../models/Blog.js';
+import Blog from '../models/blogModel.js';
 import { v2 as cloudinaryV2 } from 'cloudinary';
 
 // Function to upload the image to Cloudinary
