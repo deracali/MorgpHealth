@@ -235,35 +235,77 @@ const doctorProfile = async (req, res) => {
 };
 
 const updateDoctorProfile = async (req, res) => {
+  try {
+    const { fees, address, available, balance, name, email, gender, region, speciality } = req.body;
+    const { docId } = req.params;
+
+    const updateFields = {};
+
+    // Check and update fields if they are provided in the request body
+    if (name !== undefined) updateFields.name = name;
+    if (email !== undefined) updateFields.email = email;
+    if (gender !== undefined) updateFields.gender = gender;
+    if (region !== undefined) updateFields.region = region;
+    if (fees !== undefined) updateFields.fees = fees;
+    if (address !== undefined) updateFields.address = address;
+    if (speciality !== undefined) updateFields.speciality = speciality;
+    if (available !== undefined) updateFields.available = available;
+
+    // Update balance if provided, using the $inc operator to adjust the balance amount
+    if (balance !== undefined) {
+      updateFields.$inc = { balance: balance };
+    }
+
+
+    // Perform the update using the docId
+    const updatedDoctor = await doctorModel.findByIdAndUpdate(
+      docId,
+      updateFields,
+      { new: true } // Return the updated document
+    );
+
+    // Check if the doctor was found and updated
+    if (!updatedDoctor) {
+      return res.status(404).json({ success: false, message: "Doctor not found" });
+    }
+
+    // Return the updated profile data
+    res.json({
+      success: true,
+      message: "Profile updated",
+      profileData: updatedDoctor,
+    });
+  } catch (error) {
+    console.error("Error updating profile:", error);
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+
+
+// Update Doctor Availability
+const updateDoctorAvailability = async (req, res) => {
     try {
-        const { fees, address, available, balance } = req.body;
-        const { docId } = req.params;
+        const { doctorId } = req.params;
+        const { availability } = req.body;
 
-        const updateFields = {};
-        if (fees !== undefined) updateFields.fees = fees;
-        if (address !== undefined) updateFields.address = address;
-        if (available !== undefined) updateFields.available = available;
-
-        if (balance !== undefined) {
-            updateFields.$inc = { balance: balance }; 
-        }
-
-        const updatedDoctor = await doctorModel.findByIdAndUpdate(
-            docId, 
-            updateFields, 
-            { new: true } 
+        const doctor = await doctorModel.findByIdAndUpdate(
+            doctorId,
+            { availability },
+            { new: true }
         );
 
-        if (!updatedDoctor) {
-            return res.status(404).json({ success: false, message: 'Doctor not found' });
+        if (!doctor) {
+            return res.status(404).json({ message: 'Doctor not found' });
         }
 
-        res.json({ success: true, message: 'Profile updated', profileData: updatedDoctor });
+        return res.json({ message: 'Availability updated', doctor });
     } catch (error) {
-        console.log(error);
-        res.status(500).json({ success: false, message: error.message });
+        console.error('Error updating availability:', error);
+        return res.status(500).json({ message: 'Server error', error });
     }
 };
+
 
 const decrementDoctorBalance = async (req, res) => {
     try {
@@ -444,4 +486,4 @@ const unlikeDoctor = async (req, res) => {
   }
 };
 
-export {changeAvailablity,unlikeDoctor,likeDoctor,decrementDoctorBalance,doctorList,doctorFilterController,updateAppointment,doctorFilter, loginDoctor,appointmentsDoctor,appointmentCancel,appointmentComplete,doctorDashboard, doctorProfile, updateDoctorProfile}
+export {changeAvailablity,unlikeDoctor,likeDoctor,updateDoctorAvailability,decrementDoctorBalance,doctorList,doctorFilterController,updateAppointment,doctorFilter, loginDoctor,appointmentsDoctor,appointmentCancel,appointmentComplete,doctorDashboard, doctorProfile, updateDoctorProfile}
