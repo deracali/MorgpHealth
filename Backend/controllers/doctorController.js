@@ -486,4 +486,31 @@ const unlikeDoctor = async (req, res) => {
   }
 };
 
-export {changeAvailablity,unlikeDoctor,likeDoctor,updateDoctorAvailability,decrementDoctorBalance,doctorList,doctorFilterController,updateAppointment,doctorFilter, loginDoctor,appointmentsDoctor,appointmentCancel,appointmentComplete,doctorDashboard, doctorProfile, updateDoctorProfile}
+
+
+// Controller function to update the status
+const updateStatus = async (req, res) => {
+  try {
+    const { appointmentId } = req.params;  // Assuming appointmentId is passed in the URL
+    const appointment = await appointmentModel.findById(appointmentId);
+
+    if (!appointment) {
+      return res.status(404).json({ message: 'Appointment not found' });
+    }
+
+    // Check if the current status is 'pending' and update it to 'upcoming'
+    if (appointment.status === 'pending') {
+      appointment.status = 'upcoming';
+      await appointment.save();
+      return res.status(200).json({ message: 'Status updated to upcoming' });
+    }
+
+    return res.status(400).json({ message: 'Status is already updated or cannot be updated' });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ message: 'Server error' });
+  }
+};
+
+
+export {changeAvailablity,updateStatus,unlikeDoctor,likeDoctor,updateDoctorAvailability,decrementDoctorBalance,doctorList,doctorFilterController,updateAppointment,doctorFilter, loginDoctor,appointmentsDoctor,appointmentCancel,appointmentComplete,doctorDashboard, doctorProfile, updateDoctorProfile}
