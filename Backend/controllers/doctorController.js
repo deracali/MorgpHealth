@@ -500,28 +500,44 @@ const addReview = async (req, res) => {
 
 // Get reviews for a specific doctor
 const getReviews = async (req, res) => {
-  const { doctorId } = req.params; // Doctor ID from the URL
+  const { doctorId } = req.params;  // Doctor ID from URL params
 
   try {
-    // Fetch the doctor by ID and populate reviews with user details
-    const doctor = await doctorModel.findById(doctorId).populate('reviews.userId');
+    // Fetch the doctor by ID
+    const doctor = await doctorModel.findById(doctorId);
 
     if (!doctor) {
       return res.status(404).json({ message: 'Doctor not found' });
     }
 
-    // Map the reviews to include user details (name, email, image)
-    const reviewsWithUserDetails = doctor.reviews.map((review) => {
-      return {
-        userId: review.userId ? review.userId._id : null,
-        userName: review.userId ? review.userId.name : review.userName,
-        userEmail: review.userId ? review.userId.email : review.userEmail,
-        userImage: review.userId ? review.userId.image : review.userImage,
-        rating: review.rating,
-        reviewText: review.reviewText,
-        reviewDate: review.reviewDate,
-      };
-    });
+    // Manually fetch user details for each review
+    const reviewsWithUserDetails = await Promise.all(
+      doctor.reviews.map(async (review) => {
+        let userDetails = { name: review.userName, email: review.userEmail, image: review.userImage };
+
+        // If a userId is present, fetch the user details manually
+        if (review.userId) {
+          const user = await userModel.findById(review.userId);
+          if (user) {
+            userDetails = {
+              name: user.name,
+              email: user.email,
+              image: user.image || 'https://example.com/default-avatar.jpg',  // Default image if no user image
+            };
+          }
+        }
+
+        return {
+          userId: review.userId ? review.userId : null,
+          userName: userDetails.name,
+          userEmail: userDetails.email,
+          userImage: userDetails.image,
+          rating: review.rating,
+          reviewText: review.reviewText,
+          reviewDate: review.reviewDate,
+        };
+      })
+    );
 
     // Return the reviews along with user details
     res.status(200).json({ reviews: reviewsWithUserDetails });
