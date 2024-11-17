@@ -496,7 +496,7 @@ const addReview = async (req, res) => {
 
 
 // Get reviews for a specific doctor
-export const getReviews = async (req, res) => {
+const getReviews = async (req, res) => {
   const { doctorId } = req.params; // Doctor ID from the URL
 
   try {
