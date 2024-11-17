@@ -21,7 +21,7 @@ doctorRouter.post('/unlike', unlikeDoctor);
 doctorRouter.put('/doctors/:doctorId/availability', updateDoctorAvailability);
 doctorRouter.put('/update-status/:appointmentId', updateStatus);
 doctorRouter.get('/doctor/:doctorId/reviews', getReviews);
-doctorRouter.post('/doctor/:doctorId/reviews', addReview);
+doctorRouter.post('/doctor/:doctorId/review', addReview);
 
 
 export default doctorRouter
