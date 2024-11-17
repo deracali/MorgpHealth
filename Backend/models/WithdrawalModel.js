@@ -1,18 +1,18 @@
 import mongoose from 'mongoose';
 
 const WithdrawalSchema = new mongoose.Schema({
-    fullName: { type: String, required: true },
-    email: { type: String, required: true },
-    address: { type: String, required: true },
-    city: { type: String, required: true },
-    state: { type: String, required: true },
-    zipCode: { type: String, required: true },
-    bankName: { type: String, required: true },
-    accountNumber: { type: String, required: true },
-    amount: { type: Number, required: true },  // New field for amount
-    expMonth: { type: String, required: true },
-    expYear: { type: Number, required: true },
-    cvv: { type: String, required: true },
+    fullName: { type: String },
+    email: { type: String },
+    address: { type: String },
+    city: { type: String },
+    state: { type: String },
+    zipCode: { type: String },
+    bankName: { type: String },
+    accountNumber: { type: String },
+    amount: { type: Number },  // New field for amount
+    expMonth: { type: String },
+    expYear: { type: Number },
+    cvv: { type: String },
 });
 
 export default mongoose.model('Withdrawal', WithdrawalSchema);
