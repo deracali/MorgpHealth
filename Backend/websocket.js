@@ -1,9 +1,10 @@
-import { Server } from 'ws';
+import WebSocket from 'ws';
 
 let doctorWSS;
 
 export const initializeWebSocket = (server) => {
-  doctorWSS = new Server({ server });
+  // Correctly access the Server class from the default import
+  doctorWSS = new WebSocket.Server({ server });
 
   doctorWSS.on('connection', (ws) => {
     console.log('WebSocket connected for doctor updates.');
@@ -15,7 +16,8 @@ export const initializeWebSocket = (server) => {
 export const broadcastDoctorUpdate = (data) => {
   if (doctorWSS) {
     doctorWSS.clients.forEach((client) => {
-      if (client.readyState === 1) {
+      // Check if the client is open before sending data
+      if (client.readyState === WebSocket.OPEN) {
         client.send(JSON.stringify(data));
       }
     });
