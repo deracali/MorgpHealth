@@ -434,8 +434,7 @@ const updateAppointment = async (req, res) => {
 
 
 
-import doctorModel from '../models/Doctor'; // Import the Doctor model
-import userModel from '../models/User'; // Import the User model
+
 
 // Add a review for a doctor
 const addReview = async (req, res) => {
