@@ -434,6 +434,9 @@ const updateAppointment = async (req, res) => {
 
 
 
+import doctorModel from '../models/Doctor'; // Import the Doctor model
+import userModel from '../models/User'; // Import the User model
+
 // Add a review for a doctor
 const addReview = async (req, res) => {
   const { doctorId } = req.params; // Doctor ID from the URL
@@ -448,7 +451,7 @@ const addReview = async (req, res) => {
 
   try {
     // Fetch the doctor by ID
-    const doctor = await Doctor.findById(doctorId);
+    const doctor = await doctorModel.findById(doctorId);
 
     if (!doctor) {
       return res.status(404).json({ message: 'Doctor not found' });
@@ -495,20 +498,21 @@ const addReview = async (req, res) => {
 
 
 
+
 // Get reviews for a specific doctor
 const getReviews = async (req, res) => {
   const { doctorId } = req.params; // Doctor ID from the URL
 
   try {
-    // Fetch the doctor by ID
-    const doctor = await doctorModel.findById(doctorId).populate('reviews.userId'); // Populate the reviews with user details
+    // Fetch the doctor by ID and populate reviews with user details
+    const doctor = await doctorModel.findById(doctorId).populate('reviews.userId');
 
     if (!doctor) {
       return res.status(404).json({ message: 'Doctor not found' });
     }
 
     // Map the reviews to include user details (name, email, image)
-    const reviewsWithUserDetails = doctorModel.reviews.map((review) => {
+    const reviewsWithUserDetails = doctor.reviews.map((review) => {
       return {
         userId: review.userId ? review.userId._id : null,
         userName: review.userId ? review.userId.name : review.userName,
