@@ -609,4 +609,4 @@ const updateStatus = async (req, res) => {
 };
 
 
-export {changeAvailablity,updateStatus,addReview,unlikeDoctor,likeDoctor,updateDoctorAvailability,decrementDoctorBalance,doctorList,doctorFilterController,updateAppointment,doctorFilter, loginDoctor,appointmentsDoctor,appointmentCancel,appointmentComplete,doctorDashboard, doctorProfile, updateDoctorProfile}
+export {changeAvailablity,updateStatus,addReview,getReviews,unlikeDoctor,likeDoctor,updateDoctorAvailability,decrementDoctorBalance,doctorList,doctorFilterController,updateAppointment,doctorFilter, loginDoctor,appointmentsDoctor,appointmentCancel,appointmentComplete,doctorDashboard, doctorProfile, updateDoctorProfile}
