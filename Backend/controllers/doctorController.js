@@ -1,5 +1,6 @@
 import appointmentModel from '../models/appointmentModel.js'
 import doctorModel from '../models/doctorsModel.js'
+import User from '../models/userModel.js'
 import bcrypt from 'bcrypt'
 import jwt from 'jsonwebtoken'
 import cloudinary from 'cloudinary';
@@ -432,6 +433,101 @@ const updateAppointment = async (req, res) => {
 };
 
 
+
+// Add a review for a doctor
+const addReview = async (req, res) => {
+  const { doctorId } = req.params; // Doctor ID from the URL
+  const { userId, rating, reviewText } = req.body; // Review data from request body
+
+  // Destructure and validate the rating to ensure it is between 1 and 5
+  const userRating = Number(rating);
+
+  if (userRating < 1 || userRating > 5 || isNaN(userRating)) {
+    return res.status(400).json({ message: 'Rating must be between 1 and 5' });
+  }
+
+  try {
+    // Fetch the doctor by ID
+    const doctor = await Doctor.findById(doctorId);
+
+    if (!doctor) {
+      return res.status(404).json({ message: 'Doctor not found' });
+    }
+
+    // Fetch the user details from the User model using the userId
+    let userDetails = {};
+    if (userId) {
+      const user = await User.findById(userId);
+      if (user) {
+        userDetails = {
+          name: user.name,
+          email: user.email,
+          image: user.image || 'https://example.com/default-avatar.jpg', // Default image if user doesn't have one
+        };
+      } else {
+        return res.status(404).json({ message: 'User not found' });
+      }
+    }
+
+    // Create the review object
+    const review = {
+      userId: userId || null, // Optional if you want to store the user reference
+      userName: userDetails.name,
+      userEmail: userDetails.email,
+      rating: userRating, // Use the validated userRating here
+      reviewText,
+      userImage: userDetails.image,
+      reviewDate: new Date(),
+    };
+
+    // Add the review to the doctor's reviews array
+    doctor.reviews.push(review);
+
+    // Save the updated doctor document
+    await doctor.save();
+
+    // Return the updated reviews list
+    res.status(201).json({ message: 'Review added successfully', reviews: doctor.reviews });
+  } catch (error) {
+    res.status(500).json({ error: 'Server error', details: error.message });
+  }
+};
+
+
+
+// Get reviews for a specific doctor
+export const getReviews = async (req, res) => {
+  const { doctorId } = req.params; // Doctor ID from the URL
+
+  try {
+    // Fetch the doctor by ID
+    const doctor = await doctorModel.findById(doctorId).populate('reviews.userId'); // Populate the reviews with user details
+
+    if (!doctor) {
+      return res.status(404).json({ message: 'Doctor not found' });
+    }
+
+    // Map the reviews to include user details (name, email, image)
+    const reviewsWithUserDetails = doctorModel.reviews.map((review) => {
+      return {
+        userId: review.userId ? review.userId._id : null,
+        userName: review.userId ? review.userId.name : review.userName,
+        userEmail: review.userId ? review.userId.email : review.userEmail,
+        userImage: review.userId ? review.userId.image : review.userImage,
+        rating: review.rating,
+        reviewText: review.reviewText,
+        reviewDate: review.reviewDate,
+      };
+    });
+
+    // Return the reviews along with user details
+    res.status(200).json({ reviews: reviewsWithUserDetails });
+  } catch (error) {
+    res.status(500).json({ error: 'Server error', details: error.message });
+  }
+};
+
+
 // Controller to like a doctor
 const likeDoctor = async (req, res) => {
   try {
@@ -513,4 +609,4 @@ const updateStatus = async (req, res) => {
 };
 
 
-export {changeAvailablity,updateStatus,unlikeDoctor,likeDoctor,updateDoctorAvailability,decrementDoctorBalance,doctorList,doctorFilterController,updateAppointment,doctorFilter, loginDoctor,appointmentsDoctor,appointmentCancel,appointmentComplete,doctorDashboard, doctorProfile, updateDoctorProfile}
+export {changeAvailablity,updateStatus,addReview,unlikeDoctor,likeDoctor,updateDoctorAvailability,decrementDoctorBalance,doctorList,doctorFilterController,updateAppointment,doctorFilter, loginDoctor,appointmentsDoctor,appointmentCancel,appointmentComplete,doctorDashboard, doctorProfile, updateDoctorProfile}
