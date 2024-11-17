@@ -165,23 +165,28 @@ const appointmentComplete = async (req, res) => {
 };
 
 const appointmentCancel = async (req, res) => {
-    try {
-        const { docId, appointmentId } = req.body;
+  try {
+    const { docId, appointmentId } = req.body;
 
-        const appointmentData = await appointmentModel.findById(appointmentId);
+    const appointmentData = await appointmentModel.findById(appointmentId);
 
-        if (!appointmentData) {
-            return res.json({ success: false, message: "Appointment not found" });
-        }
-
-        await appointmentModel.findByIdAndUpdate(appointmentId, { cancelled: true });
-
-        return res.json({ success: true, message: 'Appointment cancelled' });
-    } catch (error) {
-        console.error(error);
-        return res.json({ success: false, message: error.message });
+    if (!appointmentData) {
+      return res.json({ success: false, message: "Appointment not found" });
     }
+
+    // Update the appointment status to empty and set cancelled to true
+    await appointmentModel.findByIdAndUpdate(appointmentId, {
+      cancelled: true,
+      status: '',  // Clear the status field
+    });
+
+    return res.json({ success: true, message: 'Appointment cancelled and status cleared' });
+  } catch (error) {
+    console.error(error);
+    return res.json({ success: false, message: error.message });
+  }
 };
+
 
 const doctorDashboard = async (req,res) => {
     try {
