@@ -18,24 +18,7 @@ import WithdrawalModel from '../models/WithdrawalModel.js';
       cvv,
     } = req.body;
 
-    // Check for missing fields
-    if (
-      !fullName ||
-      !email ||
-      !address ||
-      !city ||
-      !state ||
-      !zipCode ||
-      !bankName ||
-      !amount ||
-      !accountNumber ||
-      !expMonth ||
-      !expYear ||
-      !cvv
-    ) {
-      return res.status(400).json({ success: false, message: 'Missing required fields' });
-    }
-
+  
     // Create a new withdrawal record
     const newWithdrawal = new WithdrawalModel({
       fullName,
