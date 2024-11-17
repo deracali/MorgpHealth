@@ -1,6 +1,6 @@
 import appointmentModel from '../models/appointmentModel.js'
 import doctorModel from '../models/doctorsModel.js'
-import User from '../models/userModel.js'
+import userModel from '../models/userModel.js';
 import bcrypt from 'bcrypt'
 import jwt from 'jsonwebtoken'
 import cloudinary from 'cloudinary';
@@ -457,7 +457,7 @@ const addReview = async (req, res) => {
     // Fetch the user details from the User model using the userId
     let userDetails = {};
     if (userId) {
-      const user = await User.findById(userId);
+      const user = await userModel.findById(userId);
       if (user) {
         userDetails = {
           name: user.name,
