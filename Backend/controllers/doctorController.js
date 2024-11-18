@@ -553,10 +553,11 @@ const getReviews = async (req, res) => {
 };
 
 
-// Controller to like a doctor
 const likeDoctor = async (req, res) => {
   try {
     const { doctorId, userId } = req.body;
+    
+    // Find the doctor by ID
     const doctor = await doctorModel.findById(doctorId);
 
     if (!doctor) {
@@ -568,21 +569,27 @@ const likeDoctor = async (req, res) => {
       return res.status(400).json({ success: false, message: 'Already liked' });
     }
 
+    // Add the user to the likes array and update likeCount
     doctor.likes.push(userId);
+    doctor.likeCount = doctor.likes.length; // Update likeCount based on likes array length
+
+    // Save the doctor document
     await doctor.save();
 
-    // Broadcast like update with the correct count
+    // Broadcast like update with the correct likeCount
     broadcastDoctorUpdate({
       type: 'like',
       doctorId,
-      likeCount: doctor.likes.length
+      likeCount: doctor.likeCount, // Send the updated likeCount
     });
 
-    res.json({ success: true, likeCount: doctor.likes.length, doctor });
+    // Respond with success and updated likeCount
+    res.json({ success: true, likeCount: doctor.likeCount, doctor });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
   }
 };
+
 
 // Controller to unlike a doctor
 const unlikeDoctor = async (req, res) => {
