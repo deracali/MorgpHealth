@@ -563,18 +563,22 @@ const likeDoctor = async (req, res) => {
       return res.status(404).json({ success: false, message: 'Doctor not found' });
     }
 
+    // Check if the user already liked the doctor
     if (doctor.likes.includes(userId)) {
       return res.status(400).json({ success: false, message: 'Already liked' });
     }
 
     doctor.likes.push(userId);
-    doctor.likeCount += 1;
     await doctor.save();
 
-    // Broadcast like update
-    broadcastDoctorUpdate({ type: 'like', doctorId, likeCount: doctor.likeCount });
+    // Broadcast like update with the correct count
+    broadcastDoctorUpdate({
+      type: 'like',
+      doctorId,
+      likeCount: doctor.likes.length
+    });
 
-    res.json({ success: true, doctor });
+    res.json({ success: true, likeCount: doctor.likes.length, doctor });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
   }
@@ -590,18 +594,22 @@ const unlikeDoctor = async (req, res) => {
       return res.status(404).json({ success: false, message: 'Doctor not found' });
     }
 
+    // Check if the user has already unliked the doctor
     if (!doctor.likes.includes(userId)) {
       return res.status(400).json({ success: false, message: 'Not liked yet' });
     }
 
     doctor.likes = doctor.likes.filter(id => id !== userId);
-    doctor.likeCount -= 1;
     await doctor.save();
 
-    // Broadcast unlike update
-    broadcastDoctorUpdate({ type: 'unlike', doctorId, likeCount: doctor.likeCount });
+    // Broadcast unlike update with the correct count
+    broadcastDoctorUpdate({
+      type: 'unlike',
+      doctorId,
+      likeCount: doctor.likes.length
+    });
 
-    res.json({ success: true, doctor });
+    res.json({ success: true, likeCount: doctor.likes.length, doctor });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
   }
