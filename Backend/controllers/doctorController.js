@@ -553,9 +553,14 @@ const getReviews = async (req, res) => {
 };
 
 
+const mongoose = require('mongoose');
+
 const likeDoctor = async (req, res) => {
   try {
     const { doctorId, userId } = req.body;
+
+    // Ensure userId is an ObjectId
+    const userObjectId = mongoose.Types.ObjectId(userId);
     
     // Find the doctor by ID
     const doctor = await doctorModel.findById(doctorId);
@@ -565,13 +570,13 @@ const likeDoctor = async (req, res) => {
     }
 
     // Check if the user already liked the doctor
-    if (doctor.likes.includes(userId)) {
+    if (doctor.likes.some(id => id.equals(userObjectId))) {
       return res.status(400).json({ success: false, message: 'Already liked' });
     }
 
     // Add the user to the likes array and update likeCount
-    doctor.likes.push(userId);
-    doctor.likeCount = doctor.likes.length; // Update likeCount based on likes array length
+    doctor.likes.push(userObjectId);
+    doctor.likeCount = doctor.likes.length;
 
     // Save the doctor document
     await doctor.save();
@@ -580,7 +585,7 @@ const likeDoctor = async (req, res) => {
     broadcastDoctorUpdate({
       type: 'like',
       doctorId,
-      likeCount: doctor.likeCount, // Send the updated likeCount
+      likeCount: doctor.likeCount,
     });
 
     // Respond with success and updated likeCount
@@ -591,10 +596,15 @@ const likeDoctor = async (req, res) => {
 };
 
 
-// Controller to unlike a doctor
+
 const unlikeDoctor = async (req, res) => {
   try {
     const { doctorId, userId } = req.body;
+
+    // Ensure userId is an ObjectId
+    const userObjectId = mongoose.Types.ObjectId(userId);
+    
+    // Find the doctor by ID
     const doctor = await doctorModel.findById(doctorId);
 
     if (!doctor) {
@@ -602,21 +612,26 @@ const unlikeDoctor = async (req, res) => {
     }
 
     // Check if the user has already unliked the doctor
-    if (!doctor.likes.includes(userId)) {
+    if (!doctor.likes.some(id => id.equals(userObjectId))) {
       return res.status(400).json({ success: false, message: 'Not liked yet' });
     }
 
-    doctor.likes = doctor.likes.filter(id => id !== userId);
+    // Remove userId from the likes array
+    doctor.likes = doctor.likes.filter(id => !id.equals(userObjectId));
+    doctor.likeCount = doctor.likes.length;
+
+    // Save the updated doctor document
     await doctor.save();
 
     // Broadcast unlike update with the correct count
     broadcastDoctorUpdate({
       type: 'unlike',
       doctorId,
-      likeCount: doctor.likes.length
+      likeCount: doctor.likeCount,
     });
 
-    res.json({ success: true, likeCount: doctor.likes.length, doctor });
+    // Respond with success and updated likeCount
+    res.json({ success: true, likeCount: doctor.likeCount, doctor });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
   }
