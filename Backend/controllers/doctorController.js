@@ -612,7 +612,13 @@ const unlikeDoctor = async (req, res) => {
 // Controller function to update the status
 const updateStatus = async (req, res) => {
   try {
-    const { appointmentId } = req.params;  // Assuming appointmentId is passed in the URL
+    const { appointmentId } = req.params; // Assuming appointmentId is passed in the URL
+    const { status } = req.body; // Get status from the request body
+
+    if (!status) {
+      return res.status(400).json({ message: 'Status is required' });
+    }
+
     const appointment = await appointmentModel.findById(appointmentId);
 
     if (!appointment) {
@@ -620,16 +626,18 @@ const updateStatus = async (req, res) => {
     }
 
     // Check if the current status is 'pending' and update it to 'upcoming'
-    if (appointment.status === 'pending') {
+    if (appointment.status === 'pending' && status === 'upcoming') {
       appointment.status = 'upcoming';
       await appointment.save();
       return res.status(200).json({ message: 'Status updated to upcoming' });
+    } else if (appointment.status === 'upcoming') {
+      return res.status(400).json({ message: 'Appointment is already scheduled as upcoming' });
+    } else {
+      return res.status(400).json({ message: 'Status cannot be updated' });
     }
-
-    return res.status(400).json({ message: 'Status is already updated or cannot be updated' });
   } catch (error) {
-    console.error(error);
-    return res.status(500).json({ message: 'Server error' });
+    console.error('Error updating status:', error.message);
+    return res.status(500).json({ message: 'Server error', error: error.message });
   }
 };
 
