@@ -8,6 +8,15 @@ const doctorSchema = new mongoose.Schema({
         type: String,
         default: 'https://example.com/placeholder-image.jpg' // Placeholder image
     }, // Optional field
+       availability: {
+    Monday: { active: { type: Boolean, default: false }, hours: [{ start: String, end: String }] },
+    Tuesday: { active: { type: Boolean, default: false }, hours: [{ start: String, end: String }] },
+    Wednesday: { active: { type: Boolean, default: false }, hours: [{ start: String, end: String }] },
+    Thursday: { active: { type: Boolean, default: false }, hours: [{ start: String, end: String }] },
+    Friday: { active: { type: Boolean, default: false }, hours: [{ start: String, end: String }] },
+    Saturday: { active: { type: Boolean, default: false }, hours: [{ start: String, end: String }] },
+    Sunday: { active: { type: Boolean, default: false }, hours: [{ start: String, end: String }] },
+  },
     speciality: { type: String }, // Optional field
     degree: { type: String }, // Optional field
     experience: { type: String }, // Optional field
