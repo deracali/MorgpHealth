@@ -242,7 +242,7 @@ const doctorProfile = async (req, res) => {
 
 const updateDoctorProfile = async (req, res) => {
   try {
-    const { fees, address, available, balance, name, email, gender, region, speciality } = req.body;
+    const { fees, address, available,docAddress, balance, name, email, gender, region, speciality } = req.body;
     const { docId } = req.params;
 
     const updateFields = {};
@@ -256,6 +256,7 @@ const updateDoctorProfile = async (req, res) => {
     if (address !== undefined) updateFields.address = address;
     if (speciality !== undefined) updateFields.speciality = speciality;
     if (available !== undefined) updateFields.available = available;
+    if (docAddress !== undefined) updateFields.docAddress = docAddress;
 
     // Update balance if provided, using the $inc operator to adjust the balance amount
     if (balance !== undefined) {
