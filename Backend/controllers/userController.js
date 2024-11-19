@@ -295,7 +295,8 @@ const cancelAppointment = async (req, res) => {
             return res.json({ success: false, message: 'Unauthorized action' });
         }
 
-        await appointmentModel.findByIdAndUpdate(appointmentId, { cancelled: true });
+        // Update the appointment status to an empty string
+        await appointmentModel.findByIdAndUpdate(appointmentId, { cancelled: true, status: "" });
 
         const { docId, slotDate, slotTime } = appointmentData;
 
@@ -311,8 +312,10 @@ const cancelAppointment = async (req, res) => {
 
     } catch (error) {
         console.log(error);
+        res.status(500).json({ success: false, message: 'Server Error' });
     }
 };
+
 
 
 const getAppointmentById = async (req, res) => {
