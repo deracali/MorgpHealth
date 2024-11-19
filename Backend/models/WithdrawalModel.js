@@ -10,7 +10,7 @@ const WithdrawalSchema = new mongoose.Schema({
     bankName: { type: String },
     accountNumber: { type: String },
     amount: { type: Number },  // New field for amount
-    remark: {type:String},
+    remarks: {type:String},
     expMonth: { type: String },
     expYear: { type: Number },
     cvv: { type: String },
