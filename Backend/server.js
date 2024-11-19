@@ -16,6 +16,8 @@ import { initializeWebSocket } from './websocket.js';
 import videoRouter from './routes/videoRoute.js';
 import staffRouter from './routes/staffRoute.js';
 import blogRouter from './routes/blogRoute.js';
+import notificationRoute from "./routes/notificationRoute.js";
+
 
 const app = express();
 const port = process.env.PORT || 4000;
@@ -40,6 +42,7 @@ app.use('/api/chat', chatRoute);
 app.use('/api/videos', videoRouter);
 app.use('/api/staff', staffRouter);
 app.use('/api/blogs', blogRouter);
+app.use("/api/notifications", notificationRoute);
 
 app.get('/', (req, res) => {
     res.send('API WORKING');
