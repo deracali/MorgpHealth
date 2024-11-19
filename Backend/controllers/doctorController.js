@@ -561,7 +561,7 @@ const likeDoctor = async (req, res) => {
     const { doctorId, userId } = req.body;
 
     // Ensure userId is an ObjectId
-    const userObjectId = mongoose.Types.ObjectId(userId);
+    const userObjectId = new mongoose.Types.ObjectId(userId); // Corrected line
     
     // Find the doctor by ID
     const doctor = await doctorModel.findById(doctorId);
@@ -603,6 +603,7 @@ const likeDoctor = async (req, res) => {
     res.status(500).json({ success: false, message: error.message });
   }
 };
+
 
 
 
