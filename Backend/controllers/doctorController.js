@@ -243,7 +243,7 @@ const doctorProfile = async (req, res) => {
 
 const updateDoctorProfile = async (req, res) => {
   try {
-    const { fees, address, available,docAddress, balance, name, email, gender, region, speciality } = req.body;
+    const { fees, address, available, docAddress, balance, name, email, gender, region, speciality } = req.body;
     const { docId } = req.params;
 
     const updateFields = {};
@@ -259,11 +259,28 @@ const updateDoctorProfile = async (req, res) => {
     if (available !== undefined) updateFields.available = available;
     if (docAddress !== undefined) updateFields.docAddress = docAddress;
 
-    // Update balance if provided, using the $inc operator to adjust the balance amount
+    // Update balance if provided
     if (balance !== undefined) {
+      // Find the doctor by ID before updating
+      const doctor = await doctorModel.findById(docId);
+
+      if (!doctor) {
+        return res.status(404).json({ success: false, message: "Doctor not found" });
+      }
+
+      // Record the transaction in the balanceHistory (whether it's an addition or withdrawal)
+      const balanceChangeType = balance > 0 ? 'added' : 'withdrawn'; // Positive balance is an addition, negative is a withdrawal
+
+      // Push the balance change into the balanceHistory array
+      doctor.balanceHistory.push({
+        amount: Math.abs(balance), // Store the absolute value of the balance change
+        type: balanceChangeType,   // 'added' for positive balance, 'withdrawn' for negative balance
+        date: new Date()           // Record the date of the change (optional)
+      });
+
+      // Update the balance using $inc operator to adjust the balance
       updateFields.$inc = { balance: balance };
     }
-
 
     // Perform the update using the docId
     const updatedDoctor = await doctorModel.findByIdAndUpdate(
@@ -277,17 +294,19 @@ const updateDoctorProfile = async (req, res) => {
       return res.status(404).json({ success: false, message: "Doctor not found" });
     }
 
-    // Return the updated profile data
+    // Return the updated profile data along with the balance history
     res.json({
       success: true,
       message: "Profile updated",
       profileData: updatedDoctor,
+      balanceHistory: updatedDoctor.balanceHistory // Include balance history in the response
     });
   } catch (error) {
     console.error("Error updating profile:", error);
     res.status(500).json({ success: false, message: error.message });
   }
 };
+
 
 
 
