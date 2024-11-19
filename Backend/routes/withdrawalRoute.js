@@ -7,7 +7,7 @@ const WithdrawalRouter = express.Router();
 WithdrawalRouter.post('/add', addWithdrawal);
 
 // Route to get all withdrawals
-WithdrawalRouter.get('withdrawal/all', getWithdrawal);
+WithdrawalRouter.get('/all', getWithdrawal);
 
 // Route to get a withdrawal by ID
 WithdrawalRouter.get('withdrawal/:id', getWithdrawalById);
