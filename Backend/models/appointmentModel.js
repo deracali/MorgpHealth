@@ -27,6 +27,9 @@ const appointmentSchema = new mongoose.Schema({
   notes: {
     type: String,
   },
+     diagnosis: {
+    type: String,
+  },
     age: { type: String, required: false },
     sex: { type: String, required: false },
     meetingStart: { type: Date, required: false },      // Start time of the meeting
