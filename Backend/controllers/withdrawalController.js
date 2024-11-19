@@ -110,4 +110,4 @@ const getWithdrawalByEmail = async (req, res) => {
 };
 
 
-export {getWithdrawal, addWithdrawal,getWithdrawalById, deleteWithdrawal}
+export {getWithdrawal, addWithdrawal,getWithdrawalByEmail, deleteWithdrawal}
