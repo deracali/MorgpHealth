@@ -10,7 +10,7 @@ WithdrawalRouter.post('/add', addWithdrawal);
 WithdrawalRouter.get('/all', getWithdrawal);
 
 // Route to get a withdrawal by ID
-WithdrawalRouter.get('withdrawal/:id', getWithdrawalById);
+WithdrawalRouter.get('withdrawal/:email', getWithdrawalById);
 
 
 // Route to delete a withdrawal by ID
