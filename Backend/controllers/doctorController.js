@@ -293,7 +293,7 @@ const updateDoctorProfile = async (req, res) => {
       success: true,
       message: "Profile updated",
       profileData: updatedDoctor,
-      balanceHistory: updatedDoctor.balanceHistory
+      
     });
   } catch (error) {
     console.error("Error updating profile:", error);
@@ -330,12 +330,12 @@ const updateDoctorAvailability = async (req, res) => {
 
 const decrementDoctorBalance = async (req, res) => {
   try {
-    const { amount } = req.body;
+    const { balance } = req.body;  // Now we expect "balance" in the request body
     const { docId } = req.params;
 
-    // Check if the amount is valid
-    if (amount === undefined || amount <= 0) {
-      return res.status(400).json({ success: false, message: 'Invalid amount' });
+    // Check if the balance value is valid
+    if (balance === undefined || balance <= 0) {
+      return res.status(400).json({ success: false, message: 'Invalid balance' });
     }
 
     // Find the doctor by ID
@@ -348,14 +348,14 @@ const decrementDoctorBalance = async (req, res) => {
 
     // Record the withdrawal transaction (balanceHistory entry)
     const balanceHistoryEntry = {
-      amount: amount,
+      amount: balance,  // Use the balance amount directly
       type: 'withdrawn',  // This is a withdrawal
       date: new Date()    // Record the current date
     };
 
     // Update balance and push the history entry
-    doctor.balance -= amount; // Decrease the balance by the specified amount
-    doctor.balanceHistory.push(balanceHistoryEntry); // Push to balanceHistory
+    doctor.balance -= balance;  // Decrease the balance by the specified balance amount
+    doctor.balanceHistory.push(balanceHistoryEntry);  // Push to balanceHistory
 
     // Save the updated doctor data
     const updatedDoctor = await doctor.save();
@@ -365,7 +365,7 @@ const decrementDoctorBalance = async (req, res) => {
       success: true,
       message: 'Balance updated',
       profileData: updatedDoctor,
-      balanceHistory: updatedDoctor.balanceHistory
+   
     });
   } catch (error) {
     console.error(error);
