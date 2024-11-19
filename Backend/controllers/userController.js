@@ -326,6 +326,28 @@ const getAppointmentById = async (req, res) => {
       return res.status(404).json({ success: false, message: "Appointment not found" });
     }
 
+    // Get the current date and time
+    const currentDate = new Date();
+    const appointmentDate = new Date(appointment.slotDate);
+    const appointmentTime = new Date(`${appointment.slotDate} ${appointment.slotTime}`);
+
+    // Set a threshold for "close" (e.g., 15 minutes before appointment time)
+    const timeDifference = appointmentTime - currentDate;
+
+    if (timeDifference <= 15 * 60 * 1000 && timeDifference > 0) { // 15 minutes before the appointment
+      // Send a notification to the user that the appointment is approaching
+      const newNotification = new notificationModel({
+        recipientId: appointment.userId,  // Assuming userId is stored in the appointment
+        recipientType: "User",
+        title: "Upcoming Appointment",
+        message: `Your appointment with Doctor ${appointment.docData.name} is in less than 15 minutes.`,
+        read: false,  // Mark as unread by default
+      });
+
+      // Save the notification to the database
+      await newNotification.save();
+    }
+
     // Return the found appointment
     res.json({ success: true, appointment });
   } catch (error) {
