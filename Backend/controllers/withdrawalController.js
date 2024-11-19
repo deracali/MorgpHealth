@@ -50,10 +50,7 @@ import WithdrawalModel from '../models/WithdrawalModel.js';
 // Controller to get a withdrawal by ID
  const getWithdrawal = async (req, res) => {
   try {
-    const { id } = req.params;
-
-    // Find the withdrawal by its ID
-    const withdrawal = await WithdrawalModel.findById(id);
+  const withdrawals = await WithdrawalModel.find();
 
     if (!withdrawal) {
       return res.status(404).json({ success: false, message: 'Withdrawal not found' });
