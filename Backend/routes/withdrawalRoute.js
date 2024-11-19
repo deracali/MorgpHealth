@@ -1,5 +1,5 @@
 import express from 'express';
-import { addWithdrawal, getWithdrawal,deleteWithdrawal, getWithdrawalById } from '../controllers/withdrawalController.js';
+import { addWithdrawal, getWithdrawal,deleteWithdrawal, getWithdrawalByEmail } from '../controllers/withdrawalController.js';
 
 const WithdrawalRouter = express.Router();
 
@@ -10,7 +10,7 @@ WithdrawalRouter.post('/add', addWithdrawal);
 WithdrawalRouter.get('/all', getWithdrawal);
 
 // Route to get a withdrawal by ID
-WithdrawalRouter.get('withdrawal/:email', getWithdrawalById);
+WithdrawalRouter.get('withdrawal/:email', getWithdrawalByEmail);
 
 
 // Route to delete a withdrawal by ID
