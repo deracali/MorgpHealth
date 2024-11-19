@@ -11,16 +11,22 @@ const appointmentSchema = new mongoose.Schema({
     date: { type: Number },
     cancelled: { type: Boolean, required: false },
     payment: { type: Boolean, required: false },
-    testResult: { type: String, required: false },
-   
-    labTestName: { type: String, required: false },    // Name of the lab test
-    labTestResult1: { type: String, required: false },  // Result of the lab test (e.g., Positive/Negative)
-    labTestResult2: { type: String, required: false },  // Result of the lab test (e.g., Positive/Negative)
-    labTestResult3: { type: String, required: false },  // Result of the lab test (e.g., Positive/Negative)
-    labTestResult4: { type: String, required: false },  // Result of the lab test (e.g., Positive/Negative)
-    labTestResult5: { type: String, required: false },  // Result of the lab test (e.g., Positive/Negative)
-    labTestDate: { type: String, required: false },    // Date when the test was performed
-    labTestDetails: { type: String, required: false }, // Additional details about the lab test
+  hospitalName2: {
+    type: String,
+    required: true,
+  },
+  investigations: [
+    {
+      name: { type: String },
+      result: { type: Number},
+      referenceRange: { type: String},
+      unit: { type: String },
+      flag: { type: String, enum: ['High', 'Low', 'Normal'], default: 'Normal' },
+    },
+  ],
+  notes: {
+    type: String,
+  },
     age: { type: String, required: false },
     sex: { type: String, required: false },
     meetingStart: { type: Date, required: false },      // Start time of the meeting
@@ -30,10 +36,6 @@ const appointmentSchema = new mongoose.Schema({
     isCompleted: { type: Boolean, required: false },
     timer: { type: Boolean, default: true },
     status: { type: String, default: 'pending' },
-    patientName: { type: String, required: false },
-  patientAddress: { type: String, required: false },
-  patientAge: { type: Number, required: false },
-  date: { type: Date, required: false },
   medicines: [
     {
       name: { type: String, required: false },
@@ -42,7 +44,7 @@ const appointmentSchema = new mongoose.Schema({
     },
   ],
  
-  hospitalName: { type: String, required: false },
+  hospitalName1: { type: String, required: false },
 }, { timestamps: true }); // This adds createdAt and updatedAt
 
 const appointmentModel = mongoose.models.appointment || mongoose.model('appointment', appointmentSchema);
