@@ -69,26 +69,27 @@ import WithdrawalModel from '../models/WithdrawalModel.js';
 
 
 
-// Controller to get a withdrawal by ID
-const getWithdrawalById = async (req, res) => {
-    try {
-      const { id } = req.params; // Extract the ID from the request parameters
-  
-      // Find the withdrawal by its ID
-      const withdrawal = await WithdrawalModel.findById(id);
-  
-      // If no withdrawal is found, return a 404 response
-      if (!withdrawal) {
-        return res.status(404).json({ success: false, message: 'Withdrawal not found' });
-      }
-  
-      // Return the found withdrawal
-      return res.status(200).json({ success: true, data: withdrawal });
-    } catch (error) {
-      console.error(error);
-      return res.status(500).json({ success: false, message: 'Server error' });
+// Controller to get a withdrawal by Email
+const getWithdrawalByEmail = async (req, res) => {
+  try {
+    const { email } = req.params; // Extract the email from the request parameters
+
+    // Find the withdrawal by the email
+    const withdrawal = await WithdrawalModel.findOne({ email: email });
+
+    // If no withdrawal is found, return a 404 response
+    if (!withdrawal) {
+      return res.status(404).json({ success: false, message: 'Withdrawal not found' });
     }
-  };
+
+    // Return the found withdrawal
+    return res.status(200).json({ success: true, data: withdrawal });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ success: false, message: 'Server error' });
+  }
+};
+
 
   
 
