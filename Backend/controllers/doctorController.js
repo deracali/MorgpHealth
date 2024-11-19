@@ -553,7 +553,7 @@ const getReviews = async (req, res) => {
 };
 
 
-const mongoose = require('mongoose');
+
 
 const likeDoctor = async (req, res) => {
   try {
