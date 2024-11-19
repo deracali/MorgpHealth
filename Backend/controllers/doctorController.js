@@ -4,7 +4,7 @@ import userModel from '../models/userModel.js';
 import bcrypt from 'bcrypt'
 import jwt from 'jsonwebtoken'
 import cloudinary from 'cloudinary';
-import { broadcastDoctorUpdate } from '../websocket.js';
+
 
 // Access the 'vs' property if it exists on the cloudinary object
 const { vs } = cloudinary;
@@ -564,8 +564,8 @@ const likeDoctor = async (req, res) => {
     
     // Find the doctor by ID
     const doctor = await doctorModel.findById(doctorId);
-
     if (!doctor) {
+      console.log("Doctor not found:", doctorId);
       return res.status(404).json({ success: false, message: 'Doctor not found' });
     }
 
@@ -574,26 +574,35 @@ const likeDoctor = async (req, res) => {
       return res.status(400).json({ success: false, message: 'Already liked' });
     }
 
+    // Log likes and likeCount before updating
+    console.log("Likes before update:", doctor.likes);
+    console.log("Like count before update:", doctor.likeCount);
+
     // Add the user to the likes array and update likeCount
     doctor.likes.push(userObjectId);
     doctor.likeCount = doctor.likes.length;
 
     // Save the doctor document
-    await doctor.save();
+    try {
+      await doctor.save();
+      console.log("Doctor saved successfully");
+    } catch (saveError) {
+      console.error("Error saving doctor:", saveError.message);
+      return res.status(500).json({ success: false, message: 'Error saving doctor' });
+    }
 
-    // Broadcast like update with the correct likeCount
-    broadcastDoctorUpdate({
-      type: 'like',
-      doctorId,
-      likeCount: doctor.likeCount,
-    });
+    // Log likes and likeCount after updating
+    console.log("Likes after update:", doctor.likes);
+    console.log("Like count after update:", doctor.likeCount);
 
     // Respond with success and updated likeCount
     res.json({ success: true, likeCount: doctor.likeCount, doctor });
   } catch (error) {
+    console.error('Error liking doctor:', error);
     res.status(500).json({ success: false, message: error.message });
   }
 };
+
 
 
 
