@@ -12,7 +12,7 @@ const appointmentSchema = new mongoose.Schema({
     cancelled: { type: Boolean, required: false },
     payment: { type: Boolean, required: false },
     testResult: { type: String, required: false },
-    hospitalName: { type: String, required: false },  // Hospital name (optional)
+   
     labTestName: { type: String, required: false },    // Name of the lab test
     labTestResult1: { type: String, required: false },  // Result of the lab test (e.g., Positive/Negative)
     labTestResult2: { type: String, required: false },  // Result of the lab test (e.g., Positive/Negative)
@@ -27,25 +27,22 @@ const appointmentSchema = new mongoose.Schema({
     meetingEnd: { type: Date, required: false },        // End time of the meeting
     meetingDuration: { type: Number, required: false }, // Duration in seconds
     callDuration: { type: Number, required: false },    // Call duration in seconds
-    drugName1: { type: String, required: false },
-    dosage1: { type: String, required: false },
-    frequency1: { type: String, required: false },
-    period1: { type: String, required: false },
-    drugName2: { type: String, required: false },
-    dosage2: { type: String, required: false },
-    frequency2: { type: String, required: false },
-    period2: { type: String, required: false },
-    drugName3: { type: String, required: false },
-    dosage3: { type: String, required: false },
-    frequency3: { type: String, required: false },
-    period3: { type: String, required: false },
-    drugName4: { type: String, required: false },
-    dosage4: { type: String, required: false },
-    frequency4: { type: String, required: false },
-    period4: { type: String, required: false },
     isCompleted: { type: Boolean, required: false },
     timer: { type: Boolean, default: true },
-    status: { type: String, default: 'pending' }
+    status: { type: String, default: 'pending' },
+    patientName: { type: String, required: false },
+  patientAddress: { type: String, required: false },
+  patientAge: { type: Number, required: false },
+  date: { type: Date, required: false },
+  medicines: [
+    {
+      name: { type: String, required: false },
+      dosage: { type: String, required: false },
+      frequency: { type: String, required: false },
+    },
+  ],
+ 
+  hospitalName: { type: String, required: false },
 }, { timestamps: true }); // This adds createdAt and updatedAt
 
 const appointmentModel = mongoose.models.appointment || mongoose.model('appointment', appointmentSchema);
