@@ -330,12 +330,12 @@ const updateDoctorAvailability = async (req, res) => {
 
 const decrementDoctorBalance = async (req, res) => {
   try {
-    const { balance } = req.body;  // Now we expect "balance" in the request body
+    const { amount } = req.body;  // Now we expect "amount" in the request body
     const { docId } = req.params;
 
-    // Check if the balance value is valid
-    if (balance === undefined || balance <= 0) {
-      return res.status(400).json({ success: false, message: 'Invalid balance' });
+    // Check if the amount value is valid
+    if (amount === undefined || amount <= 0) {
+      return res.status(400).json({ success: false, message: 'Invalid amount' });
     }
 
     // Find the doctor by ID
@@ -346,15 +346,20 @@ const decrementDoctorBalance = async (req, res) => {
       return res.status(404).json({ success: false, message: 'Doctor not found' });
     }
 
+    // Check if the doctor has sufficient balance for the withdrawal
+    if (doctor.balance < amount) {
+      return res.status(400).json({ success: false, message: 'Insufficient balance' });
+    }
+
     // Record the withdrawal transaction (balanceHistory entry)
     const balanceHistoryEntry = {
-      amount: balance,  // Use the balance amount directly
+      amount,  // Use the withdrawal amount
       type: 'withdrawn',  // This is a withdrawal
       date: new Date()    // Record the current date
     };
 
-    // Update balance and push the history entry
-    doctor.balance -= balance;  // Decrease the balance by the specified balance amount
+    // Decrease the balance by the specified withdrawal amount
+    doctor.balance -= amount;  
     doctor.balanceHistory.push(balanceHistoryEntry);  // Push to balanceHistory
 
     // Save the updated doctor data
@@ -363,9 +368,8 @@ const decrementDoctorBalance = async (req, res) => {
     // Return the updated profile data along with the balance history
     res.json({
       success: true,
-      message: 'Balance updated',
+      message: 'Balance updated successfully',
       profileData: updatedDoctor,
-   
     });
   } catch (error) {
     console.error(error);
