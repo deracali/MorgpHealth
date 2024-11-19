@@ -329,48 +329,50 @@ const updateDoctorAvailability = async (req, res) => {
 
 
 const decrementDoctorBalance = async (req, res) => {
-    try {
-        const { amount } = req.body; 
-        const { docId } = req.params;
+  try {
+    const { amount } = req.body;
+    const { docId } = req.params;
 
-        // Check if the amount is valid
-        if (amount === undefined || amount <= 0) {
-            return res.status(400).json({ success: false, message: 'Invalid amount' });
-        }
-
-        // Find the doctor by ID
-        const doctor = await doctorModel.findById(docId);
-
-        // If doctor is not found
-        if (!doctor) {
-            return res.status(404).json({ success: false, message: 'Doctor not found' });
-        }
-
-        // Record the withdrawal transaction
-        doctor.balanceHistory.push({
-            amount: amount,
-            type: 'withdrawn', // This is a withdrawal
-        });
-
-        // Decrease the balance by the specified amount
-        doctor.balance -= amount;
-
-        // Save the updated doctor data
-        const updatedDoctor = await doctor.save();
-
-        // Return the updated profile data along with the balance history
-        res.json({ 
-            success: true, 
-            message: 'Balance updated', 
-            profileData: updatedDoctor,
-            balanceHistory: updatedDoctor.balanceHistory 
-        });
-
-    } catch (error) {
-        console.error(error);
-        res.status(500).json({ success: false, message: error.message });
+    // Check if the amount is valid
+    if (amount === undefined || amount <= 0) {
+      return res.status(400).json({ success: false, message: 'Invalid amount' });
     }
+
+    // Find the doctor by ID
+    const doctor = await doctorModel.findById(docId);
+
+    // If doctor is not found
+    if (!doctor) {
+      return res.status(404).json({ success: false, message: 'Doctor not found' });
+    }
+
+    // Record the withdrawal transaction (balanceHistory entry)
+    const balanceHistoryEntry = {
+      amount: amount,
+      type: 'withdrawn',  // This is a withdrawal
+      date: new Date()    // Record the current date
+    };
+
+    // Update balance and push the history entry
+    doctor.balance -= amount; // Decrease the balance by the specified amount
+    doctor.balanceHistory.push(balanceHistoryEntry); // Push to balanceHistory
+
+    // Save the updated doctor data
+    const updatedDoctor = await doctor.save();
+
+    // Return the updated profile data along with the balance history
+    res.json({
+      success: true,
+      message: 'Balance updated',
+      profileData: updatedDoctor,
+      balanceHistory: updatedDoctor.balanceHistory
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ success: false, message: error.message });
+  }
 };
+
 
 
 
