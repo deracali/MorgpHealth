@@ -320,26 +320,42 @@ const decrementDoctorBalance = async (req, res) => {
         const { amount } = req.body; 
         const { docId } = req.params;
 
+        // Check if the amount is valid
         if (amount === undefined || amount <= 0) {
             return res.status(400).json({ success: false, message: 'Invalid amount' });
         }
 
-        const updatedDoctor = await doctorModel.findByIdAndUpdate(
-            docId,
-            { $inc: { balance: -amount } }, 
-            { new: true } 
-        );
+        // Find the doctor by ID
+        const doctor = await doctorModel.findById(docId);
 
-        if (!updatedDoctor) {
+        // If doctor is not found
+        if (!doctor) {
             return res.status(404).json({ success: false, message: 'Doctor not found' });
         }
 
-        res.json({ success: true, message: 'Balance updated', profileData: updatedDoctor });
+        // Push the current balance to the balanceHistory array
+        doctor.balanceHistory.push(doctor.balance);
+
+        // Decrease the balance by the specified amount
+        doctor.balance -= amount;
+
+        // Save the updated doctor data
+        const updatedDoctor = await doctor.save();
+
+        // Return the updated profile data along with the balance history
+        res.json({ 
+            success: true, 
+            message: 'Balance updated', 
+            profileData: updatedDoctor,
+            balanceHistory: updatedDoctor.balanceHistory 
+        });
+
     } catch (error) {
         console.error(error);
         res.status(500).json({ success: false, message: error.message });
     }
 };
+
 
 const updateAppointment = async (req, res) => {
     try {
