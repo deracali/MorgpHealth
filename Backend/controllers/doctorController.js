@@ -147,24 +147,28 @@ const appointmentsDoctor = async (req,res) => {
 }
 
 const appointmentComplete = async (req, res) => {
-    try {
-        const { docId, appointmentId } = req.body;
+  try {
+    const { docId, appointmentId } = req.body;
 
-        const appointmentData = await appointmentModel.findById(appointmentId);
+    // Find the appointment data by ID
+    const appointmentData = await appointmentModel.findById(appointmentId);
 
-        if (!appointmentData) {
-            return res.json({ success: false, message: "Appointment not found" });
-        }
-
-        await appointmentModel.findByIdAndUpdate(appointmentId, { isCompleted: true });
-
-        return res.json({ success: true, message: 'Appointment completed' });
-    } catch (error) {
-        console.error(error);
-        return res.json({ success: false, message: error.message });
+    if (!appointmentData) {
+      return res.json({ success: false, message: "Appointment not found" });
     }
-};
 
+    // Update the appointment as completed and clear the status field
+    await appointmentModel.findByIdAndUpdate(appointmentId, {
+      isCompleted: true,
+      status: '',  // Clear the status field
+    });
+
+    return res.json({ success: true, message: 'Appointment completed and status cleared' });
+  } catch (error) {
+    console.error(error);
+    return res.json({ success: false, message: error.message });
+  }
+};
 const appointmentCancel = async (req, res) => {
   try {
     const { docId, appointmentId } = req.body;
