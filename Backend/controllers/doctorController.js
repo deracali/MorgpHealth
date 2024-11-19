@@ -352,8 +352,11 @@ const decrementDoctorBalance = async (req, res) => {
             return res.status(404).json({ success: false, message: 'Doctor not found' });
         }
 
-        // Push the current balance to the balanceHistory array
-        doctor.balanceHistory.push(doctor.balance);
+        // Record the withdrawal transaction
+        doctor.balanceHistory.push({
+            amount: amount,
+            type: 'withdrawn', // This is a withdrawal
+        });
 
         // Decrease the balance by the specified amount
         doctor.balance -= amount;
@@ -374,6 +377,7 @@ const decrementDoctorBalance = async (req, res) => {
         res.status(500).json({ success: false, message: error.message });
     }
 };
+
 
 
 const updateAppointment = async (req, res) => {
