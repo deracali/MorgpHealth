@@ -5,6 +5,8 @@ import userModel from '../models/userModel.js';
 import cloudinary from 'cloudinary';
 import doctorModel from "../models/doctorsModel.js";
 import appointmentModel from "../models/appointmentModel.js";
+import Notification from "../models/notificationModel.js";
+
 
 // Access the 'vs' property if it exists on the cloudinary object
 const { vs } = cloudinary;
@@ -179,71 +181,86 @@ const updateProfileMobile = async (req, res) => {
   }
 };
 
-const bookAppointment = async (req, res) => {
-    try {
-        const { userId, docId, slotDate, slotTime } = req.body;
+ const bookAppointment = async (req, res) => {
+  try {
+    const { userId, docId, slotDate, slotTime } = req.body;
 
-        // Fetch doctor data, excluding password field
-        const docData = await doctorModel.findById(docId).select('-password');
-        if (!docData) {
-            return res.json({ success: false, message: "Doctor not found" });
-        }
-
-        if (!docData.available) {
-            return res.json({ success: false, message: "Doctor not available" });
-        }
-
-        // Ensure `slots_booked` exists in doctor data
-        let slots_booked = docData.slots_booked || {};
-
-        // Check if the specific date is already booked
-        if (slots_booked[slotDate]) {
-            if (slots_booked[slotDate].includes(slotTime)) {
-                return res.json({ success: false, message: "Slot not available" });
-            } else {
-                slots_booked[slotDate].push(slotTime); // Add slot to the existing array
-            }
-        } else {
-            slots_booked[slotDate] = [slotTime]; // Initialize the array with the new slot
-        }
-
-        // Fetch user data, excluding password field
-        const userData = await userModel.findById(userId).select('-password');
-        if (!userData) {
-            return res.json({ success: false, message: "User not found" });
-        }
-
-        // Remove `slots_booked` from docData as it's not needed in the appointment
-        delete docData.slots_booked;
-
-        // Prepare appointment data
-        const appointmentData = {
-            userId,
-            docId,
-            userData,
-            docData,
-            amount: docData.fees,
-            slotTime,
-            slotDate,
-            data: Date.now() // Use `Date.now()` for timestamp
-        };
-
-        // Create a new appointment
-        const newAppointment = new appointmentModel(appointmentData);
-
-        // Save new appointment to the database
-        await newAppointment.save();
-
-        // Update the doctor's available slots in the database
-        await doctorModel.findByIdAndUpdate(docId, { slots_booked });
-
-        // Respond with success
-        res.json({ success: true, message: "Appointment Booked", appointment: appointmentData });
-
-    } catch (error) {
-        console.error("Error occurred while booking appointment:", error);
-        res.status(500).json({ success: false, message: "Something went wrong. Please try again later." });
+    // Fetch doctor data, excluding password field
+    const docData = await doctorModel.findById(docId).select("-password");
+    if (!docData) {
+      return res.json({ success: false, message: "Doctor not found" });
     }
+
+    if (!docData.available) {
+      return res.json({ success: false, message: "Doctor not available" });
+    }
+
+    // Ensure `slots_booked` exists in doctor data
+    let slots_booked = docData.slots_booked || {};
+
+    // Check if the specific date is already booked
+    if (slots_booked[slotDate]) {
+      if (slots_booked[slotDate].includes(slotTime)) {
+        return res.json({ success: false, message: "Slot not available" });
+      } else {
+        slots_booked[slotDate].push(slotTime); // Add slot to the existing array
+      }
+    } else {
+      slots_booked[slotDate] = [slotTime]; // Initialize the array with the new slot
+    }
+
+    // Fetch user data, excluding password field
+    const userData = await userModel.findById(userId).select("-password");
+    if (!userData) {
+      return res.json({ success: false, message: "User not found" });
+    }
+
+    // Prepare appointment data
+    const appointmentData = {
+      userId,
+      docId,
+      userData,
+      docData,
+      amount: docData.fees,
+      slotTime,
+      slotDate,
+      data: Date.now(),
+    };
+
+    // Create a new appointment
+    const newAppointment = new appointmentModel(appointmentData);
+
+    // Save new appointment to the database
+    await newAppointment.save();
+
+    // Update the doctor's available slots in the database
+    await doctorModel.findByIdAndUpdate(docId, { slots_booked });
+
+    // Create notifications
+    await Notification.create({
+      recipientId: userId,
+      recipientType: "User",
+      title: "Appointment Confirmed",
+      message: `Your appointment with Dr. ${docData.name} is confirmed for ${slotDate} at ${slotTime}.`,
+    });
+
+    await Notification.create({
+      recipientId: docId,
+      recipientType: "Doctor",
+      title: "New Appointment",
+      message: `${userData.name} has booked an appointment for ${slotDate} at ${slotTime}.`,
+    });
+
+    // Respond with success
+    res.json({ 
+      success: true, 
+      message: "Appointment Booked", 
+      appointment: appointmentData 
+    });
+  } catch (error) {
+    console.error("Error occurred while booking appointment:", error.message);
+    res.status(500).json({ success: false, message: "Something went wrong. Please try again later." });
+  }
 };
 
 const listAppointment = async (req, res) => {
