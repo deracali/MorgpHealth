@@ -1,6 +1,7 @@
 import appointmentModel from '../models/appointmentModel.js'
 import doctorModel from '../models/doctorsModel.js'
 import userModel from '../models/userModel.js';
+import mongoose from 'mongoose';
 import bcrypt from 'bcrypt'
 import jwt from 'jsonwebtoken'
 import cloudinary from 'cloudinary';
