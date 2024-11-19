@@ -259,27 +259,21 @@ const updateDoctorProfile = async (req, res) => {
     if (available !== undefined) updateFields.available = available;
     if (docAddress !== undefined) updateFields.docAddress = docAddress;
 
-    // Update balance if provided
+    // Handle balance update if provided
     if (balance !== undefined) {
-      // Find the doctor by ID before updating
-      const doctor = await doctorModel.findById(docId);
+      // Determine if the balance is being added or withdrawn
+      const balanceChangeType = balance > 0 ? 'added' : 'withdrawn'; // Positive balance is added, negative is withdrawn
 
-      if (!doctor) {
-        return res.status(404).json({ success: false, message: "Doctor not found" });
-      }
+      // Create balance history entry
+      const balanceHistoryEntry = {
+        amount: Math.abs(balance),  // Ensure the amount is positive for historical records
+        type: balanceChangeType,    // 'added' or 'withdrawn'
+        date: new Date()            // Record the current date
+      };
 
-      // Record the transaction in the balanceHistory (whether it's an addition or withdrawal)
-      const balanceChangeType = balance > 0 ? 'added' : 'withdrawn'; // Positive balance is an addition, negative is a withdrawal
-
-      // Push the balance change into the balanceHistory array
-      doctor.balanceHistory.push({
-        amount: Math.abs(balance), // Store the absolute value of the balance change
-        type: balanceChangeType,   // 'added' for positive balance, 'withdrawn' for negative balance
-        date: new Date()           // Record the date of the change (optional)
-      });
-
-      // Update the balance using $inc operator to adjust the balance
-      updateFields.$inc = { balance: balance };
+      // Update balance using $inc and push the history entry
+      updateFields.$inc = { balance: balance };  // Update the balance
+      updateFields.$push = { balanceHistory: balanceHistoryEntry };  // Push to balanceHistory
     }
 
     // Perform the update using the docId
@@ -294,12 +288,12 @@ const updateDoctorProfile = async (req, res) => {
       return res.status(404).json({ success: false, message: "Doctor not found" });
     }
 
-    // Return the updated profile data along with the balance history
+    // Return the updated profile data along with balance history
     res.json({
       success: true,
       message: "Profile updated",
       profileData: updatedDoctor,
-      balanceHistory: updatedDoctor.balanceHistory // Include balance history in the response
+      balanceHistory: updatedDoctor.balanceHistory
     });
   } catch (error) {
     console.error("Error updating profile:", error);
