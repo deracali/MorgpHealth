@@ -25,7 +25,11 @@ const doctorSchema = new mongoose.Schema({
     available: { type: Boolean, default: true },
    timer: { type: Boolean, default: true },
     fees: { type: Number }, // Optional field
-    balance: { type: Number, default: 0 }, // Optional field
+   const doctorSchema = new mongoose.Schema({
+  // other fields
+  balance: { type: Number, default: 0 },
+  balanceHistory: { type: [Number], default: [] },  // Array to store previous balances
+});
     address: { type: Object }, // Optional field
     docaddress: { type: String },
     slots_booked: { type: Object }, // Optional field
