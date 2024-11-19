@@ -5,15 +5,15 @@ import {
   markNotificationAsRead,
 } from "../controllers/notificationController.js";
 
-const NotificationRouter = express.Router();
+const notificationRouter = express.Router();
 
 // Create a notification
-NotificationRouter.post("/create", createNotification);
+notificationRoute.post("/create", createNotification);
 
 // Get notifications for a recipient
-NotificationRouter.get("/:recipientId/:recipientType", getNotifications);
+notificationRoute.get("/:recipientId/:recipientType", getNotifications);
 
 // Mark a notification as read
-NotificationRouter.put("/read/:notificationId", markNotificationAsRead);
+notificationRoute.put("/read/:notificationId", markNotificationAsRead);
 
-export default NotificationRouter;
+export default notificationRoute;
