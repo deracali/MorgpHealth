@@ -146,6 +146,8 @@ const appointmentsDoctor = async (req,res) => {
     }
 }
 
+const Notification = require('../models/Notification');  // Assuming Notification model is available
+
 const appointmentComplete = async (req, res) => {
   try {
     const { docId, appointmentId } = req.body;
@@ -163,12 +165,35 @@ const appointmentComplete = async (req, res) => {
       status: '',  // Clear the status field
     });
 
-    return res.json({ success: true, message: 'Appointment completed and status cleared' });
+    // Fetch the user associated with the appointment
+    const userData = await userModel.findById(appointmentData.userId);
+
+    if (!userData) {
+      return res.json({ success: false, message: "User not found" });
+    }
+
+    // Create a notification for the user about the completed appointment
+    const newNotification = new Notification({
+      recipientId: userData._id,
+      recipientType: "User",  // This is a user notification
+      title: 'Appointment Completed',
+      message: `Your appointment with Dr. ${appointmentData.doctorName} has been completed successfully.`,
+      read: false,  // Notification is unread by default
+    });
+
+    // Save the notification
+    await newNotification.save();
+
+    // Respond with success
+    res.json({ success: true, message: 'Appointment completed and status cleared. Notification sent to user.' });
   } catch (error) {
-    console.error(error);
-    return res.json({ success: false, message: error.message });
+    console.error("Error in completing appointment:", error);
+    res.status(500).json({ success: false, message: error.message });
   }
 };
+
+
+
 const appointmentCancel = async (req, res) => {
   try {
     const { docId, appointmentId } = req.body;
