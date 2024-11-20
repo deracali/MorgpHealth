@@ -224,6 +224,8 @@ const updateProfileMobile = async (req, res) => {
       amount: docData.fees,
       slotTime,
       slotDate,
+      concern,
+      description,
       data: Date.now(),
     };
 
