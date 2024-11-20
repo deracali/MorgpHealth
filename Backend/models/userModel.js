@@ -11,6 +11,14 @@ const userSchema = new mongoose.Schema({
     gender: {type: String, default:"Not Selected"},
     insured: { type: Boolean, default: false },
     timer: { type: Boolean, default:true },
+     passwordResetOtp: {
+    type: String, // OTP will be a string (it can contain numbers, but we store it as a string for simplicity)
+    required: false, // Optional initially, as it will be set after a user requests to reset password
+  },
+  otpExpiration: {
+    type: Date, // Expiration time for OTP, which is a date value
+    required: false, // Optional initially, as it will be set when OTP is generated
+  },
 },{minimize:false})
 
 const userModel = mongoose.models.user || mongoose.model('user', userSchema)
