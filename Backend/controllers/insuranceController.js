@@ -29,9 +29,15 @@ const addInsurance = async (req, res) => {
             totalPrice,
             type,
             cover,
-            policyTerm
+            policyTerm,
+            self, // Coming from the body
+            spouse, // Coming from the body
+            child, // Coming from the body
+            mother, // Coming from the body
+            father // Coming from the body
         } = req.body;
 
+        // Prepare the insurance data to be saved
         const insuranceData = {
             name,
             userId,
@@ -50,20 +56,30 @@ const addInsurance = async (req, res) => {
             price,
             value,
             price2,
-            insured: insured || false,
+            insured: insured || false, // Defaulting to false if not provided
             plan,
             planType,
             planPrice,
-            addOns: addOns || [],
+            addOns: addOns || [], // Defaulting to empty array if not provided
             totalPrice,
             type,
             cover,
-            policyTerm
+            policyTerm,
+            // Use the values provided in the body for self, spouse, child, mother, and father
+            self,
+            spouse,
+            child,
+            mother,
+            father
         };
 
+        // Create a new insurance document using the insurance data
         const newInsurance = new insuranceModel(insuranceData);
+
+        // Save the document to the database
         await newInsurance.save();
 
+        // Respond with a success message
         res.json({ success: true, message: "Insurance Added" });
     } catch (error) {
         console.log(error);
