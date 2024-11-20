@@ -1,6 +1,6 @@
 import express from 'express'
 import { appointmentCancel,updateStatus,getReviews,addReview,unlikeDoctor,likeDoctor,updateDoctorAvailability,appointmentComplete, appointmentsDoctor, decrementDoctorBalance, doctorDashboard, doctorFilter, doctorFilterController, doctorList,doctorProfile,loginDoctor, updateAppointment, updateDoctorProfile } from '../controllers/doctorController.js'
-
+import {forgetPassword, verifyOtp,resetPassword} from '../controllers/docForgetpassword.js'
 
 const doctorRouter = express.Router()
 
