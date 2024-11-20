@@ -431,36 +431,22 @@ const updateAppointment = async (req, res) => {
             slotTime,
             amount,
             cancelled,
-            payment,
-            testResult,
-            hospitalName,
-            labTestName,
-            labTestResult,
-            labTestDate,
-            labTestDetails,
+            paymentSuccessful,
+            hospitalName2,
+            investigations,
+            notes,
+            diagnosis,
             age,
-            gender,
-            region,
-            drugName1,
-            dosage1,
-            frequency1,
-            period1,
-            drugName2,
-            dosage2,
-            frequency2,
-            period2,
-            drugName3,
-            dosage3,
-            frequency3,
-            period3,
-            drugName4,
-            dosage4,
-            frequency4,
-            period4,
+            sex,
+            meetingStart,
+            meetingEnd,
+            meetingDuration,
+            callDuration,
+            isCompleted,
             timer,
-            meetingStart,   // New field for meeting start time
-            meetingEnd,     // New field for meeting end time
-            meetingDuration // New field for meeting duration
+            status,
+            medicines,
+            hospitalName1,
         } = req.body;
 
         const currentAppointment = await appointmentModel.findById(appointmentId);
@@ -477,38 +463,22 @@ const updateAppointment = async (req, res) => {
         if (slotTime !== undefined) updateData.slotTime = slotTime;
         if (amount !== undefined) updateData.amount = amount;
         if (cancelled !== undefined) updateData.cancelled = cancelled;
-        if (payment !== undefined) updateData.payment = payment;
-        if (testResult !== undefined) updateData.testResult = testResult;
-        if (hospitalName !== undefined) updateData.hospitalName = hospitalName;
-        if (labTestName !== undefined) updateData.labTestName = labTestName;
-        if (labTestResult !== undefined) updateData.labTestResult = labTestResult;
-        if (labTestDate !== undefined) updateData.labTestDate = labTestDate;
-        if (labTestDetails !== undefined) updateData.labTestDetails = labTestDetails;
+        if (paymentSuccessful !== undefined) updateData.paymentSuccessful = paymentSuccessful;
+        if (hospitalName2 !== undefined) updateData.hospitalName2 = hospitalName2;
+        if (investigations !== undefined) updateData.investigations = investigations;
+        if (notes !== undefined) updateData.notes = notes;
+        if (diagnosis !== undefined) updateData.diagnosis = diagnosis;
         if (age !== undefined) updateData.age = age;
-        if (timer !== undefined) updateData.timer = timer;
-        if (gender !== undefined) updateData.gender = gender;
-        if (region !== undefined) updateData.region = region;
-        if (drugName1 !== undefined) updateData.drugName1 = drugName1;
-        if (dosage1 !== undefined) updateData.dosage1 = dosage1;
-        if (frequency1 !== undefined) updateData.frequency1 = frequency1;
-        if (period1 !== undefined) updateData.period1 = period1;
-        if (drugName2 !== undefined) updateData.drugName2 = drugName2;
-        if (dosage2 !== undefined) updateData.dosage2 = dosage2;
-        if (frequency2 !== undefined) updateData.frequency2 = frequency2;
-        if (period2 !== undefined) updateData.period2 = period2;
-        if (drugName3 !== undefined) updateData.drugName3 = drugName3;
-        if (dosage3 !== undefined) updateData.dosage3 = dosage3;
-        if (frequency3 !== undefined) updateData.frequency3 = frequency3;
-        if (period3 !== undefined) updateData.period3 = period3;
-        if (drugName4 !== undefined) updateData.drugName4 = drugName4;
-        if (dosage4 !== undefined) updateData.dosage4 = dosage4;
-        if (frequency4 !== undefined) updateData.frequency4 = frequency4;
-        if (period4 !== undefined) updateData.period4 = period4;
-        
-        // Add new meeting-related fields if they are present in the request
+        if (sex !== undefined) updateData.sex = sex;
         if (meetingStart !== undefined) updateData.meetingStart = meetingStart;
         if (meetingEnd !== undefined) updateData.meetingEnd = meetingEnd;
         if (meetingDuration !== undefined) updateData.meetingDuration = meetingDuration;
+        if (callDuration !== undefined) updateData.callDuration = callDuration;
+        if (isCompleted !== undefined) updateData.isCompleted = isCompleted;
+        if (timer !== undefined) updateData.timer = timer;
+        if (status !== undefined) updateData.status = status;
+        if (medicines !== undefined) updateData.medicines = medicines;
+        if (hospitalName1 !== undefined) updateData.hospitalName1 = hospitalName1;
 
         const updatedAppointment = await appointmentModel.findByIdAndUpdate(appointmentId, updateData, { new: true });
 
