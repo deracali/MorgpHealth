@@ -20,6 +20,6 @@ userRouter.get('/api/appointments/:appointmentId', getAppointmentById);
 userRouter.post('/forget-password', forgetPassword);
 userRouter.post('/reset-password', resetPassword);
 userRouter.post('/verify-otp',  verifyOtp);
-
+userRouter.post("/create", createNotification);
 
 export default userRouter
