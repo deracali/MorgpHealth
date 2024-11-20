@@ -7,7 +7,7 @@ import {
 const notificationRouter = express.Router();
 
 // Create a notification
-notificationRouter.post("/create", createNotification);
+notificationRouter.post("/create/noti", createNotification);
 
 // Get notifications for a recipient
 notificationRouter.get("/:recipientId/:recipientType", fetchNotifications);
