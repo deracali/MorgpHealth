@@ -39,14 +39,14 @@ const stripe = Stripe(process.env.STRIPE_SECRET_KEY);
 // Create a payment intent endpoint
 app.post('/create-payment-intent', async (req, res) => {
   try {
-    const { amount, email, name } = req.body; // Amount, email, and name
+    const { amount, email, metadata } = req.body; // Amount, email, and name
 
     // Create a payment intent with the specified amount
     const paymentIntent = await stripe.paymentIntents.create({
       amount,
       currency: 'usd', // You can change this to your desired currency
       receipt_email: email, // Attach user email for the receipt
-      metadata: name , // Optional: add user name as metadata
+      metadata, // Optional: add user name as metadata
     });
 
     res.send({
