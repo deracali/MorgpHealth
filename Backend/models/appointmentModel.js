@@ -15,7 +15,6 @@ const appointmentSchema = new mongoose.Schema({
     paymentSuccessful: { type: Boolean, required: false },
   hospitalName2: {
     type: String,
-    required: true,
   },
   investigations: [
     {
