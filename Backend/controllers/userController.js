@@ -339,7 +339,7 @@ const getAppointmentById = async (req, res) => {
 
     if (timeDifference <= 15 * 60 * 1000 && timeDifference > 0) { // 15 minutes before the appointment
       // Send a notification to the user that the appointment is approaching
-      const newNotification = new notificationModel({
+      const newNotification = new Notification({
         recipientId: appointment.userId,  // Assuming userId is stored in the appointment
         recipientType: "User",
         title: "Upcoming Appointment",
