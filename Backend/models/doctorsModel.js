@@ -90,6 +90,7 @@ const doctorSchema = new mongoose.Schema({
   otpExpiration: {
     type: Date, // Expiration time for OTP, which is a date value
     required: false, // Optional initially, as it will be set when OTP is generated
+  }
 }, { minimize: false });
 
 const doctorModel = mongoose.models.doctor || mongoose.model('doctor', doctorSchema);
