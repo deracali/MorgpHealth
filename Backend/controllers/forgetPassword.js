@@ -13,7 +13,7 @@ const sendOtpEmail = async (email, otp) => {
     service: 'gmail', // Use your email service provider
     auth: {
       user: 'chideracalistus1999@gmail.com', // Replace with a valid email
-      pass: 'INCORRECT', // Replace with your email password or app password
+      pass: 'mpbozidepcttbtsu', // Replace with your email password or app password
     },
   });
 
