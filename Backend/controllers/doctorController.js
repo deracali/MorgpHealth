@@ -165,38 +165,17 @@ const appointmentComplete = async (req, res) => {
       status: '',  // Clear the status field
     });
 
-    // Fetch the user associated with the appointment
-    const userData = await userModel.findById(appointmentData.userId);
-
-    if (!userData) {
-      return res.json({ success: false, message: "User not found" });
-    }
-
-    // Create a notification for the user about the completed appointment
-    const newNotification = new Notification({
-      recipientId: userData._id,
-      recipientType: "User",  // This is a user notification
-      title: 'Appointment Completed',
-      message: `Your appointment with Dr. ${appointmentData.doctorName} has been completed successfully.`,
-      read: false,  // Notification is unread by default
-    });
-
-    // Save the notification
-    await newNotification.save();
-
-    // Respond with success
-    res.json({ success: true, message: 'Appointment completed and status cleared. Notification sent to user.' });
+    return res.json({ success: true, message: 'Appointment completed and status cleared' });
   } catch (error) {
-    console.error("Error in completing appointment:", error);
-    res.status(500).json({ success: false, message: error.message });
+    console.error(error);
+    return res.json({ success: false, message: error.message });
   }
 };
 
 
-
-const appointmentCancel = async (req, res) => {
+ const appointmentCancel = async (req, res) => {
   try {
-    const { docId, appointmentId, userId } = req.body;  // Make sure userId is passed in the request body.
+    const { docId, appointmentId } = req.body;
 
     const appointmentData = await appointmentModel.findById(appointmentId);
 
@@ -210,19 +189,7 @@ const appointmentCancel = async (req, res) => {
       status: '',  // Clear the status field
     });
 
-    // Create a new notification for the user
-    const newNotification = new notificationModel({
-      recipientId: userId,  // User receiving the notification
-      recipientType: "User",  // The recipient type is "User"
-      title: "Appointment Cancelled",
-      message: `Your appointment with Doctor ${appointmentData.docData.name} has been cancelled.`,
-      read: false,  // Mark as unread by default
-    });
-
-    // Save the notification to the database
-    await newNotification.save();
-
-    return res.json({ success: true, message: 'Appointment cancelled, notification sent to user.' });
+    return res.json({ success: true, message: 'Appointment cancelled and status cleared' });
   } catch (error) {
     console.error(error);
     return res.json({ success: false, message: error.message });
