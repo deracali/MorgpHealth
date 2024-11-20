@@ -16,7 +16,7 @@ import { initializeWebSocket } from './websocket.js';
 import videoRouter from './routes/videoRoute.js';
 import staffRouter from './routes/staffRoute.js';
 import blogRouter from './routes/blogRoute.js';
-import notificationRoute from "./routes/notificationRoute.js";
+import  notificationRouter from "./routes/notificationRoute.js";
 import Stripe from 'stripe';
 
 const app = express();
@@ -88,7 +88,7 @@ app.use('/api/chat', chatRoute);
 app.use('/api/videos', videoRouter);
 app.use('/api/staff', staffRouter);
 app.use('/api/blogs', blogRouter);
-app.use("/api/notifications", notificationRoute);
+app.use("/api/notifications", notificationRouter);
 
 app.get('/', (req, res) => {
     res.send('API WORKING');
