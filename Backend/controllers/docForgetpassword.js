@@ -1,6 +1,6 @@
 import bcrypt from 'bcrypt'
 import nodemailer from 'nodemailer';
-import doctorModel from '../models/doctorModel.js';
+import doctorModel from '../models/doctorsModel.js'
 
 // Generate OTP (4-digit OTP)
 const generateOtp = () => (
