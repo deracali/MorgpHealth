@@ -1,8 +1,7 @@
 import express from "express";
 import {
   createNotification,
-  getNotifications,
-  markNotificationAsRead,
+  fetchNotifications
 } from "../controllers/notificationController.js";
 
 const notificationRouter = express.Router();
