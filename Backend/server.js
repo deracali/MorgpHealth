@@ -17,7 +17,7 @@ import videoRouter from './routes/videoRoute.js';
 import staffRouter from './routes/staffRoute.js';
 import blogRouter from './routes/blogRoute.js';
 import notificationRoute from "./routes/notificationRoute.js";
-
+import Stripe from 'stripe';
 
 const app = express();
 const port = process.env.PORT || 4000;
@@ -30,6 +30,53 @@ app.use(cors({
     methods: ['GET', 'POST'],
      allowedHeaders: ['Content-Type', 'Authorization', 'token', 'dtoken', 'atoken'], 
   }));
+
+
+// Initialize Stripe with the secret key from .env file
+const stripe = Stripe(process.env.STRIPE_SECRET_KEY);
+
+
+// Create a payment intent endpoint
+app.post('/create-payment-intent', async (req, res) => {
+  try {
+    const { amount, appointmentId } = req.body; // Amount should be a normal number, not cents
+    
+    // Create a payment intent with the specified amount
+    const paymentIntent = await stripe.paymentIntents.create({
+      amount: amount * 100, // Stripe requires the amount in cents, so multiply by 100
+      currency: 'usd', // You can change this to your desired currency
+    });
+
+    // Respond with the client secret for the payment intent
+    res.send({
+      clientSecret: paymentIntent.client_secret,
+    });
+
+    // The frontend will confirm the payment using this client secret
+  } catch (error) {
+    console.error('Error creating payment intent:', error);
+    res.status(500).send('Internal Server Error');
+  }
+});
+
+// Update appointment status endpoint (for successful payment)
+app.post('/update-payment-status', async (req, res) => {
+  const { appointmentId, paymentSuccessful } = req.body;
+
+  try {
+    const response = await fetch(`https://morgphealth.onrender.com/update-appointment/${appointmentId}`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ paymentSuccessful }),
+    });
+
+    const data = await response.json();
+    res.status(200).json(data);
+  } catch (error) {
+    console.error('Error updating appointment:', error);
+    res.status(500).json({ error: 'Failed to update payment status' });
+  }
+});
 
 // Define your routes
 app.use('/api/admin', adminRouter);
