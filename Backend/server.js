@@ -46,7 +46,7 @@ app.post('/create-payment-intent', async (req, res) => {
       amount,
       currency: 'usd', // You can change this to your desired currency
       receipt_email: email, // Attach user email for the receipt
-      metadata: { name }, // Optional: add user name as metadata
+      metadata: name , // Optional: add user name as metadata
     });
 
     res.send({
