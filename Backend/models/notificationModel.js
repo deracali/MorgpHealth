@@ -20,10 +20,6 @@ const notificationSchema = new mongoose.Schema(
       type: Boolean,
       default: false, // Track if the notification has been read
     },
-    timestamp: {
-      type: Date,
-      default: Date.now, // Automatically set the timestamp
-    },
   },
   { timestamps: true } // Automatically manage `createdAt` and `updatedAt`
 );
