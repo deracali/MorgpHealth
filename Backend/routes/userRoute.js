@@ -3,6 +3,9 @@ import { bookAppointment,getAppointmentById,cancelAppointment, getProfile,update
 import authUser from '../middlewares/authUser.js'
 import upload from '../middlewares/multer.js'
 import {forgetPassword, verifyOtp,resetPassword} from '../controllers/forgetPassword.js'
+import {
+  createNotification
+} from "../controllers/notificationController.js";
 
 const userRouter = express.Router()
 
