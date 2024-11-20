@@ -58,4 +58,27 @@ const fetchNotifications = async (req, res) => {
   }
 };
 
-export {fetchNotifications,createNotification}
+
+const updateReadStatus = async (req, res) => {
+  const { notificationId } = req.params;  // Get notificationId from the URL parameter
+
+  try {
+    // Find the notification by its ID and update the `read` field to `true`
+    const updatedNotification = await Notification.findByIdAndUpdate(
+      notificationId, 
+      { read: true }, // Set the read field to true
+      { new: true } // Return the updated notification
+    );
+
+    if (!updatedNotification) {
+      return res.status(404).json({ message: 'Notification not found' });
+    }
+
+    return res.status(200).json({ message: 'Notification marked as read', notification: updatedNotification });
+  } catch (error) {
+    console.error('Error updating notification read status:', error);
+    return res.status(500).json({ message: 'Server error', error: error.message });
+  }
+};
+
+export {fetchNotifications,createNotification,updateReadStatus}
