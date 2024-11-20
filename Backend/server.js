@@ -39,20 +39,19 @@ const stripe = Stripe(process.env.STRIPE_SECRET_KEY);
 // Create a payment intent endpoint
 app.post('/create-payment-intent', async (req, res) => {
   try {
-    const { amount, appointmentId } = req.body; // Amount should be a normal number, not cents
-    
+    const { amount, email, name } = req.body; // Amount, email, and name
+
     // Create a payment intent with the specified amount
     const paymentIntent = await stripe.paymentIntents.create({
-      amount: amount * 100, // Stripe requires the amount in cents, so multiply by 100
+      amount,
       currency: 'usd', // You can change this to your desired currency
+      receipt_email: email, // Attach user email for the receipt
+      metadata: { name }, // Optional: add user name as metadata
     });
 
-    // Respond with the client secret for the payment intent
     res.send({
       clientSecret: paymentIntent.client_secret,
     });
-
-    // The frontend will confirm the payment using this client secret
   } catch (error) {
     console.error('Error creating payment intent:', error);
     res.status(500).send('Internal Server Error');
