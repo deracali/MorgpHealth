@@ -22,6 +22,8 @@ doctorRouter.put('/doctors/:doctorId/availability', updateDoctorAvailability);
 doctorRouter.put('/update-status/:appointmentId', updateStatus);
 doctorRouter.get('/doctor/:doctorId/reviews', getReviews);
 doctorRouter.post('/doctor/:doctorId/review', addReview);
-
+doctorRouter.post('/forget-password', forgetPassword);
+doctorRouter.post('/reset-password', resetPassword);
+doctorRouter.post('/verify-otp',  verifyOtp);
 
 export default doctorRouter
