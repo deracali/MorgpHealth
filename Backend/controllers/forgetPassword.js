@@ -1,4 +1,4 @@
-import bcrypt from 'bcryptjs';
+import bcrypt from 'bcrypt'
 import nodemailer from 'nodemailer';
 import userModel from '../models/userModel.js';
 
