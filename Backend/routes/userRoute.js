@@ -16,6 +16,8 @@ userRouter.post('/book-appointment',bookAppointment)
 userRouter.get('/appointments/:userId',listAppointment)
 userRouter.post('/cancel-appointment',cancelAppointment)
 userRouter.get('/api/appointments/:appointmentId', getAppointmentById);
+userRouter.post('/forget-password', forgetPassword);
+userRouter.post('/reset-password', resetPassword);
 
 
 export default userRouter
