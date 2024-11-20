@@ -158,7 +158,7 @@ const verifyOtp = async (req, res) => {
 
 // Stage 3: Reset Password
 const resetPassword = async (req, res) => {
-  const { email, otp, newPassword } = req.body;
+  const { email, newPassword } = req.body; // Only email and new password are required now
 
   try {
     // Find user by email
@@ -167,23 +167,11 @@ const resetPassword = async (req, res) => {
       return res.status(404).json({ message: 'User not found' });
     }
 
-    // Verify OTP
-    if (user.passwordResetOtp !== otp) {
-      return res.status(400).json({ message: 'Invalid OTP' });
-    }
-
-    // Check if OTP has expired
-    if (user.otpExpiration < Date.now()) {
-      return res.status(400).json({ message: 'OTP has expired' });
-    }
-
     // Hash the new password
     const hashedPassword = await bcrypt.hash(newPassword, 12);
 
-    // Update password
+    // Update the password
     user.password = hashedPassword;
-    user.passwordResetOtp = undefined; // Clear OTP
-    user.otpExpiration = undefined; // Clear OTP expiration
     await user.save();
 
     res.status(200).json({ message: 'Password reset successful' });
