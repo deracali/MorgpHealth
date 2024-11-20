@@ -5,7 +5,8 @@ import upload from '../middlewares/multer.js'
 import {forgetPassword, verifyOtp,resetPassword} from '../controllers/forgetPassword.js'
 import {
   createNotification,
-  fetchNotifications
+  fetchNotifications,
+  updateReadStatus
 } from "../controllers/notificationController.js";
 
 const userRouter = express.Router()
@@ -26,5 +27,7 @@ userRouter.post('/reset-password', resetPassword);
 userRouter.post('/verify-otp',  verifyOtp);
 userRouter.post("/create", createNotification);
 userRouter.get("/:recipientId/:recipientType", fetchNotifications);
+userRouter.put('/notifications/:notificationId/read',updateReadStatus);
+
 
 export default userRouter
