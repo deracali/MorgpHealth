@@ -4,7 +4,7 @@ import {
   fetchNotifications
 } from "../controllers/notificationController.js";
 
-const notificationRouter = express.Router();
+const notificationRoute = express.Router();
 
 // Create a notification
 notificationRoute.post("/create", createNotification);
