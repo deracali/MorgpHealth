@@ -2,7 +2,7 @@ import React, { useContext, useEffect, useState } from 'react';
 import { DoctorContext } from '../../context/DoctorContext';
 import { assets } from '../../assets/assets_admin/assets';
 import { AppContext } from '../../context/AppContext';
-import { useParams } from 'react-router-dom';
+import { Link, useParams } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import axios from 'axios';
 import io from 'socket.io-client'; // Import Socket.IO client
@@ -260,7 +260,7 @@ export default function DoctorDashboard() {
                         <div className='flex items-center px-6 py-3 gap-3 hover:bg-gray-100' key={index}>
                             <img className='rounded-full w-10' src={item.userData.image} alt='' />
                             <div className='flex-1 text-sm'>
-                                <p className='text-gray-800 font-medium'>{item.userData.name}</p>
+                                <Link to={`/session/${item._id}`}  className='text-gray-800 font-medium'>{item.userData.name}</Link>
                                 <p className='text-gray-600'>{slotDateFormat(item.slotDate)}</p>
                             </div>
                             {item.cancelled
@@ -338,7 +338,7 @@ export default function DoctorDashboard() {
       </div>
     </div>
   ))}
-</div>s
+</div>
                     <div className='chat-input flex mt-2'>
                         <input
                             type='text'

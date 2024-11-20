@@ -2,7 +2,7 @@ import React, { useContext, useEffect, useState } from 'react';
 import { DoctorContext } from '../../context/DoctorContext';
 import { AppContext } from '../../context/AppContext';
 import { assets } from '../../assets/assets_admin/assets';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, Link } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import axios from 'axios';
 
@@ -95,7 +95,7 @@ export default function DoctorAppointment() {
                         <p className='max-sm:hidden'>{index + 1}</p>
                         <div className='flex items-center gap-2'>
                             <img className="w-8 rounded-full" src={item.userData.image} alt={item.userData.name} />
-                            <p className='text-xs inline border border-primary px-2 rounded-full'>{item.userData.name}</p>
+                            <Link  to={`/session/${item._id}`} className='text-xs inline border border-primary px-2 rounded-full'>{item.userData.name}</Link>
                         </div>
                         <p>{!item.payment ? "ONLINE" : "CASH"}</p>
                         <p>{calculateAge(item.userData.dob)}</p>
