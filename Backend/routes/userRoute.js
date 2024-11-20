@@ -2,7 +2,7 @@ import express from 'express'
 import { bookAppointment,getAppointmentById,cancelAppointment, getProfile,updateProfileMobile, getProfileId, listAppointment, loginUser, registerUser, updateProfile } from '../controllers/userController.js'
 import authUser from '../middlewares/authUser.js'
 import upload from '../middlewares/multer.js'
-import {forgetPassword, verifyOtp,resetPassword} from '../controllers/forgetPasssword.js'
+import {forgetPassword, verifyOtp,resetPassword} from '../controllers/forgetPassword.js'
 
 const userRouter = express.Router()
 
