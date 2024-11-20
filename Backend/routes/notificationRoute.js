@@ -10,9 +10,9 @@ const notificationRoute = express.Router();
 notificationRoute.post("/create", createNotification);
 
 // Get notifications for a recipient
-notificationRoute.get("/:recipientId/:recipientType", getNotifications);
+notificationRoute.get("/:recipientId/:recipientType", fetchNotifications);
 
 // Mark a notification as read
-notificationRoute.put("/read/:notificationId", markNotificationAsRead);
+// notificationRoute.put("/read/:notificationId", markNotificationAsRead);
 
 export default notificationRoute;
