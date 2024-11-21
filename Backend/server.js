@@ -36,25 +36,37 @@ app.use(cors({
 const stripe = Stripe(process.env.STRIPE_SECRET_KEY);
 
 
-// Create a payment intent endpoint
-app.post('/create-payment-intent', async (req, res) => {
+app.post("/payment-sheet", async (req, res) => {
   try {
-    const { amount, email, metadata } = req.body; // Amount, email, and name
+      const amount = req.body.amount
+    // Step 1: Create a new customer or use an existing one
+    const customer = await stripe.customers.create();
 
-    // Create a payment intent with the specified amount
+    // Step 2: Create an ephemeral key for the customer
+    const ephemeralKey = await stripe.ephemeralKeys.create(
+      { customer: customer.id },
+      { apiVersion: "2020-08-27" } // Use the Stripe API version
+    );
+
+    // Step 3: Create a payment intent
     const paymentIntent = await stripe.paymentIntents.create({
-      amount,
-      currency: 'usd', // You can change this to your desired currency
-      receipt_email: email, // Attach user email for the receipt
-      metadata, // Optional: add user name as metadata
+      amount: amount, // Amount in cents
+      currency: "usd",
+      customer: customer.id,
+      automatic_payment_methods: {
+        enabled: true, // Use automatic payment methods
+      },
     });
 
-    res.send({
-      clientSecret: paymentIntent.client_secret,
+    // Step 4: Respond with the client secret, ephemeral key, and publishable key
+    res.json({
+      paymentIntent: paymentIntent.client_secret,
+      ephemeralKey: ephemeralKey.secret,
+      customer: customer.id,
+      publishableKey: "pk_test_your_publishable_key_here",
     });
   } catch (error) {
-    console.error('Error creating payment intent:', error);
-    res.status(500).send('Internal Server Error');
+    res.status(500).json({ error: error.message });
   }
 });
 
