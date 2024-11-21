@@ -35,13 +35,13 @@ app.use(cors({
 
 
 app.post('/update-payment', (req, res) => {
-  const { appointmentId, paymentStatus, amountPaid } = req.body;
+  const { appointmentId, paymentSuccessful, amountPaid } = req.body;
 
   // Update payment status in the database
   // Example: Updating MongoDB
   appointmentModel.updateOne(
     { _id: appointmentId },
-    { paymentStatus, amountPaid },
+    { paymentSuccessful, amountPaid },
     (err, result) => {
       if (err) {
         return res.status(500).json({ success: false, message: 'Payment update failed' });
