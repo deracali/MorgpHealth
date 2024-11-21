@@ -17,7 +17,7 @@ import videoRouter from './routes/videoRoute.js';
 import staffRouter from './routes/staffRoute.js';
 import blogRouter from './routes/blogRoute.js';
 import  notificationRouter from "./routes/notificationRoute.js";
-
+import appointmentModel from './controllers/appointmentModel.js'
 
 const app = express();
 const port = process.env.PORT || 4000;
@@ -39,7 +39,7 @@ app.post('/update-payment', (req, res) => {
 
   // Update payment status in the database
   // Example: Updating MongoDB
-  Appointment.updateOne(
+  appointmentModel.updateOne(
     { _id: appointmentId },
     { paymentStatus, amountPaid },
     (err, result) => {
