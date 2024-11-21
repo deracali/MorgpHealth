@@ -70,24 +70,7 @@ app.post("/payment-sheet", async (req, res) => {
   }
 });
 
-// Update appointment status endpoint (for successful payment)
-app.post('/update-payment-status', async (req, res) => {
-  const { appointmentId, paymentSuccessful } = req.body;
 
-  try {
-    const response = await fetch(`https://morgphealth.onrender.com/update-appointment/${appointmentId}`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ paymentSuccessful }),
-    });
-
-    const data = await response.json();
-    res.status(200).json(data);
-  } catch (error) {
-    console.error('Error updating appointment:', error);
-    res.status(500).json({ error: 'Failed to update payment status' });
-  }
-});
 
 // Define your routes
 app.use('/api/admin', adminRouter);
