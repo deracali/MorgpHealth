@@ -17,7 +17,7 @@ import videoRouter from './routes/videoRoute.js';
 import staffRouter from './routes/staffRoute.js';
 import blogRouter from './routes/blogRoute.js';
 import  notificationRouter from "./routes/notificationRoute.js";
-import Stripe from 'stripe';
+
 
 const app = express();
 const port = process.env.PORT || 4000;
@@ -32,45 +32,24 @@ app.use(cors({
   }));
 
 
-// Initialize Stripe with the secret key from .env file
-const stripe = Stripe(process.env.STRIPE_SECRET_KEY);
 
 
-app.post("/payment-sheet", async (req, res) => {
-  try {
-      const amount = req.body.amount
-    // Step 1: Create a new customer or use an existing one
-    const customer = await stripe.customers.create();
+app.post('/update-payment', (req, res) => {
+  const { appointmentId, paymentStatus, amountPaid } = req.body;
 
-    // Step 2: Create an ephemeral key for the customer
-    const ephemeralKey = await stripe.ephemeralKeys.create(
-      { customer: customer.id },
-      { apiVersion: "2020-08-27" } // Use the Stripe API version
-    );
-
-    // Step 3: Create a payment intent
-    const paymentIntent = await stripe.paymentIntents.create({
-      amount: amount, // Amount in cents
-      currency: "usd",
-      customer: customer.id,
-      automatic_payment_methods: {
-        enabled: true, // Use automatic payment methods
-      },
-    });
-
-    // Step 4: Respond with the client secret, ephemeral key, and publishable key
-    res.json({
-      paymentIntent: paymentIntent.client_secret,
-      ephemeralKey: ephemeralKey.secret,
-      customer: customer.id,
-      publishableKey: "pk_test_51QN8mWG2ozhLuxUAf8fdoD3MqAQnfNsZZoZdbc1fRx1fHUWRbpLjbGfdeR5VEAGOVCAUqH9hrlaJPQ5lEpAmrt7q00kPKajlEa",
-    });
-  } catch (error) {
-    res.status(500).json({ error: error.message });
-  }
+  // Update payment status in the database
+  // Example: Updating MongoDB
+  Appointment.updateOne(
+    { _id: appointmentId },
+    { paymentStatus, amountPaid },
+    (err, result) => {
+      if (err) {
+        return res.status(500).json({ success: false, message: 'Payment update failed' });
+      }
+      res.status(200).json({ success: true, message: 'Payment updated successfully' });
+    }
+  );
 });
-
-
 
 // Define your routes
 app.use('/api/admin', adminRouter);
