@@ -17,7 +17,6 @@ import videoRouter from './routes/videoRoute.js';
 import staffRouter from './routes/staffRoute.js';
 import blogRouter from './routes/blogRoute.js';
 import  notificationRouter from "./routes/notificationRoute.js";
-import appointmentModel from './controllers/appointmentModel.js'
 import Stripe from 'stripe';
 
 // Initialize Stripe with the secret key
