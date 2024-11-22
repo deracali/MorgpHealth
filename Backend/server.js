@@ -33,22 +33,28 @@ app.use(cors({
 
 
 
+app.post("/payment", async (req, res) => {
+  const { token, amount } = req.body;
 
-app.post('/update-payment', (req, res) => {
-  const { appointmentId, paymentSuccessful, amountPaid } = req.body;
+  try {
+    // Create a payment intent using the token
+    const paymentIntent = await stripe.paymentIntents.create({
+      amount: amount, // Amount in cents
+      currency: "gbp", // Currency (you can change it to your preferred one)
+      payment_method: token, // Token received from the frontend
+      confirmation_method: "manual", // We are confirming the payment manually
+      confirm: true,
+    });
 
-  // Update payment status in the database
-  // Example: Updating MongoDB
-  appointmentModel.updateOne(
-    { _id: appointmentId },
-    { paymentSuccessful, amountPaid },
-    (err, result) => {
-      if (err) {
-        return res.status(500).json({ success: false, message: 'Payment update failed' });
-      }
-      res.status(200).json({ success: true, message: 'Payment updated successfully' });
+    // Check if the payment was successful
+    if (paymentIntent.status === "succeeded") {
+      res.status(200).send({ success: true, message: "Payment successful" });
+    } else {
+      res.status(400).send({ success: false, message: "Payment failed" });
     }
-  );
+  } catch (error) {
+    res.status(500).send({ success: false, message: error.message });
+  }
 });
 
 // Define your routes
