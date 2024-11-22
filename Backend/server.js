@@ -40,7 +40,7 @@ app.post("/payment", async (req, res) => {
     // Create a payment intent using the token
     const paymentIntent = await stripe.paymentIntents.create({
       amount: amount, // Amount in cents
-      currency: "gbp", // Currency (you can change it to your preferred one)
+      currency: "usd", // Currency (you can change it to your preferred one)
       payment_method: token, // Token received from the frontend
       confirmation_method: "manual", // We are confirming the payment manually
       confirm: true,
