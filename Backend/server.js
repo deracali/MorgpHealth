@@ -18,6 +18,11 @@ import staffRouter from './routes/staffRoute.js';
 import blogRouter from './routes/blogRoute.js';
 import  notificationRouter from "./routes/notificationRoute.js";
 import appointmentModel from './controllers/appointmentModel.js'
+import Stripe from 'stripe';
+
+// Initialize Stripe with the secret key
+const stripe = Stripe(process.env.STRIPE_SECRET_KEY);
+
 
 const app = express();
 const port = process.env.PORT || 4000;
