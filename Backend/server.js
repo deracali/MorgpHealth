@@ -37,7 +37,7 @@ app.use(cors({
 
 
 
-const stripe = require("stripe")("sk_test_YourSecretKey");
+
 
 app.post("/payment", async (req, res) => {
   const { paymentMethodId, amount, currency } = req.body;
