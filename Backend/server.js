@@ -44,8 +44,6 @@ app.post("/payment", async (req, res) => {
       amount,
       currency,
       payment_method: paymentMethodId,
-      confirmation_method: "manual",
-      confirm: true,
       automatic_payment_methods: {
         enabled: true,
         allow_redirects: "never", // Prevent redirect-based methods
