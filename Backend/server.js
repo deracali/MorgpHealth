@@ -43,7 +43,6 @@ app.post("/payment", async (req, res) => {
     const paymentIntent = await stripe.paymentIntents.create({
       amount,
       currency,
-      payment_method: paymentMethodId,
       automatic_payment_methods: {
         enabled: true,
         allow_redirects: "never", // Prevent redirect-based methods
