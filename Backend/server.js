@@ -38,19 +38,16 @@ app.use(cors({
 
 
 app.post("/payment", async (req, res) => {
-  const { token, amount } = req.body;
+  const { paymentMethodId, amount } = req.body;
 
   try {
-    // Create a payment intent using the token
     const paymentIntent = await stripe.paymentIntents.create({
-      amount: amount, // Amount in cents
-      currency: "usd", // Currency (you can change it to your preferred one)
-      payment_method: token, // Token received from the frontend
-      confirmation_method: "manual", // We are confirming the payment manually
+      amount,
+      currency: "usd",
+      payment_method: paymentMethodId,
       confirm: true,
     });
 
-    // Check if the payment was successful
     if (paymentIntent.status === "succeeded") {
       res.status(200).send({ success: true, message: "Payment successful" });
     } else {
