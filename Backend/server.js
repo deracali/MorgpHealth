@@ -36,33 +36,31 @@ app.use(cors({
   }));
 
 
-app.post("/payment", async (req, res) => {
-  const { paymentMethodId, amount, currency } = req.body;
+ app.post("/payment", async (req, res) => {
+  const { token, amount } = req.body;
 
   try {
+    // Create a payment intent using the token
     const paymentIntent = await stripe.paymentIntents.create({
-      amount,
-      currency,
-      automatic_payment_methods: {
-        enabled: true,
-        allow_redirects: "never", // Prevent redirect-based methods
-      },
+      amount: amount, // Amount in cents
+      currency: "usd", // Currency (you can change it to your preferred one)
+      payment_method: token, // Token received from the frontend
+      confirmation_method: "manual", // We are confirming the payment manually
+      confirm: true,
     });
 
+    // Check if the payment was successful
     if (paymentIntent.status === "succeeded") {
       res.status(200).send({ success: true, message: "Payment successful" });
     } else {
-      res.status(400).send({
-        success: false,
-        message: "Payment failed",
-        status: paymentIntent.status,
-      });
+      res.status(400).send({ success: false, message: "Payment failed" });
     }
   } catch (error) {
-    console.error("Payment Error:", error);
     res.status(500).send({ success: false, message: error.message });
   }
 });
+
+
 
 // Define your routes
 app.use('/api/admin', adminRouter);
