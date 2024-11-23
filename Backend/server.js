@@ -36,29 +36,43 @@ app.use(cors({
   }));
 
 
- app.post("/payment", async (req, res) => {
-  const { token, amount } = req.body;
-
+app.post('/create-intent', async (req, res) => {
+  const { amount } = req.body;  // Amount in cents (e.g., 1000 for $10)
   try {
-    // Create a payment intent using the token
     const paymentIntent = await stripe.paymentIntents.create({
-      amount: amount, // Amount in cents
-      currency: "usd", // Currency (you can change it to your preferred one)
-      payment_method: token, // Token received from the frontend
-      confirmation_method: "manual", // We are confirming the payment manually
-      confirm: true,
+      amount,
+      currency: 'usd',
+      payment_method_types: ['card'],  // Specify card as payment method
     });
 
-    // Check if the payment was successful
-    if (paymentIntent.status === "succeeded") {
-      res.status(200).send({ success: true, message: "Payment successful" });
-    } else {
-      res.status(400).send({ success: false, message: "Payment failed" });
-    }
+    res.send({ client_secret: paymentIntent.client_secret });
   } catch (error) {
-    res.status(500).send({ success: false, message: error.message });
+    console.error('Error creating PaymentIntent:', error);
+    res.status(500).send({ error: 'Internal Server Error' });
   }
 });
+
+// Route to process the payment (after frontend confirms it)
+app.post('/payment', async (req, res) => {
+  const { token, amount, docName, userName, userEmail } = req.body;
+  try {
+    // Payment logic here (e.g., creating charge, storing transaction in DB)
+    // Example: Create a payment with the token returned by Stripe Checkout
+    const charge = await stripe.charges.create({
+      amount,
+      currency: 'usd',
+      source: token,  // The token received from Stripe Checkout
+      description: `Payment for Dr. ${docName} by ${userName}`,
+      receipt_email: userEmail,
+    });
+
+    res.send({ success: true });
+  } catch (error) {
+    console.error('Payment processing error:', error);
+    res.status(500).send({ error: 'Payment processing failed' });
+  }
+});
+
 
 
 
