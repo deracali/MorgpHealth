@@ -36,27 +36,25 @@ app.use(cors({
   }));
 
 
-
-
-
 app.post("/payment", async (req, res) => {
   const { paymentMethodId, amount, currency } = req.body;
 
   try {
-    // Create a PaymentIntent with the specified amount and currency
     const paymentIntent = await stripe.paymentIntents.create({
       amount,
       currency,
       payment_method: paymentMethodId,
-      confirmation_method: "manual", // Optional but useful for debugging
-      confirm: true, // Confirm the payment immediately
+      confirmation_method: "manual",
+      confirm: true,
+      automatic_payment_methods: {
+        enabled: true,
+        allow_redirects: "never", // Prevent redirect-based methods
+      },
     });
 
     if (paymentIntent.status === "succeeded") {
-      // Payment succeeded
       res.status(200).send({ success: true, message: "Payment successful" });
     } else {
-      // Payment failed, return intent status
       res.status(400).send({
         success: false,
         message: "Payment failed",
@@ -65,21 +63,6 @@ app.post("/payment", async (req, res) => {
     }
   } catch (error) {
     console.error("Payment Error:", error);
-
-    // Handle Stripe-specific errors
-    if (error.type === "StripeCardError") {
-      return res.status(400).send({
-        success: false,
-        message: `Card error: ${error.message}`,
-      });
-    } else if (error.type === "StripeInvalidRequestError") {
-      return res.status(400).send({
-        success: false,
-        message: `Invalid request: ${error.message}`,
-      });
-    }
-
-    // General error
     res.status(500).send({ success: false, message: error.message });
   }
 });
