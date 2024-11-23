@@ -37,21 +37,30 @@ app.use(cors({
 
 
 app.post('/create-intent', async (req, res) => {
+    try {
+        const { amount } = req.body;
 
-  try {
-   const session = await stripe.checkout.sessions.create({
-       payment_method_types: ["card"],
-       mode:"payment",
-       success_url:"https://frontend-morgphealth.netlify.app/",
-       cancel_url:"https://frontend-morgphealth.netlify.app/about"
-   })
-    res.json({id:session.id})
+        const session = await stripe.checkout.sessions.create({
+            payment_method_types: ['card'],
+            line_items: [
+                {
+                    price_data: {
+                        currency: 'usd',
+                        product_data: { name: 'Doctor Appointment Fee' },
+                        unit_amount: amount,
+                    },
+                    quantity: 1,
+                },
+            ],
+            mode: 'payment',
+            success_url: 'https://example.com/success',
+            cancel_url: 'https://example.com/cancel',
+        });
 
-   
-  } catch (error) {
-    console.error('Error creating PaymentIntent:', error);
-    res.status(500).send({ error: 'Internal Server Error' });
-  }
+        res.json({ id: session.id });
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
 });
 
 // Route to process the payment (after frontend confirms it)
