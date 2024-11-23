@@ -37,15 +37,17 @@ app.use(cors({
 
 
 app.post('/create-intent', async (req, res) => {
-  const { amount } = req.body;  // Amount in cents (e.g., 1000 for $10)
-  try {
-    const paymentIntent = await stripe.paymentIntents.create({
-      amount,
-      currency: 'usd',
-      payment_method_types: ['card'],  // Specify card as payment method
-    });
 
-    res.send({ client_secret: paymentIntent.client_secret });
+  try {
+   const session = await stripe.checkout.sessions.create({
+       payment_method_types: ["card"],
+       mode:"payment",
+       success_url:"https://frontend-morgphealth.netlify.app/",
+       cancel_url:"https://frontend-morgphealth.netlify.app/about"
+   })
+    res.json({id:session.id})
+
+   
   } catch (error) {
     console.error('Error creating PaymentIntent:', error);
     res.status(500).send({ error: 'Internal Server Error' });
