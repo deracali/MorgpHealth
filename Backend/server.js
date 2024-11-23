@@ -37,16 +37,21 @@ app.use(cors({
 
 
 app.post('/create-intent', async (req, res) => {
-    try {
-        const { amount } = req.body;
+    const { amount, docName, docEmail, userName, userEmail } = req.body;
 
+    try {
+        // Create a Stripe Checkout Session
         const session = await stripe.checkout.sessions.create({
             payment_method_types: ['card'],
+            customer_email: userEmail, // Email for receipt and future payments
             line_items: [
                 {
                     price_data: {
                         currency: 'usd',
-                        product_data: { name: 'Doctor Appointment Fee' },
+                        product_data: {
+                            name: `Payment for ${docName}`,
+                            description: `Doctor Email: ${docEmail}, User: ${userName}`,
+                        },
                         unit_amount: amount,
                     },
                     quantity: 1,
@@ -57,32 +62,13 @@ app.post('/create-intent', async (req, res) => {
             cancel_url: 'https://example.com/cancel',
         });
 
-        res.json({ id: session.id });
+        res.status(200).json({ id: session.id });
     } catch (error) {
+        console.error('Error creating Stripe session:', error.message);
         res.status(500).json({ error: error.message });
     }
 });
 
-// Route to process the payment (after frontend confirms it)
-app.post('/payment', async (req, res) => {
-  const { token, amount, docName, userName, userEmail } = req.body;
-  try {
-    // Payment logic here (e.g., creating charge, storing transaction in DB)
-    // Example: Create a payment with the token returned by Stripe Checkout
-    const charge = await stripe.charges.create({
-      amount,
-      currency: 'usd',
-      source: token,  // The token received from Stripe Checkout
-      description: `Payment for Dr. ${docName} by ${userName}`,
-      receipt_email: userEmail,
-    });
-
-    res.send({ success: true });
-  } catch (error) {
-    console.error('Payment processing error:', error);
-    res.status(500).send({ error: 'Payment processing failed' });
-  }
-});
 
 
 
