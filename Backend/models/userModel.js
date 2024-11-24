@@ -10,7 +10,6 @@ const userSchema = new mongoose.Schema({
     address: {type: Object, default: {line1:'',line2:''}},
     gender: {type: String, default:"Not Selected"},
     insured: { type: Boolean, default: false },
-    timer: { type: Boolean, default:true },
      passwordResetOtp: {
     type: String, // OTP will be a string (it can contain numbers, but we store it as a string for simplicity)
     required: false, // Optional initially, as it will be set after a user requests to reset password
