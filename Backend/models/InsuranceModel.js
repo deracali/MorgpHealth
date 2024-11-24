@@ -3,6 +3,7 @@ import mongoose from 'mongoose';
 const insuranceSchema = new mongoose.Schema({
    userId: { type: String }, // userId field to store the user's ID
   name: { type: String }, // Name of the user
+  email: { type: String }, // Email of the user
   gender: { type: String }, // Gender of the user
   spouseName: { type: String }, // Spouse's name, optional
   motherName: { type: String }, // Mother's name, optional
