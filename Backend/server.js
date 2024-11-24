@@ -71,6 +71,41 @@ app.post('/create-intent', async (req, res) => {
 
 
 
+app.post('/create-intents', async (req, res) => {
+    const { amount, name, email } = req.body;
+
+    try {
+        // Create a Stripe Checkout Session
+        const session = await stripe.checkout.sessions.create({
+            payment_method_types: ['card'],
+            customer_email: email, // Email for receipt and future payments
+            line_items: [
+                {
+                    price_data: {
+                        currency: 'usd',
+                        product_data: {
+                            name: `Payment for ${docName}`,
+                            description: `Insurance: ${name}, User Email: ${email}`,
+                        },
+                        unit_amount: amount,
+                    },
+                    quantity: 1,
+                },
+            ],
+            mode: 'payment',
+            success_url: 'https://example.com/success',
+            cancel_url: 'https://example.com/cancel',
+        });
+
+        res.status(200).json({ id: session.id });
+    } catch (error) {
+        console.error('Error creating Stripe session:', error.message);
+        res.status(500).json({ error: error.message });
+    }
+});
+
+
+
 
 
 // Define your routes
