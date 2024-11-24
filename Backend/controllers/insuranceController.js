@@ -5,6 +5,7 @@ const addInsurance = async (req, res) => {
     try {
         const {
             name,
+            email,
             userId,
             spouseName,
             motherName,
@@ -40,6 +41,7 @@ const addInsurance = async (req, res) => {
         // Prepare the insurance data to be saved
         const insuranceData = {
             name,
+            email,
             userId,
             spouseName,
             motherName,
