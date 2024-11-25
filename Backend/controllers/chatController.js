@@ -3,9 +3,24 @@ import Message from '../models/messageModel.js';
 import User from '../models/userModel.js';
 import Doctor from '../models/doctorsModel.js';
 import http from 'http';
-import socketIo from 'socket.io';
+import { Server } from 'socket.io';
 
-const io = socketIo(server);
+const server = http.createServer(app);
+const io = new Server(server, {
+  cors: {
+    origin: '*', // Allow all origins; adjust for production
+    methods: ['GET', 'POST'],
+  },
+});
+
+io.on('connection', (socket) => {
+  console.log(`User connected: ${socket.id}`);
+
+  socket.on('disconnect', () => {
+    console.log(`User disconnected: ${socket.id}`);
+  });
+});
+
 
 // Start a new chat between a user and a doctor
 const startChat = async (req, res) => {
