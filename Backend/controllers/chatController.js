@@ -24,7 +24,7 @@ const startChat = async (req, res) => {
     }
 };
 
-// Get chat history for a specific chat ID
+
 // Get chat history for a specific chat ID
 const getChatHistory = async (req, res) => {
     const { chatId } = req.params;
@@ -32,7 +32,7 @@ const getChatHistory = async (req, res) => {
 
     try {
         const messages = await Message.find({ chat: chatId })
-            .sort({ createdAt: -1 }) // Sort by most recent messages first
+            .sort({ createdAt: 1 }) // Sort by most recent messages first
             .skip(Number(skip)) // Skip messages that have already been loaded
             .limit(Number(limit)) // Limit the number of messages loaded
             .populate('sender', 'name'); // Populate sender details for context
