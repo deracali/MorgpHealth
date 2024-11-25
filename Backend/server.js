@@ -152,6 +152,6 @@ io.on('connection', (socket) => {
         console.log('Client disconnected:', socket.id);
     });
 });
-
+export { io };
 // Start the server
 server.listen(port, () => console.log(`Server started on port ${port}`));
