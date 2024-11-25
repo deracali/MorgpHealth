@@ -56,10 +56,16 @@ const getChatHistory = async (req, res) => {
 
 // Send a message in a specific chat
 const sendMessage = async (req, res) => {
-  const { chatId } = req.params;
-  const { senderId, senderModel, content } = req.body;
-  console.log(`Received message from senderId: ${senderId}, senderModel: ${senderModel} for chatId: ${chatId}`);
-  console.log(`Message content: "${content}"`);
+  const { chatId } = req.params; // chatId from URL parameter
+  const { senderId, senderModel, content } = req.body; // senderId, senderModel, content from body
+
+  console.log(`Received message for chatId: ${chatId}`);
+  console.log(`Message content: ${content}`);
+  console.log(`Sender ID: ${senderId}, Sender Model: ${senderModel}`);
+
+  if (!senderId || !senderModel || !content) {
+    return res.status(400).json({ error: 'Missing required fields: senderId, senderModel, content' });
+  }
 
   try {
     const newMessage = await Message.create({ chatId, senderId, senderModel, content });
@@ -68,12 +74,14 @@ const sendMessage = async (req, res) => {
     // Emit message to socket
     io.to(chatId).emit('receiveMessage', newMessage);
 
+    // Return the new message as the response
     res.status(200).json({ message: 'Message sent', newMessage });
   } catch (error) {
     console.error('Error sending message:', error);
     res.status(500).json({ error: 'Failed to send message' });
   }
 };
+
 
 
 // Get all chats for a specific doctor
