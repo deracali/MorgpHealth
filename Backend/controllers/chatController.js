@@ -60,18 +60,30 @@ const sendMessage = async (req, res) => {
 
   console.log('Received message data:', req.body);
 
+  // Validate the required fields in the request body
   if (!senderId || !senderModel || !content || !chat) {
     return res.status(400).json({ error: 'Missing required fields: senderId, senderModel, content, chat' });
   }
 
   try {
-    // Check if sender exists (if it's a User or Doctor)
-    const sender = await User.findById(senderId);
-    if (!sender) {
-      return res.status(404).json({ error: 'Sender not found' });
+    let sender;
+
+    // Check if sender is a User or a Doctor
+    if (senderModel === 'User') {
+      sender = await User.findById(senderId);
+      if (!sender) {
+        return res.status(404).json({ error: 'User not found' });
+      }
+    } else if (senderModel === 'Doctor') {
+      sender = await Doctor.findById(senderId);  // Assuming 'Doctor' model exists
+      if (!sender) {
+        return res.status(404).json({ error: 'Doctor not found' });
+      }
+    } else {
+      return res.status(400).json({ error: 'Invalid sender model' });
     }
 
-    // Validate chat
+    // Validate the chat exists
     const chatExists = await Chat.findById(chat);
     if (!chatExists) {
       return res.status(404).json({ error: 'Chat not found' });
@@ -80,7 +92,7 @@ const sendMessage = async (req, res) => {
     // Create new message
     const newMessage = await Message.create({
       chat, // chatId from the request body
-      sender: senderId, // sender reference
+      sender: senderId, // sender reference (User or Doctor)
       senderModel, // sender model ('User' or 'Doctor')
       content, // message content
     });
@@ -96,7 +108,6 @@ const sendMessage = async (req, res) => {
     res.status(500).json({ error: `Failed to send message: ${error.message}` });
   }
 };
-
 
 
 
