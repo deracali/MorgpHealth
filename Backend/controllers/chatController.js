@@ -56,19 +56,27 @@ const getChatHistory = async (req, res) => {
 
 // Send a message in a specific chat
 const sendMessage = async (req, res) => {
-  const { chatId } = req.params; // chatId from URL parameter
-  const { senderId, senderModel, content } = req.body; // senderId, senderModel, content from body
+  const { chatId } = req.params; // Get chatId from URL params
+  const { senderId, senderModel, content } = req.body; // Get senderId, senderModel, content from request body
 
   console.log(`Received message for chatId: ${chatId}`);
-  console.log(`Message content: ${content}`);
+  console.log(`Message content: "${content}"`);
   console.log(`Sender ID: ${senderId}, Sender Model: ${senderModel}`);
 
-  if (!senderId || !senderModel || !content) {
-    return res.status(400).json({ error: 'Missing required fields: senderId, senderModel, content' });
+  // Check that all required fields are present
+  if (!senderId || !senderModel || !content || !chatId) {
+    return res.status(400).json({ error: 'Missing required fields: senderId, senderModel, content, chatId' });
   }
 
   try {
-    const newMessage = await Message.create({ chatId, senderId, senderModel, content });
+    // Create new message and save to the database
+    const newMessage = await Message.create({
+      chat: chatId, // Ensure the 'chat' field is populated with the chatId
+      sender: senderId, // Ensure the 'sender' field is populated with the senderId
+      senderModel: senderModel, // 'User' or 'Doctor'
+      content: content, // The message content
+    });
+
     console.log('Message saved to database:', newMessage);
 
     // Emit message to socket
@@ -81,6 +89,7 @@ const sendMessage = async (req, res) => {
     res.status(500).json({ error: 'Failed to send message' });
   }
 };
+
 
 
 
