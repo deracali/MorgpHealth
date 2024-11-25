@@ -25,12 +25,16 @@ const startChat = async (req, res) => {
 };
 
 // Get chat history for a specific chat ID
+// Get chat history for a specific chat ID
 const getChatHistory = async (req, res) => {
     const { chatId } = req.params;
-    
+    const { limit = 10, skip = 0 } = req.query; // Default to loading 10 messages at a time
+
     try {
         const messages = await Message.find({ chat: chatId })
-            .sort('createdAt')
+            .sort({ createdAt: -1 }) // Sort by most recent messages first
+            .skip(Number(skip)) // Skip messages that have already been loaded
+            .limit(Number(limit)) // Limit the number of messages loaded
             .populate('sender', 'name'); // Populate sender details for context
 
         res.status(200).json({ success: true, messages });
@@ -39,6 +43,7 @@ const getChatHistory = async (req, res) => {
         res.status(500).json({ success: false, error: 'Failed to retrieve chat history' });
     }
 };
+
 
 // Send a message in a specific chat
 const sendMessage = async (req, res) => {
