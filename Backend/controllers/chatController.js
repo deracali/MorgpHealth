@@ -56,33 +56,32 @@ const getChatHistory = async (req, res) => {
 
 // Send a message in a specific chat
 const sendMessage = async (req, res) => {
-  const { chatId } = req.params; // Get chatId from URL params
-  const { senderId, senderModel, content } = req.body; // Get senderId, senderModel, content from request body
+  const { chat } = req.body;  // Chat is now part of the request body
+  const { senderId, senderModel, content } = req.body;
 
-  console.log(`Received message for chatId: ${chatId}`);
-  console.log(`Message content: "${content}"`);
-  console.log(`Sender ID: ${senderId}, Sender Model: ${senderModel}`);
+  // Log received data
+  console.log('Received message data:', req.body);
+  console.log('Chat ID:', chat);
 
-  // Check that all required fields are present
-  if (!senderId || !senderModel || !content || !chatId) {
-    return res.status(400).json({ error: 'Missing required fields: senderId, senderModel, content, chatId' });
+  // Validate that all required fields are present
+  if (!senderId || !senderModel || !content || !chat) {
+    return res.status(400).json({ error: 'Missing required fields: senderId, senderModel, content, chat' });
   }
 
   try {
-    // Create new message and save to the database
+    // Create new message
     const newMessage = await Message.create({
-      chat: chatId, // Ensure the 'chat' field is populated with the chatId
-      sender: senderId, // Ensure the 'sender' field is populated with the senderId
-      senderModel: senderModel, // 'User' or 'Doctor'
-      content: content, // The message content
+      chat, // chatId from the request body
+      sender: senderId, // sender reference
+      senderModel, // sender model (User or Doctor)
+      content, // message content
     });
 
     console.log('Message saved to database:', newMessage);
 
     // Emit message to socket
-    io.to(chatId).emit('receiveMessage', newMessage);
+    io.to(chat).emit('receiveMessage', newMessage);
 
-    // Return the new message as the response
     res.status(200).json({ message: 'Message sent', newMessage });
   } catch (error) {
     console.error('Error sending message:', error);
