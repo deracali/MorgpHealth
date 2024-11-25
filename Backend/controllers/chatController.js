@@ -33,26 +33,21 @@ const startChat = async (req, res) => {
 
 
 
-// Get chat history for a specific chat ID
 const getChatHistory = async (req, res) => {
-  const { chatId } = req.params;
-  const { limit = 10, skip = 0 } = req.query; // Set default values for limit and skip
+    const { chatId } = req.params;
+    
+    try {
+        const messages = await Message.find({ chat: chatId })
+            .sort('createdAt')
+            .populate('sender', 'name'); // Populate sender details for context
 
-  try {
-    // Fetch messages for a specific chat, paginated
-    const messages = await Message.find({ chatId })
-      .sort({ createdAt: 1 }) // Sort messages by creation date in descending order (newest first)
-      .limit(parseInt(limit))   // Limit the number of messages
-      .skip(parseInt(skip))     // Skip the number of messages based on the skip parameter
-      .exec();
-
-    // Send the messages as the response
-    res.json({ messages });
-  } catch (error) {
-    console.error('Error fetching chat history:', error);
-    res.status(500).json({ message: 'Failed to fetch chat history' });
-  }
+        res.status(200).json({ success: true, messages });
+    } catch (error) {
+        console.error('Error retrieving chat history:', error);
+        res.status(500).json({ success: false, error: 'Failed to retrieve chat history' });
+    }
 };
+
 
 
 // Send a message in a specific chat
