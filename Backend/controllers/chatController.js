@@ -49,46 +49,42 @@ const getChatHistory = async (req, res) => {
 
 // Send a message in a specific chat
 const sendMessage = async (req, res) => {
-    const { chatId } = req.params;
-    const { senderId, senderModel, content } = req.body;
+  const { chatId } = req.params;
+  const { senderId, senderModel, content } = req.body;
+  console.log(`Received message from senderId: ${senderId}, senderModel: ${senderModel} for chatId: ${chatId}`);
+  console.log(`Message content: "${content}"`);
 
-    try {
-        const message = new Message({
-            chat: chatId,
-            sender: senderId,
-            senderModel,
-            content,
-            createdAt: Date.now()
-        });
-        
-        await message.save();
+  try {
+    const newMessage = await Message.create({ chatId, senderId, senderModel, content });
+    console.log('Message saved to database:', newMessage);
 
-        // Update the chat's last message content and timestamp
-        await Chat.findByIdAndUpdate(chatId, {
-            lastMessage: content,
-            updatedAt: Date.now()
-        });
+    // Emit message to socket
+    io.to(chatId).emit('receiveMessage', newMessage);
 
-        res.status(201).json({ success: true, message });
-    } catch (error) {
-        console.error('Error sending message:', error);
-        res.status(500).json({ success: false, error: 'Failed to send message' });
-    }
+    res.status(200).json({ message: 'Message sent', newMessage });
+  } catch (error) {
+    console.error('Error sending message:', error);
+    res.status(500).json({ error: 'Failed to send message' });
+  }
 };
 
 // Get all chats for a specific doctor
-const getDoctorChats = async (req, res) => {
-    try {
-        const { doctorId } = req.params;
+const getChatHistory = async (req, res) => {
+  const { chatId } = req.params;
+  const { limit = 10, skip = 0 } = req.query;
+  console.log(`Fetching chat history for chatId: ${chatId} with limit: ${limit} and skip: ${skip}`);
 
-        // Corrected: Use { doctor: doctorId } to match the field name in the schema
-        const doctorChats = await Chat.find({ doctor: doctorId })           .exec();
-
-        res.json({ success: true, chats: doctorChats });
-    } catch (error) {
-        console.error('Error fetching doctor chats:', error);
-        res.status(500).json({ success: false, message: 'Failed to fetch doctor chats' });
-    }
+  try {
+    const messages = await Message.find({ chatId })
+      .skip(skip)
+      .limit(limit)
+      .sort({ createdAt: 1 }); // Assuming messages are stored in order
+    console.log('Messages found:', messages);
+    res.status(200).json({ messages });
+  } catch (error) {
+    console.error('Error fetching chat history:', error);
+    res.status(500).json({ error: 'Failed to fetch chat history' });
+  }
 };
 
 
