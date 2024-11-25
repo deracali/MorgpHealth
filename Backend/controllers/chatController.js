@@ -76,6 +76,22 @@ const sendMessage = async (req, res) => {
 };
 
 
+// Get all chats for a specific doctor
+const getDoctorChats = async (req, res) => {
+    try {
+        const { doctorId } = req.params;
+
+        // Corrected: Use { doctor: doctorId } to match the field name in the schema
+        const doctorChats = await Chat.find({ doctor: doctorId })           .exec();
+
+        res.json({ success: true, chats: doctorChats });
+    } catch (error) {
+        console.error('Error fetching doctor chats:', error);
+        res.status(500).json({ success: false, message: 'Failed to fetch doctor chats' });
+    }
+};
+
+
 
 
 // Delete a chat and its associated messages
