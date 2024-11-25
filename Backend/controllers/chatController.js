@@ -75,24 +75,6 @@ const sendMessage = async (req, res) => {
   }
 };
 
-// Get all chats for a specific doctor
-const getChatHistory = async (req, res) => {
-  const { chatId } = req.params;
-  const { limit = 10, skip = 0 } = req.query;
-  console.log(`Fetching chat history for chatId: ${chatId} with limit: ${limit} and skip: ${skip}`);
-
-  try {
-    const messages = await Message.find({ chatId })
-      .skip(skip)
-      .limit(limit)
-      .sort({ createdAt: 1 }); // Assuming messages are stored in order
-    console.log('Messages found:', messages);
-    res.status(200).json({ messages });
-  } catch (error) {
-    console.error('Error fetching chat history:', error);
-    res.status(500).json({ error: 'Failed to fetch chat history' });
-  }
-};
 
 
 
