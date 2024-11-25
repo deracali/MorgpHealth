@@ -2,6 +2,10 @@ import Chat from '../models/chatModel.js';
 import Message from '../models/messageModel.js';
 import User from '../models/userModel.js';
 import Doctor from '../models/doctorsModel.js';
+import http from 'http';
+import socketIo from 'socket.io';
+
+const io = socketIo(server);
 
 // Start a new chat between a user and a doctor
 const startChat = async (req, res) => {
