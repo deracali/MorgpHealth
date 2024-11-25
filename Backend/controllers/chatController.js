@@ -56,24 +56,32 @@ const getChatHistory = async (req, res) => {
 
 // Send a message in a specific chat
 const sendMessage = async (req, res) => {
-  const { chat } = req.body;  // Chat is now part of the request body
-  const { senderId, senderModel, content } = req.body;
+  const { chat, senderId, senderModel, content } = req.body;
 
-  // Log received data
   console.log('Received message data:', req.body);
-  console.log('Chat ID:', chat);
 
-  // Validate that all required fields are present
   if (!senderId || !senderModel || !content || !chat) {
     return res.status(400).json({ error: 'Missing required fields: senderId, senderModel, content, chat' });
   }
 
   try {
+    // Check if sender exists (if it's a User or Doctor)
+    const sender = await User.findById(senderId);
+    if (!sender) {
+      return res.status(404).json({ error: 'Sender not found' });
+    }
+
+    // Validate chat
+    const chatExists = await Chat.findById(chat);
+    if (!chatExists) {
+      return res.status(404).json({ error: 'Chat not found' });
+    }
+
     // Create new message
     const newMessage = await Message.create({
       chat, // chatId from the request body
       sender: senderId, // sender reference
-      senderModel, // sender model (User or Doctor)
+      senderModel, // sender model ('User' or 'Doctor')
       content, // message content
     });
 
@@ -85,7 +93,7 @@ const sendMessage = async (req, res) => {
     res.status(200).json({ message: 'Message sent', newMessage });
   } catch (error) {
     console.error('Error sending message:', error);
-    res.status(500).json({ error: 'Failed to send message' });
+    res.status(500).json({ error: `Failed to send message: ${error.message}` });
   }
 };
 
