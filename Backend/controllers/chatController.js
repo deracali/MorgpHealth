@@ -5,24 +5,31 @@ import Doctor from '../models/doctorsModel.js';
 
 // Start a new chat between a user and a doctor
 const startChat = async (req, res) => {
-    const { userId, doctorId } = req.body;
-    
-    try {
-        // Check if a chat between the user and doctor already exists
-        let chat = await Chat.findOne({ user: userId, doctor: doctorId });
-        
-        // If no existing chat, create a new one
-        if (!chat) {
-            chat = new Chat({ user: userId, doctor: doctorId });
-            await chat.save();
-        }
+  const { userId, doctorId } = req.body;
 
-        res.status(200).json({ success: true, chatId: chat._id });
-    } catch (error) {
-        console.error('Error starting chat:', error);
-        res.status(500).json({ success: false, error: 'Failed to start chat' });
+  try {
+    console.log(`Received request to start chat between user ${userId} and doctor ${doctorId}`);
+
+    // Check if a chat between the user and doctor already exists
+    let chat = await Chat.findOne({ user: userId, doctor: doctorId });
+    
+    if (!chat) {
+      console.log(`No existing chat found. Creating a new chat between user ${userId} and doctor ${doctorId}`);
+      chat = new Chat({ user: userId, doctor: doctorId });
+      await chat.save();
+      console.log(`New chat created with chatId: ${chat._id}`);
     }
+
+    res.status(200).json({ success: true, chatId: chat._id });
+  } catch (error) {
+    console.error('Error starting chat:', error);
+    if (error.name === 'ValidationError') {
+      console.error('Validation Error:', error.message); // Log validation specific errors
+    }
+    res.status(500).json({ success: false, error: 'Failed to start chat' });
+  }
 };
+
 
 
 // Get chat history for a specific chat ID
