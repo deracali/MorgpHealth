@@ -13,45 +13,63 @@ const { vs } = cloudinary;
 
 const registerUser = async (req, res) => {
     try {
-        const { name, email, password, region, phoneNumber,gender } = req.body; // Added age and region
+        const { name, email, password, region, phoneNumber, gender } = req.body;
 
-        if (!name || !password || !email) { // Check for age and region
-            return res.json({ success: false, message: "Missing Details" });
+        // Validate required fields
+        if (!name || !email || !password) {
+            return res.status(400).json({ success: false, message: "Missing Details" });
         }
 
+        // Validate email format
         if (!validator.isEmail(email)) {
-            return res.json({ success: false, message: "Enter a valid email" });
+            return res.status(400).json({ success: false, message: "Enter a valid email" });
         }
 
-        if (password.length < 6) { // Fixed the typo from 'lenght' to 'length' and set a minimum length
-            return res.json({ success: false, message: "Enter a strong password (at least 6 characters)" });
+        // Validate password length
+        if (password.length < 6) {
+            return res.status(400).json({ success: false, message: "Enter a strong password (at least 6 characters)" });
         }
 
+        // Check if email already exists
+        const existingUser = await userModel.findOne({ email });
+        if (existingUser) {
+            return res.status(400).json({ success: false, message: "Email already exists" });
+        }
+
+        // Hash the password
         const salt = await bcrypt.genSalt(10);
         const hashedPassword = await bcrypt.hash(password, salt);
 
+        // Prepare user data
         const userData = {
             name,
             email,
             password: hashedPassword,
-            region,  // Added region to user data
+            region,
             phoneNumber,
             gender
         };
 
+        // Save user to the database
         const newUser = new userModel(userData);
         const user = await newUser.save();
 
+        // Generate a token
         const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET);
-        const insured = user.insured; 
-        const userId = user._id; 
-        res.json({ success: true, token, userId,insured });
 
+        // Send response
+        res.status(201).json({
+            success: true,
+            token,
+            userId: user._id,
+            insured: user.insured
+        });
     } catch (error) {
-        console.log(error);
-        res.json({ success: false, message: error.message });
+        console.error(error);
+        res.status(500).json({ success: false, message: "Server error. Please try again later." });
     }
 };
+
 
 const loginUser = async (req, res) => {
     try {
