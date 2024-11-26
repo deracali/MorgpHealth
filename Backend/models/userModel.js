@@ -18,6 +18,7 @@ const userSchema = new mongoose.Schema({
     type: Date, // Expiration time for OTP, which is a date value
     required: false, // Optional initially, as it will be set when OTP is generated
   },
+    timer:{type:Boolean,default:true}
 },{minimize:false})
 
 const userModel = mongoose.models.user || mongoose.model('user', userSchema)
