@@ -31,7 +31,7 @@ connectCloudinary();
 app.use(express.json());
 app.use(cors({
     origin: '*', // or the correct frontend URL
-    methods: ['GET', 'POST'],
+    methods: ['GET', 'POST', 'PUT', 'DELETE'],
      allowedHeaders: ['Content-Type', 'Authorization', 'token', 'dtoken', 'atoken'], 
   }));
 
@@ -58,8 +58,8 @@ app.post('/create-intent', async (req, res) => {
                 },
             ],
             mode: 'payment',
-            success_url: 'https://example.com/success',
-            cancel_url: 'https://example.com/cancel',
+            success_url: 'https://frontend-morgphealth.netlify.app/paymentsuccess',
+            cancel_url: 'https://frontend-morgphealth.netlify.app/paymentfailed',
         });
 
         res.status(200).json({ id: session.id });
@@ -84,7 +84,7 @@ app.post('/create-intents', async (req, res) => {
                     price_data: {
                         currency: 'usd',
                         product_data: {
-                            name: `Payment for ${docName}`,
+                            name: `Payment for ${name}`,
                             description: `Insurance: ${name}, User Email: ${email}`,
                         },
                         unit_amount: amount,
@@ -93,8 +93,8 @@ app.post('/create-intents', async (req, res) => {
                 },
             ],
             mode: 'payment',
-            success_url: 'https://example.com/success',
-            cancel_url: 'https://example.com/cancel',
+            success_url: 'https://frontend-morgphealth.netlify.app/paymentsuccess',
+            cancel_url: 'https://frontend-morgphealth.netlify.app/paymentfailed',
         });
 
         res.status(200).json({ id: session.id });
@@ -105,6 +105,39 @@ app.post('/create-intents', async (req, res) => {
 });
 
 
+
+app.post('/create-intentss', async (req, res) => {
+    const { amount, docName, docEmail,userName,userEmail,appointmentId } = req.body;
+
+    try {
+        // Create a Stripe Checkout Session
+        const session = await stripe.checkout.sessions.create({
+            payment_method_types: ['card'],
+            customer_email: userEmail, // Email for receipt and future payments
+            line_items: [
+                {
+                    price_data: {
+                        currency: 'usd',
+                        product_data: {
+                            name: `Payment for ${userName}`,
+                            description: `Lab and Prescription update for: ${userName}, User Email: ${userEmail}, doctor Email: ${docEmail}, appointment Id:${appointmentId}`,
+                        },
+                        unit_amount: amount,
+                    },
+                    quantity: 1,
+                },
+            ],
+            mode: 'payment',
+            success_url: 'https://frontend-morgphealth.netlify.app/paymentsuccess',
+            cancel_url: 'https://frontend-morgphealth.netlify.app/paymentfailed',
+        });
+
+        res.status(200).json({ id: session.id });
+    } catch (error) {
+        console.error('Error creating Stripe session:', error.message);
+        res.status(500).json({ error: error.message });
+    }
+});
 
 
 

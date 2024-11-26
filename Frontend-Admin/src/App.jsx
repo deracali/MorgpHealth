@@ -19,6 +19,12 @@ import User from "./pages/Admin/User"
 import AddDoctor from "./pages/RegisterDoctor"
 import Session from "./pages/Admin/Session"
 import VideoCall from "./pages/Admin/VideoCall"
+import Stripe from "./pages/Stripe"
+import FlutterWave from "./pages/Flutterwave"
+import InsuranceFlutterWave from "./pages/InsuranceFlutter"
+import InsuranceStripe from "./pages/InsuranceStripe"
+import PaymentFailed from "./pages/PaymentFailed"
+import PaymentSuccess from "./pages/Paymentsuccess"
 
 
 function App() {
@@ -49,6 +55,14 @@ function App() {
 
 
          <Route path="/user-panel" element={<User/> } />    
+         <Route path="/paymentsuccess" element={<PaymentSuccess/> } />    
+         <Route path="/paymentfailed" element={<PaymentFailed/> } />    
+         <Route path="/stripe/:docName/:userName/:userEmail/:docFees" element={<Stripe />} />
+         <Route path="/flutterwave/:docName/:userName/:userEmail/:docFees" element={<FlutterWave />} />
+         <Route path="/insuranceflutterwave/:name/:email/:price" element={<InsuranceFlutterWave />} />
+         <Route path="/insurancestripe/:name/:email/:price" element={<InsuranceStripe />} />
+         <Route path="/labestripe/:docName/:userName/:userEmail/:docEmail/:appointmentId/:fee" element={<InsuranceStripe />} />
+         <Route path="/labflutterwave/:docName/:userName/:userEmail/:docEmail/:appointmentId/:fee" element={<InsuranceFlutterWave />} />
         </Routes>
       <Footer/>
         </div> 

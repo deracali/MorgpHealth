@@ -7,6 +7,7 @@ import UsersDoctorsPieChart from '../../component/UsersDoctorsPie';
 import TotalEarningsChart from '../../component/TotalEarningsCharts';
 import { useNavigate } from 'react-router-dom';
 import GenderRegionPieChart from '../../component/GenderRegionPie';
+import { FaUserMd, FaCalendarAlt, FaUsers, FaDollarSign, FaShoppingCart } from 'react-icons/fa';
 
 
 export default function Dashboard() {
@@ -21,54 +22,54 @@ const navigate = useNavigate()
 
   return (
     <div className='m-5'>
-      <div className='flex flex-wrap gap-3'>
+    <div className='flex flex-wrap gap-3'>
+  
+  {/* Doctors */}
+  <div className='flex items-center gap-2 bg-white p-4 min-w-52 rounded-lg border-2 border-gray-100 cursor-pointer hover:scale-105 transition-all'>
+    <FaUserMd className='w-14 text-gray-600' />
+    <div>
+      <p className='text-xl font-semibold text-gray-600'>{dashData.doctors}</p>
+      <p className='text-gray-400'>Doctors</p>
+    </div>
+  </div>
 
-        {/* Doctors */}
-        <div className='flex items-center gap-2 bg-white p-4 min-w-52 rounded border-2 border-gray-100 cursor-pointer hover:scale-105 transition-all'>
-          <img className='w-14' src={assets.doctor_icon} alt='' />
-          <div>
-            <p className='text-xl font-semibold text-gray-600'>{dashData.doctors}</p>
-            <p className='text-gray-400'>Doctors</p>
-          </div>
-        </div>
+  {/* Appointments */}
+  <div className='flex items-center gap-2 bg-white p-4 min-w-52 rounded-lg border-2 border-gray-100 cursor-pointer hover:scale-105 transition-all'>
+    <FaCalendarAlt className='w-14 text-gray-600' />
+    <div>
+      <p className='text-xl font-semibold text-gray-600'>{dashData.appointments}</p>
+      <p className='text-gray-400'>Appointments</p>
+    </div>
+  </div>
 
-        {/* Appointments */}
-        <div className='flex items-center gap-2 bg-white p-4 min-w-52 rounded border-2 border-gray-100 cursor-pointer hover:scale-105 transition-all'>
-          <img className='w-14' src={assets.appointments_icon} alt='' />
-          <div>
-            <p className='text-xl font-semibold text-gray-600'>{dashData.appointments}</p>
-            <p className='text-gray-400'>Appointments</p>
-          </div>
-        </div>
+  {/* Users */}
+  <div className='flex items-center gap-2 bg-white p-4 min-w-52 rounded-lg border-2 border-gray-100 cursor-pointer hover:scale-105 transition-all'>
+    <FaUsers className='w-14 text-gray-600' />
+    <div>
+      <p className='text-xl font-semibold text-gray-600'>{dashData.patients}</p>
+      <p className='text-gray-400'>Users</p>
+    </div>
+  </div>
 
-        {/* Users */}
-        <div className='flex items-center gap-2 bg-white p-4 min-w-52 rounded border-2 border-gray-100 cursor-pointer hover:scale-105 transition-all'>
-          <img className='w-14' src={assets.patients_icon} alt='' />
-          <div>
-            <p className='text-xl font-semibold text-gray-600'>{dashData.patients}</p>
-            <p className='text-gray-400'>Users</p>
-          </div>
-        </div>
+  {/* Total Earnings */}
+  <div className='flex items-center gap-2 bg-white p-4 min-w-52 rounded-lg border-2 border-gray-100 cursor-pointer hover:scale-105 transition-all'>
+    <FaDollarSign className='w-14 text-gray-600' />
+    <div>
+      <p className='text-xl font-semibold text-gray-600'>${dashData.totalEarnings}</p>
+      <p className='text-gray-400'>Net Profit</p>
+    </div>
+  </div>
 
-        {/* Total Earnings */}
-        <div className='flex items-center gap-2 bg-white p-4 min-w-52 rounded border-2 border-gray-100 cursor-pointer hover:scale-105 transition-all'>
-          <img className='w-14' src={assets.earning_icon} alt='' />
-          <div>
-            <p className='text-xl font-semibold text-gray-600'>${dashData.totalEarnings}</p>
-            <p className='text-gray-400'>Net Profit</p>
-          </div>
-        </div>
+  {/* Total Sales */}
+  <div className='flex items-center gap-2 bg-white p-4 min-w-52 rounded-lg border-2 border-gray-100 cursor-pointer hover:scale-105 transition-all'>
+    <FaShoppingCart className='w-14 text-gray-600' />
+    <div>
+      <p className='text-xl font-semibold text-gray-600'>${dashData.totalSales}</p>
+      <p className='text-gray-400'>Total Sales</p>
+    </div>
+  </div>
 
-        {/* Total Sales */}
-        <div className='flex items-center gap-2 bg-white p-4 min-w-52 rounded border-2 border-gray-100 cursor-pointer hover:scale-105 transition-all'>
-          <img className='w-14' src={assets.sales_icon} alt='' /> {/* Add your sales icon here */}
-          <div>
-            <p className='text-xl font-semibold text-gray-600'>${dashData.totalSales}</p>
-            <p className='text-gray-400'>Total Sales</p>
-          </div>
-        </div>
-
-      </div>
+</div>
 
   <div className="chart grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
     {/* Total Sales Chart */}

@@ -75,55 +75,91 @@ export default function DoctorAppointment() {
         );
     }
 
+
+
     return (
-        <div onScroll={handleScroll} className='w-full max-w-6xl m-5'>
-            <p className='mb-3 text-lg font-medium'>Appointment Details</p>
-
-            <div className='bg-white border rounded text-sm max-h-[80vh] min-h-[50vh] overflow-y-scroll'>
-                <div className='max-sm:hidden grid grid-cols-[0.5fr_2fr_1fr_1fr_2fr_1fr_1fr] gap-1 py-3 px-6 border-b'>
-                    <p>#</p>
-                    <p>Patient</p>
-                    <p>Payment</p>
-                    <p>Age</p>
-                    <p>Date & Time</p>
-                    <p>Fees</p>
-                    <p>Action</p>
+        <div onScroll={handleScroll} className="w-full max-w-6xl m-5">
+            <p className="mb-5 text-lg font-medium text-gray-800">Appointments</p>
+    
+            <div className="bg-[#FCFCFC] border rounded-lg shadow-sm text-sm max-h-[80vh] min-h-[50vh] overflow-y-scroll overscroll-auto">
+                <div className="hidden sm:grid grid-cols-[2fr_2fr_1fr_2fr_1fr_1fr_1fr] gap-4 py-3 px-6 bg-gray-100 border-b">
+                    <p className="font-medium text-gray-700">Name</p>
+                    <p className="font-medium text-gray-700">Date & Time</p>
+                    <p className="font-medium text-gray-700">Payment</p>
+                    <p className="font-medium text-gray-700 text-center">Status</p>
+                    <p className="font-medium text-gray-700">Meeting</p>
+                    <p className="font-medium text-gray-700">Lab</p>
+                    <p className="font-medium text-gray-700">Prescription</p>
                 </div>
-
-                {[...appointments].reverse().map((item, index) => (
-                    <div key={index} className='flex flex-wrap justify-between max-sm:gap-5 max-sm:text-base sm:grid grid-cols-[0.5fr_2fr_1fr_1fr_2fr_1fr_1fr] gap-1 item-center text-gray-500 py-3 px-6 border-b hover:bg-gray-50'>
-                        <p className='max-sm:hidden'>{index + 1}</p>
-                        <div className='flex items-center gap-2'>
-                            <img className="w-8 rounded-full" src={item.userData.image} alt={item.userData.name} />
-                            <Link  to={`/session/${item._id}`} className='text-xs inline border border-primary px-2 rounded-full'>{item.userData.name}</Link>
+    
+                {[...appointments].map((item, index) => (
+                    <div
+                        key={index}
+                        className="flex flex-wrap sm:grid sm:grid-cols-[2fr_2fr_1fr_2fr_1fr_1fr_1fr] gap-4 items-center text-gray-600 py-4 px-6 border-b hover:bg-gray-50"
+                    >
+                        <div className="flex items-center gap-3">
+                            <img
+                                className="w-10 h-10 rounded-full"
+                                src={item.userData.image}
+                                alt={item.userData.name}
+                            />
+                            <p className="font-medium">{item.userData.name}</p>
                         </div>
-                        <p>{!item.payment ? "ONLINE" : "CASH"}</p>
-                        <p>{calculateAge(item.userData.dob)}</p>
-                        <p>{slotDateFormat(item.slotDate)}, {item.slotTime}</p>
-                        <p>{currency}{item.amount}</p>
-                        {
-                            item.cancelled 
-                            ? <p className='text-red-400 text-xs font-medium'>Cancelled</p>
-                            : item.isCompleted
-                            ? <p className='text-green-500 text-xs font-medium'>Completed</p>
-                            : <div className='flex items-center gap-2'>
-                                <img className="cursor-pointer w-10" onClick={() => cancelAppointment(item._id)} src={assets.cancel_icon} alt='Cancel' />
-                                <img className="cursor-pointer w-10" onClick={() => completeAppointment(item._id)} src={assets.tick_icon} alt='Confirm' />
+                        <p className="text-gray-500">{slotDateFormat(item.slotDate)}, {item.slotTime}</p>
+                        <p className="text-gray-500">{item.condition || "N/A"}</p>
+                        {item.cancelled ? (
+                            <p className="text-red-500 font-medium text-center">Cancelled</p>
+                        ) : item.isCompleted ? (
+                            <p className="text-green-500 font-medium text-center">Completed</p>
+                        ) : (
+                            <div className="flex justify-center items-center gap-2">
                                 <button
-                                    className='text-white bg-blue-500 hover:bg-blue-600 py-1 px-2 rounded text-xs'
-                                    onClick={() => startVideoCall(item._id)}
+                                    onClick={() => cancelAppointment(item._id)}
+                                    className="text-xs text-red-500 hover:underline"
                                 >
-                                    Start Appointment
+                                    Cancel
+                                </button>
+                                <button
+                                    onClick={() => completeAppointment(item._id)}
+                                    className="text-xs text-green-500 hover:underline"
+                                >
+                                    Complete
                                 </button>
                             </div>
-                        }
+                        )}
+                        <div>
+                            <button
+                                className="text-white bg-blue-500 hover:bg-blue-600 py-1 px-3 rounded text-xs"
+                                onClick={() => startVideoCall(item._id)}
+                            >
+                                Join
+                            </button>
+                        </div>
+                        <div>
+                            <button
+                                className="text-white bg-blue-500 hover:bg-blue-600 py-1 px-3 rounded text-xs"
+                                onClick={() => startVideoCall(item._id)}
+                            >
+                                Lab Result
+                            </button>
+                        </div>
+                        <div>
+                            <button
+                                className="text-white bg-blue-500 hover:bg-blue-600 py-1 px-3 rounded text-xs"
+                                onClick={() => startVideoCall(item._id)}
+                            >
+                                Prescription
+                            </button>
+                        </div>
                     </div>
                 ))}
-
-                {loading && <div className="spinner">Loading...</div>}
-
-                {!loading && appointments.length === 0 && <p>No appointments found.</p>}
+    
+                {loading && <div className="text-center py-4 text-gray-500">Loading...</div>}
+    
+                {!loading && appointments.length === 0 && (
+                    <p className="text-center py-4 text-gray-500">No appointments found.</p>
+                )}
             </div>
         </div>
     );
-}
+}    

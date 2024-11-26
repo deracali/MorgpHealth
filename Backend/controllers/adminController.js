@@ -206,7 +206,7 @@ const adminDashboard = async (req, res) => {
             doctors: doctors.length,
             appointments: appointments.length,
             patients: users.length,
-            latestAppointments: appointments.reverse().slice(0, 5),
+            latestAppointments: appointments.slice(0, 5),
             totalEarnings: totalEarnings.toFixed(2), // Earnings rounded to 2 decimal places
             totalSales: totalSales.toFixed(2), // Total sales rounded to 2 decimal places
             earningsChartData: totalEarningsData, // Add earnings data for the chart

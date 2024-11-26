@@ -46,10 +46,10 @@ const Withdrawal = () => {
 
         try {
             // Send the withdrawal data to the server
-            const withdrawalResponse = await axios.post(`http://localhost:4000/api/withdraws/add`, withdrawalData);
+            const withdrawalResponse = await axios.post(`https://morgphealth.onrender.com/api/withdraws/add`, withdrawalData);
             
             // Send the same amount to the decrement endpoint
-            const decrementResponse = await axios.put(`http://localhost:4000/api/doctor/balance/decrement/${docId}`, { amount: parseFloat(amount) });
+            const decrementResponse = await axios.put(`https://morgphealth.onrender.com/api/doctor/balance/decrement/${docId}`, { amount: parseFloat(amount) });
 
             // Handle successful responses
             if (withdrawalResponse.data.success && decrementResponse.data.success) {

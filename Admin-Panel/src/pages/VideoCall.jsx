@@ -91,7 +91,7 @@ export default function VideoCall() {
     };
 
     return (
-        <div className="flex items-center justify-center h-screen bg-gray-100">
+        <div className="flex items-center w-[100%] justify-center h-screen bg-gray-100">
             <div className="bg-white w-full max-w-4xl h-[80vh] p-6 rounded-lg shadow-md">
                 <h2 className="text-2xl font-bold mb-4 text-center">
                     Video Call for Appointment {appointmentId}
