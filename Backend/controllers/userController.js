@@ -62,7 +62,8 @@ const registerUser = async (req, res) => {
             success: true,
             token,
             userId: user._id,
-            insured: user.insured
+            insured: user.insured,
+            timer:user.timer
         });
     } catch (error) {
         console.error(error);
@@ -87,7 +88,8 @@ const loginUser = async (req, res) => {
          
             const insured = user.insured; 
             const userId = user._id; 
-            res.json({ success: true, token, insured, userId });
+            const timer = user.timer
+            res.json({ success: true, token, insured, userId, timer });
         } else {
             res.json({ success: false, message: "Invalid credentials" });
         }
