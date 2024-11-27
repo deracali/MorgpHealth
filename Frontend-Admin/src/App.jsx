@@ -25,6 +25,8 @@ import InsuranceFlutterWave from "./pages/InsuranceFlutter"
 import InsuranceStripe from "./pages/InsuranceStripe"
 import PaymentFailed from "./pages/PaymentFailed"
 import PaymentSuccess from "./pages/Paymentsuccess"
+import LabStripe from "./pages/LabStripe"
+import LabFlutterWave from "./pages/LabFlutterwave"
 
 
 function App() {
@@ -61,8 +63,8 @@ function App() {
          <Route path="/flutterwave/:docName/:userName/:userEmail/:docFees" element={<FlutterWave />} />
          <Route path="/insuranceflutterwave/:name/:email/:price" element={<InsuranceFlutterWave />} />
          <Route path="/insurancestripe/:name/:email/:price" element={<InsuranceStripe />} />
-         <Route path="/labstripe/:docName/:userName/:userEmail/:docEmail/:appointmentId/:fee" element={<InsuranceStripe />} />
-         <Route path="/labflutterwave/:docName/:userName/:userEmail/:docEmail/:appointmentId/:fee" element={<InsuranceFlutterWave />} />
+         <Route path="/labstripe/:docName/:userName/:userEmail/:docEmail/:appointmentId/:fee" element={<LabStripe />} />
+         <Route path="/labflutterwave/:docName/:userName/:userEmail/:docEmail/:appointmentId/:fee" element={<LabFlutterWave />} />
         </Routes>
       <Footer/>
         </div> 
