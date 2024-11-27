@@ -163,12 +163,12 @@ const updateProfile = async (req, res) => {
 const updateProfileMobile = async (req, res) => {
   try {
     // Extract fields from request body (image is handled via file or Base64)
-    const { userId, name, phoneNumber, email, gender, region } = req.body; 
+    const { userId, name, phoneNumber, email, gender, region, timer } = req.body; 
 
     // Find and update the user's profile data
     const updatedUser = await userModel.findByIdAndUpdate(
       userId,
-      { name, phoneNumber, email, gender, region },
+      { name, phoneNumber, email, gender, region,timer },
       { new: true } // Return the updated user
     );
 
