@@ -4,7 +4,7 @@ import {loadStripe} from "@stripe/stripe-js";
 
 
 const LabStripe = () => {
-  const { name,email,price } = useParams();
+  const { docName,docEmail,fee,appointmentId,userName,userEmail } = useParams();
 
   const handleToken = async () => {
     const stripe = await loadStripe("pk_test_51QN8mWG2ozhLuxUAf8fdoD3MqAQnfNsZZoZdbc1fRx1fHUWRbpLjbGfdeR5VEAGOVCAUqH9hrlaJPQ5lEpAmrt7q00kPKajlEa");
