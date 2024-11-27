@@ -2,7 +2,7 @@ import React from "react";
 import { useFlutterwave, closePaymentModal } from "flutterwave-react-v3";
 import { useParams, useNavigate } from "react-router-dom";
 
-const InsuranceFlutterWave = () => {
+const LabFlutterWave = () => {
   // Extract docName and userName from URL parameters
   const { docName,docEmail,fee,userName,userEmail,appointmentId } = useParams();
   const navigate = useNavigate();
@@ -126,7 +126,7 @@ const InsuranceFlutterWave = () => {
   );
 };
 
-export default InsuranceFlutterWave;
+export default LabFlutterWave;
 
 
 

@@ -1,7 +1,9 @@
 import React from "react";
 import { useParams } from "react-router-dom";
 import {loadStripe} from "@stripe/stripe-js";
-const InsuranceStripe = () => {
+
+
+const LabStripe = () => {
   const { name,email,price } = useParams();
 
   const handleToken = async () => {
@@ -93,4 +95,4 @@ const InsuranceStripe = () => {
   );
 };
 
-export default InsuranceStripe;
+export default LabStripe;
