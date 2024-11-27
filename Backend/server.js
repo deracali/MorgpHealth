@@ -141,6 +141,24 @@ app.post('/create-intentss', async (req, res) => {
 
 
 
+app.get('/api/usertimer/timer-status/:userId', async (req, res) => {
+  const { userId } = req.params;
+
+  try {
+    // Fetch the user's timer status from the database
+    const user = await User.findById(userId);
+    if (user) {
+      return res.json({ timer: user.timer }); // Return the timer status to the frontend
+    } else {
+      return res.status(404).json({ message: "User not found" });
+    }
+  } catch (error) {
+    console.error("Error fetching user timer status:", error);
+    res.status(500).json({ message: "Server error" });
+  }
+});
+
+
 // Define your routes
 app.use('/api/admin', adminRouter);
 app.use('/api/doctor', doctorRouter);
