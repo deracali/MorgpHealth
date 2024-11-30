@@ -3,7 +3,7 @@ import { useParams } from "react-router-dom";
 import {loadStripe} from "@stripe/stripe-js";
 const InsuranceStripe = () => {
   const { name,email,price } = useParams();
-
+console.log(name,email,price)
   const handleToken = async () => {
     const stripe = await loadStripe("pk_test_51QN8mWG2ozhLuxUAf8fdoD3MqAQnfNsZZoZdbc1fRx1fHUWRbpLjbGfdeR5VEAGOVCAUqH9hrlaJPQ5lEpAmrt7q00kPKajlEa");
     

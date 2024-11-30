@@ -5,109 +5,183 @@ import doctorModel from "../models/doctorsModel.js";
 import cloudinary from 'cloudinary';
 import appointmentModel from "../models/appointmentModel.js";
 import userModel from "../models/userModel.js";
+import Staff from '../models/staffModel.js';
+
 
 // Access the 'vs' property if it exists on the cloudinary object
 
 const { v2: cloudinaryV2 } = cloudinary; 
 
 const addDoctor = async (req, res) => {
+  try {
+    const {
+      name,
+      email,
+      password,
+      speciality,
+      degree,
+      experience,
+      about,
+      fees,
+      address,
+      age,
+      gender,
+      region,
+      universityName,
+      universityCountry,
+      medicalCouncilName,
+      medicalCouncilCountry,
+      graduationYear,
+      balance,
+      image: imageBody,
+      medicalLicense: licenseBody,
+      diplomaCertificates: diplomaBody,
+      proofOfID: proofIDBody
+    } = req.body;
+
+    // Destructure files from req.files if available
+    const { image, medicalLicense, diplomaCertificates, proofOfID } = req.files || {};
+
+    // Check if email already exists
+    const existingDoctor = await doctorModel.findOne({ email });
+    if (existingDoctor) {
+      return res.status(400).json({ success: false, message: 'Email already exists' });
+    }
+
+    // Hash the password
+    const salt = await bcrypt.genSalt(10);
+    const hashedPassword = await bcrypt.hash(password, salt);
+
+    // Placeholder image URL
+    const placeholderImageUrl = 'https://example.com/placeholder-image.jpg';
+
+    const uploadToCloudinary = async (file) => {
+      if (!file) return null;
+
+      try {
+        if (file.startsWith('data:image')) {
+          const uploadResult = await cloudinaryV2.uploader.upload(file, { resource_type: 'image' });
+          return uploadResult.secure_url;
+        } else if (file.startsWith('http')) {
+          const uploadResult = await cloudinaryV2.uploader.upload(file, { resource_type: 'image' });
+          return uploadResult.secure_url;
+        } else if (file.path) {
+          const uploadResult = await cloudinaryV2.uploader.upload(file.path, { resource_type: 'image' });
+          return uploadResult.secure_url;
+        }
+      } catch (error) {
+        console.error('Cloudinary upload error:', error);
+        return null;
+      }
+    };
+
+    // Upload images based on availability (files or body data)
+    const imageUrl = await uploadToCloudinary(image && image[0] ? image[0] : imageBody) || placeholderImageUrl;
+    const medicalLicenseUrl = await uploadToCloudinary(medicalLicense && medicalLicense[0] ? medicalLicense[0] : licenseBody);
+    const diplomaCertificatesUrl = await uploadToCloudinary(diplomaCertificates && diplomaCertificates[0] ? diplomaCertificates[0] : diplomaBody);
+    const proofOfIDUrl = await uploadToCloudinary(proofOfID && proofOfID[0] ? proofOfID[0] : proofIDBody);
+
+    // Create doctor data object
+    const doctorData = {
+      name: name || null,
+      email: email || null,
+      password: hashedPassword,
+      speciality: speciality || '',
+      degree: degree || null,
+      experience: experience || null,
+      about: about || null,
+      fees: fees || null,
+      address: address || null,
+      age: age || null,
+      gender: gender || null,
+      region: region || null,
+      universityName: universityName || null,
+      universityCountry: universityCountry || null,
+      medicalCouncilName: medicalCouncilName || null,
+      medicalCouncilCountry: medicalCouncilCountry || null,
+      graduationYear: graduationYear || null,
+      image: imageUrl,
+      medicalLicense: medicalLicenseUrl,
+      diplomaCertificates: diplomaCertificatesUrl,
+      proofOfID: proofOfIDUrl,
+      balance: balance || 0
+    };
+
+    // Save new doctor to the database
+    const newDoctor = new doctorModel(doctorData);
+    await newDoctor.save();
+
+    res.json({ success: true, message: 'Doctor Added Successfully' });
+  } catch (error) {
+    console.error(error);
+    res.json({ success: false, message: error.message });
+  }
+};
+
+  
+
+  const loginAdmin = async (req, res) => {
     try {
-      const {
-        name,
-        email,
-        password,
-        speciality,
-        degree,
-        experience,
-        about,
-        fees,
-        address,
-        age,
-        gender,
-        region,
-        universityName,
-        universityCountry,
-        medicalCouncilName,
-        medicalCouncilCountry,
-        graduationYear,
-        balance
-      } = req.body;
+      const { email, password } = req.body;
   
-      // Destructure files from req.files
-      const { image, medicalLicense, diplomaCertificates, proofOfID } = req.files || {};
+      // Find the staff by email
+      const staff = await Staff.findOne({ email });
+      if (!staff) {
+        return res.status(404).json({ success: false, message: 'User not found' });
+      }
   
-      // Hash the password
-      const salt = await bcrypt.genSalt(10);
-      const hashedPassword = await bcrypt.hash(password, salt);
+      // Compare the entered password with the stored hashed password
+      const isMatch = await bcrypt.compare(password, staff.password); // Use bcrypt.compare to compare hashed password
+      if (!isMatch) {
+        return res.status(401).json({ success: false, message: 'Invalid credentials' });
+      }
   
-      // Define a placeholder image URL
-      const placeholderImageUrl = 'https://example.com/placeholder-image.jpg';
+      // Set last login time
+      staff.lastLogin = new Date(); // Update last login time
+      await staff.save();
   
-      // Upload images to Cloudinary and handle potential errors
-      const uploadImage = async (file) => {
-        if (!file) return null;
-        const uploadResult = await cloudinaryV2.uploader.upload(file.path, { resource_type: 'image' });
-        return uploadResult.secure_url;
-      };
+      // Generate JWT token
+      const token = jwt.sign({ id: staff._id, email: staff.email, admin: staff.admin }, process.env.JWT_SECRET, { expiresIn: '1d' });
   
-      // Upload files and store their URLs, if files exist
-      const imageUrl = await uploadImage(image && image[0] ? image[0] : null) || placeholderImageUrl;
-      const medicalLicenseUrl = await uploadImage(medicalLicense && medicalLicense[0] ? medicalLicense[0] : null);
-      const diplomaCertificatesUrl = await uploadImage(diplomaCertificates && diplomaCertificates[0] ? diplomaCertificates[0] : null);
-      const proofOfIDUrl = await uploadImage(proofOfID && proofOfID[0] ? proofOfID[0] : null);
-  
-      // Create doctor data object
-      const doctorData = {
-        name: name || null,
-        email: email || null,
-        password: hashedPassword,
-        speciality: speciality || '',
-        degree: degree || null,
-        experience: experience || null,
-        about: about || null,
-        fees: fees || null,
-        address: address || null,
-        age: age || null,
-        gender: gender || null,
-        region: region || null,
-        universityName: universityName || null,
-        universityCountry: universityCountry || null,
-        medicalCouncilName: medicalCouncilName || null,
-        medicalCouncilCountry: medicalCouncilCountry || null,
-        graduationYear: graduationYear || null,
-        image: imageUrl,
-        medicalLicense: medicalLicenseUrl,
-        diplomaCertificates: diplomaCertificatesUrl,
-        proofOfID: proofOfIDUrl,
-        balance: balance || 0
-      };
-  
-      // Save new doctor to the database
-      const newDoctor = new doctorModel(doctorData);
-      await newDoctor.save();
-  
-      res.json({ success: true, message: 'Doctor Added Successfully' });
+      // Send success response with token and admin status
+      res.json({
+        success: true,
+        token,
+        _id: staff._id,
+        admin: staff.admin,
+        message: 'User logged in successfully',
+      });
     } catch (error) {
       console.error(error);
-      res.json({ success: false, message: error.message });
+      res.status(500).json({ success: false, message: 'Server error' });
+    }
+  };
+
+
+
+  
+  // On logout:
+  const logoutAdmin = async (req, res) => {
+    try {
+      const { id } = req.params; // Assuming you attach the user object from the token
+  
+      const staff = await Staff.findById(id);
+      if (!staff) {
+        return res.status(404).json({ success: false, message: 'User not found' });
+      }
+  
+      const now = new Date();
+      const duration = Math.floor((now - staff.lastLogin) / 1000); // Calculate duration in seconds
+      staff.onlineDuration += duration;
+      await staff.save();
+  
+      res.json({ success: true, message: 'User logged out successfully' });
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ success: false, message: 'Server error' });
     }
   };
   
-
-const loginAdmin = async (req, res) => {
-    try {
-        const { email, password } = req.body;
-        if (email === process.env.ADMIN_EMAIL && password === process.env.ADMIN_PASSWORD) {
-            const token = jwt.sign(email + password, process.env.JWT_SECRET);
-            res.json({ success: true, token });
-        } else {
-            res.json({ success: false, message: "Invalid credentials" });
-        }
-    } catch (error) {
-        console.log(error);
-        res.json({ success: false, message: error.message });
-    }
-};
 
 // API to get all doctors list for admin panel
 const allDoctors = async (req, res) => {
@@ -119,6 +193,54 @@ const allDoctors = async (req, res) => {
         res.json({ success: false, message: error.message });
     }
 };
+
+
+// Controller function to get all users
+
+const getAllUsers = async (req, res) => {
+  try {
+    const users = await userModel.find(); // Fetch all users
+    res.status(200).json({
+      success: true,
+      data: users,
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: 'Failed to fetch users',
+      error: error.message,
+    });
+  }
+};
+
+// Controller function to delete a user by ID
+const deleteUser = async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    const user = await userModel.findByIdAndDelete(id);
+
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: 'User not found',
+      });
+    }
+
+    res.status(200).json({
+      success: true,
+      message: 'User deleted successfully',
+      data: user, // Returning the deleted user for reference
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: 'Failed to delete user',
+      error: error.message,
+    });
+  }
+};
+
 
 const appointmentsAdmin = async (req, res) => {
     try {
@@ -232,4 +354,4 @@ const adminDashboard = async (req, res) => {
     }
 };
 
-export { addDoctor, loginAdmin, allDoctors, appointmentsAdmin, appointmentCancel, adminDashboard };
+export { addDoctor, loginAdmin,logoutAdmin, allDoctors,getAllUsers,deleteUser, appointmentsAdmin, appointmentCancel, adminDashboard };

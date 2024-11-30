@@ -12,7 +12,7 @@ const PaymentSuccess = () => {
       </div>
       <p className="text-gray-600 text-lg text-center mb-7">Payment made successfully</p>
       <button
-        onClick={() => navigate("/home")}
+        onClick={() => navigate("/")}
         className="bg-blue-500 text-white text-lg font-bold py-3 px-8 rounded-md w-4/5"
       >
         Continue

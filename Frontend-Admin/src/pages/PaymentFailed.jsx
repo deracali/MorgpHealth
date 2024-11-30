@@ -12,7 +12,7 @@ const PaymentFailed = () => {
       </div>
       <p className="text-gray-600 text-lg text-center mb-7">Payment failed. Please try again.</p>
       <button
-        onClick={() => navigate("/payment")}
+        onClick={() => navigate("/")}
         className="bg-red-500 text-white text-lg font-bold py-3 px-8 rounded-md w-4/5"
       >
         Retry Payment

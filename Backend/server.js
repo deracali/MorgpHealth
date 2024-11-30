@@ -18,6 +18,7 @@ import staffRouter from './routes/staffRoute.js';
 import blogRouter from './routes/blogRoute.js';
 import  notificationRouter from "./routes/notificationRoute.js";
 import Stripe from 'stripe';
+import User from './models/userModel.js'
 
 // Initialize Stripe with the secret key
 const stripe = Stripe(process.env.STRIPE_SECRET_KEY);
@@ -31,7 +32,7 @@ connectCloudinary();
 app.use(express.json());
 app.use(cors({
     origin: '*', // or the correct frontend URL
-    methods: ['GET', 'POST', 'PUT', 'DELETE'],
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH'],
      allowedHeaders: ['Content-Type', 'Authorization', 'token', 'dtoken', 'atoken'], 
   }));
 

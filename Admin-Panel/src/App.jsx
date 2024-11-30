@@ -37,7 +37,7 @@ function App() {
        <div className="flex items-start">
         <SideBar/>
         <Routes>
-          <Route path='/dashboard' element={<Dashboard/>}/>
+          <Route path='/' element={<Dashboard/>}/>
           <Route path='/all-appointment' element={<AllAppointment/>}/>
           <Route path='/add-doctor' element={<AddDoctor/>}/>
           <Route path='/doctor-list' element={<DoctorList/>}/>

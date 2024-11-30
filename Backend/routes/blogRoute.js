@@ -26,6 +26,6 @@ const upload = multer({ storage, fileFilter });
 // Blog routes
 blogRouter.post('/create', upload.single('image'), createBlog);
 blogRouter.get('/', getBlogs);
-blogRouter.delete('/:id', deleteBlog);
+blogRouter.delete('/delete/:id', deleteBlog);
 
 export default blogRouter;

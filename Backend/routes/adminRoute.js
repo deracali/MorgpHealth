@@ -7,7 +7,10 @@ import {
     allDoctors, 
     appointmentCancel, 
     appointmentsAdmin, 
-    loginAdmin 
+    deleteUser, 
+    getAllUsers, 
+    loginAdmin, 
+    logoutAdmin
 } from '../controllers/adminController.js';
 import { changeAvailablity } from '../controllers/doctorController.js';
 import upload from '../middlewares/multer.js'; // This remains as 'upload'
@@ -24,7 +27,10 @@ const adminUpload = upload.fields([
 
 adminRouter.post('/add-doctor', adminUpload, addDoctor);
 adminRouter.post('/login', loginAdmin);
+adminRouter.post('/logout/:id', logoutAdmin);
 adminRouter.post('/all-doctors', allDoctors);
+adminRouter.get('/all-users', getAllUsers);
+adminRouter.post('/delete-user', deleteUser);
 adminRouter.post('/change-availability', changeAvailablity);
 adminRouter.get('/appointments', appointmentsAdmin);
 adminRouter.post('/cancel-appointment', appointmentCancel);

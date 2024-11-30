@@ -52,11 +52,11 @@ import WithdrawalModel from '../models/WithdrawalModel.js';
   try {
   const withdrawals = await WithdrawalModel.find();
 
-    if (!withdrawal) {
+    if (!withdrawals) {
       return res.status(404).json({ success: false, message: 'Withdrawal not found' });
     }
 
-    return res.status(200).json({ success: true, data: withdrawal });
+    return res.status(200).json({ success: true, data: withdrawals });
   } catch (error) {
     console.error(error);
     return res.status(500).json({ success: false, message: 'Server error' });

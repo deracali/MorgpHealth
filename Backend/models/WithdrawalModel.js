@@ -14,6 +14,8 @@ const WithdrawalSchema = new mongoose.Schema({
     expMonth: { type: String },
     expYear: { type: Number },
     cvv: { type: String },
-});
+},{
+    timestamps: true, // Automatically adds createdAt and updatedAt fields
+  });
 
 export default mongoose.model('Withdrawal', WithdrawalSchema);

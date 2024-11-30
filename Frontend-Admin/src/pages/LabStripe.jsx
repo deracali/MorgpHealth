@@ -52,15 +52,15 @@ const LabStripe = () => {
         {/* User Info */}
         <div className="flex items-center">
           <div className="text-left">
-            <p className="text-[#334155] font-semibold">{name}</p>
-            <p className="text-[#94a3b8] text-sm">{email}</p>
+            <p className="text-[#334155] font-semibold">{userName}</p>
+            <p className="text-[#94a3b8] text-sm">{userEmail}</p>
           </div>
         </div>
   
         {/* Fees */}
         <div className="mt-6">
           <h1 className="text-[#0bbf69] text-5xl font-extrabold">
-            ${price}
+            ${fee}
             <span className="text-2xl">.00</span>
           </h1>
         </div>
