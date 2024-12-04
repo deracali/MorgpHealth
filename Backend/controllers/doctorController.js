@@ -135,16 +135,21 @@ const loginDoctor = async (req, res) => {
     }
 };
 
-const appointmentsDoctor = async (req,res) => {
-    try {
-        const { docId } = req.params;
-        const appointments = await appointmentModel.find({docId}).populate('userId', 'age gender region'); // Populate userId to get age, gender, and region
+const appointmentsDoctor = async (req, res) => {
+  try {
+      const { docId } = req.params;
 
-        res.json({success:true,appointments});
-    } catch (error) {
-        res.json({success:false,message:error.message});
-    }
-}
+      // Find appointments for the doctor and sort by createdAt descending
+      const appointments = await appointmentModel
+          .find({ docId })
+          .populate('userId', 'age gender region') // Populate userId to get additional details
+          .sort({ createdAt: -1 }); // -1 for descending, 1 for ascending
+
+      res.json({ success: true, appointments });
+  } catch (error) {
+      res.json({ success: false, message: error.message });
+  }
+};
 
 
 
