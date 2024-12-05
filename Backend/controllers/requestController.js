@@ -2,34 +2,34 @@ import Request from '../models/requestModal.js';
 
 // Create a new request
 const createRequest = async (req, res) => {
-  try {
-    const { username, userEmail, userMessage } = req.body;
-
-    // Validate input fields
-    if (!username || !userEmail || !userMessage) {
-      return res.status(400).json({ error: 'All fields are required.' });
+    try {
+      const { username, userEmail, chatMessages } = req.body;
+  
+      // Validate input fields
+      if (!username || !userEmail || !Array.isArray(chatMessages) || chatMessages.length === 0) {
+        return res.status(400).json({ error: 'Username, userEmail, and chatMessages are required, and chatMessages must be a non-empty array.' });
+      }
+  
+      // Create a new Request document
+      const newRequest = new Request({
+        username,
+        userEmail,
+        chatMessages, // Save the entire array of messages
+      });
+  
+      // Save the new request to the database
+      await newRequest.save();
+  
+      return res.status(201).json({
+        message: 'Request created successfully.',
+        data: newRequest,
+      });
+    } catch (error) {
+      console.error(error);
+      return res.status(500).json({ error: 'Server error, please try again later.' });
     }
-
-    // Create a new Request document
-    const newRequest = new Request({
-      username,
-      userEmail,
-      userMessage,
-      botResponse: 'I am here to help!',  // You can modify this logic
-    });
-
-    // Save the new request to the database
-    await newRequest.save();
-
-    return res.status(201).json({
-      message: 'Request created successfully.',
-      data: newRequest,
-    });
-  } catch (error) {
-    console.error(error);
-    return res.status(500).json({ error: 'Server error, please try again later.' });
-  }
-};
+  };
+  
 
 // Delete a request by ID
 const deleteRequest = async (req, res) => {
