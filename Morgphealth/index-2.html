@@ -278,6 +278,7 @@
                 <li class="nav-item"><a class="nav-link" href="pages/forms/basic_elements.html">Staff Form</a></li>
                 <!-- <li class="nav-item"><a class="nav-link" href="pages/forms/advanced_elements.html">Advanced Elements</a></li> -->
                 <li class="nav-item"><a class="nav-link" href="pages/forms/validation.html">Blog Form</a></li>
+                <li class="nav-item"><a class="nav-link" href="pages/forms/wizard.html">Appointment Form</a></li>
                 <!-- <li class="nav-item"><a class="nav-link" href="pages/forms/wizard.html">Wizard</a></li> -->
               </ul>
             </div>
@@ -308,6 +309,7 @@
                 <li class="nav-item"> <a class="nav-link" href="pages/tables/data-table.html">Users table</a></li>
                 <li class="nav-item"> <a class="nav-link" href="pages/tables/js-grid.html">Doctors</a></li>
                 <li class="nav-item"> <a class="nav-link" href="pages/tables/sortable-table.html">Appointment table</a>
+                <li class="nav-item"> <a class="nav-link" href="pages/tables/Requests.html">Notice</a>
                 </li>
               </ul>
             </div>
@@ -1118,24 +1120,27 @@
 
 
   <script>
+    let totalEarnings = 0; // Declare totalEarnings globally
+    let totalSales = 0; // Declare totalSales globally
+  
     fetch('https://morgphealth.onrender.com/api/admin/dashboard')
       .then(response => response.json())
       .then(data => {
         if (data.success) {
           const dashData = data.dashData;
-
+  
           // Get total earnings and total sales
-          const totalEarnings = parseFloat(dashData.totalEarnings);
-          const totalSales = parseFloat(dashData.totalSales);
-
+          totalEarnings = parseFloat(dashData.totalEarnings);
+          totalSales = parseFloat(dashData.totalSales);
+  
           // Update Total Earnings
           document.getElementById('totalEarningsDisplay').innerHTML = totalEarnings +
             ' <span class="text-muted h4 font-weight-normal">Sales</span>';
-
+  
           // Update Total Sales
           document.getElementById('totalSalesDisplay').innerHTML = totalSales +
             ' <span class="text-muted h4 font-weight-normal">Sales</span>';
-
+  
           // Initialize Total Earnings Chart (Bar Chart)
           var options1 = {
             chart: {
@@ -1188,10 +1193,10 @@
               }
             }
           };
-
+  
           var chart1 = new ApexCharts(document.querySelector("#sales-chart-1"), options1);
           chart1.render();
-
+  
           // Initialize Total Sales Chart (Line Chart)
           var options2 = {
             chart: {
@@ -1238,13 +1243,74 @@
               }
             }
           };
-
+  
           var chart2 = new ApexCharts(document.querySelector("#total-sales-chart"), options2);
           chart2.render();
+  
+          // Add event listener to download JSON button
+          document.getElementById('download-json-btn').addEventListener('click', function () {
+            // Prepare the chart data in JSON format (including both Total Earnings and Total Sales)
+            const earningsData = {
+              totalEarnings: totalEarnings,
+              totalSales: totalSales
+            };
+  
+            // Trigger download of the data as JSON
+            downloadJSON([earningsData]);
+          });
+  
+          // Add event listener to download CSV button
+          document.getElementById('download-csv-btn').addEventListener('click', function () {
+            // Prepare the chart data in an array format (including both Total Earnings and Total Sales)
+            const earningsData = [{
+              label: 'Total Earnings',
+              value: totalEarnings
+            }, {
+              label: 'Total Sales',
+              value: totalSales
+            }];
+  
+            // Trigger download of the combined data as CSV
+            downloadCSV(earningsData);
+          });
         }
       })
       .catch(error => console.error('Error fetching data:', error));
+  
+    // Function to convert chart data to CSV
+    function convertToCSV(data) {
+      const rows = [];
+      const headers = Object.keys(data[0]); // Get headers from data object
+      rows.push(headers.join(',')); // Add headers to CSV
+  
+      // Loop through the data and create CSV rows
+      data.forEach(row => {
+        rows.push(Object.values(row).join(','));
+      });
+  
+      return rows.join('\n'); // Join all rows with a newline character
+    }
+  
+    // Function to trigger CSV download
+    function downloadCSV(data, filename = 'chart-data.csv') {
+      const csv = convertToCSV(data);
+      const blob = new Blob([csv], { type: 'text/csv' });
+      const link = document.createElement('a');
+      link.href = URL.createObjectURL(blob);
+      link.download = filename;
+      link.click();
+    }
+  
+    // Function to trigger JSON download
+    function downloadJSON(data, filename = 'chart-data.json') {
+      const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+      const link = document.createElement('a');
+      link.href = URL.createObjectURL(blob);
+      link.download = filename;
+      link.click();
+    }
   </script>
+  
 
 
 

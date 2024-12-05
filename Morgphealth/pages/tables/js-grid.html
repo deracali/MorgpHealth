@@ -236,7 +236,7 @@
             <div class="collapse" id="form-elements">
               <ul class="nav flex-column sub-menu">
                 <li class="nav-item"><a class="nav-link" href="../forms/basic_elements.html">Staff Form</a></li>                
-              
+                <li class="nav-item"><a class="nav-link" href="../forms/wizard.html">Appointment Form</a></li>
                 <li class="nav-item"><a class="nav-link" href="../forms/validation.html">Blog Form</a></li>
               </ul>
             </div>
@@ -363,7 +363,7 @@
                   <div class="search-panel d-flex mb-4">
                       <label class="d-flex align-items-center mr-3 mb-0">
                           <span class="mr-2">Search:</span>
-                          <input type="text" id="searchField" class="form-control form-control-sm" placeholder="Search by name, email, or specialty">
+                          <input type="text" id="searchFields" class="form-control form-control-sm" placeholder="Search by name, email, or specialty">
                       </label>
                   </div>
                   
@@ -371,21 +371,21 @@
                   <div class="sort-panel d-flex align-items-center mb-4">
                       <label class="d-flex align-items-center mr-3 mb-0">
                           <span class="mr-2">Sort By:</span>
-                          <select id="sortingField" class="form-control form-control-sm">
+                          <select id="sortingFields" class="form-control form-control-sm">
                               <option>Name</option>
                               <option>Specialty</option>
                               <option>Degree</option>
                               <option>Experience</option>
                           </select>
                       </label>
-                      <button type="button" id="sort" class="btn btn-info btn-sm ml-2">Sort</button>
+                      <button type="button" id="sorts" class="btn btn-info btn-sm ml-2">Sort</button>
                   </div>
               
                   <!-- Entries Display Panel -->
                   <div class="entries-panel d-flex align-items-center mb-4">
                       <label class="d-flex align-items-center mr-3 mb-0">
                           <span class="mr-2">Show:</span>
-                          <select id="entriesCount" class="form-control form-control-sm">
+                          <select id="entriesCounts" class="form-control form-control-sm">
                               <option value="10">10</option>
                               <option value="30" selected>30</option>
                               <option value="50">50</option>
@@ -697,41 +697,40 @@
         const response = await fetch(url, {
             method: 'POST',
             headers: {
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/json',
             },
-            body: JSON.stringify({ success: true })
+            body: JSON.stringify({ success: true }),
         });
 
         const data = await response.json();
-        const doctors = data.doctors; // Array of doctor objects
-        console.log(doctors[0])
-        let filteredDoctors = [...doctors];  // Start with all doctors
+        const doctors = data.doctors || []; // Fallback to an empty array if no data
+        let filteredDoctors = [...doctors]; // Start with all doctors
         const tableBody = document.getElementById("doctorTable");
 
         // Function to generate table rows dynamically
         function generateTableRows(doctors) {
-            tableBody.innerHTML = '';  // Clear existing table rows
+            tableBody.innerHTML = ''; // Clear existing table rows
             doctors.forEach(doctor => {
                 const row = document.createElement("tr");
 
                 const doctoridCell = document.createElement("td");
-                doctoridCell.textContent = doctor._id;
+                doctoridCell.textContent = doctor._id || "N/A";
                 row.appendChild(doctoridCell);
-                
+
                 const nameCell = document.createElement("td");
-                nameCell.textContent = doctor.name;
+                nameCell.textContent = doctor.name || "N/A";
                 row.appendChild(nameCell);
 
                 const specialtyCell = document.createElement("td");
-                specialtyCell.textContent = doctor.speciality;
+                specialtyCell.textContent = doctor.speciality || "N/A";
                 row.appendChild(specialtyCell);
 
                 const degreeCell = document.createElement("td");
-                degreeCell.textContent = doctor.degree;
+                degreeCell.textContent = doctor.degree || "N/A";
                 row.appendChild(degreeCell);
 
                 const experienceCell = document.createElement("td");
-                experienceCell.textContent = doctor.experience;
+                experienceCell.textContent = doctor.experience || "N/A";
                 row.appendChild(experienceCell);
 
                 const availabilityCell = document.createElement("td");
@@ -744,11 +743,12 @@
 
         // Function to filter doctors based on search input
         function filterDoctors(query) {
+            const lowerCaseQuery = query.toLowerCase(); // Normalize the query to lowercase
             filteredDoctors = doctors.filter(doctor => {
                 return (
-                    doctor.name.toLowerCase().includes(query.toLowerCase()) ||
-                    doctor.email.toLowerCase().includes(query.toLowerCase()) ||
-                    doctor.speciality.toLowerCase().includes(query.toLowerCase())
+                    (doctor.name?.toLowerCase().includes(lowerCaseQuery)) || // Check name
+                    (doctor.email?.toLowerCase().includes(lowerCaseQuery)) || // Check email
+                    (doctor.speciality?.toLowerCase().includes(lowerCaseQuery)) // Check speciality
                 );
             });
             updateTableDisplay();
@@ -756,7 +756,7 @@
 
         // Function to update table display based on selected entries count
         function updateTableDisplay() {
-            const entriesCount = parseInt(document.getElementById("entriesCount").value);
+            const entriesCount = parseInt(document.getElementById("entriesCounts").value, 10);
             const doctorsToDisplay = filteredDoctors.slice(0, entriesCount);
             generateTableRows(doctorsToDisplay);
         }
@@ -765,37 +765,30 @@
         updateTableDisplay();
 
         // Handle search input event
-        document.getElementById("searchField").addEventListener("input", (e) => {
+        document.getElementById("searchFields").addEventListener("input", (e) => {
+            console.log('Search Query:', e.target.value); // Debugging search input
             filterDoctors(e.target.value);
         });
 
         // Sorting functionality
         document.getElementById("sort").addEventListener("click", () => {
-            const sortingField = document.getElementById("sortingField").value;
-
-            const sortedDoctors = [...filteredDoctors].sort((a, b) => {
-                if (sortingField === "Name") {
-                    return a.name.localeCompare(b.name);
-                } else if (sortingField === "Specialty") {
-                    return a.speciality.localeCompare(b.speciality);
-                } else if (sortingField === "Degree") {
-                    return a.degree.localeCompare(b.degree);
-                } else if (sortingField === "Experience") {
-                    return parseInt(a.experience) - parseInt(b.experience);
+            const sortingField = document.getElementById("sortingFields").value.toLowerCase();
+            filteredDoctors.sort((a, b) => {
+                if (sortingField === "experience") {
+                    return parseInt(a.experience || 0, 10) - parseInt(b.experience || 0, 10);
                 }
-                return 0;
+                return (a[sortingField]?.toLowerCase() || "").localeCompare(b[sortingField]?.toLowerCase() || "");
             });
-
-            filteredDoctors = sortedDoctors;
             updateTableDisplay();
         });
 
         // Handle entries count change
-        document.getElementById("entriesCount").addEventListener("change", () => {
+        document.getElementById("entriesCounts").addEventListener("change", () => {
             updateTableDisplay();
         });
     });
 </script>
+
 
 
 

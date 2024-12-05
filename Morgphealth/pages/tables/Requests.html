@@ -288,111 +288,40 @@
           <div class="row">
             <div class="col-12 grid-margin">
              <!-- All Appointments Table -->
-<div class="card">
-  <div class="card-body">
-    <h4 class="card-title">Appointment List</h4>
-    <p class="page-description">Search appointments by ID</p>
-    
-    <div class="row">
-      <div class="col-lg-4 col-md-6 col-sm-12">
-        <input type="text" id="searchAppointments" class="form-control" placeholder="Search by Appointment ID">
-      </div>
-    </div>
-
-    <div class="row mt-3">
-      <div class="col-lg-2 col-md-4 col-sm-6">
-        <select id="entries-select" class="form-control">
-          <option value="10">10</option>
-          <option value="20" selected>20</option>
-          <option value="50">50</option>
-          <option value="100">100</option>
-          <option value="200">200</option>
-          <option value="500">500</option>
-        </select>
-      </div>
-    </div>
-
-
-        <!-- Overlay and Popup Container -->
-        <div id="popup-overlay" class="popup-overlay"></div>
-        <div id="popup-container"></div>
-
-    <div class="table-sorter-wrapper col-lg-12 table-responsive">
-      <table id="sortable-table-1" class="table">
-        <thead>
-          <tr>
-            <th>Appointment ID</th>
-            <th>User Name</th>
-            <th>User Email</th>
-            <th>Doctor Name</th>
-            <th>Doctor Email</th>
-            <th>Slot Date</th>
-            <th>Slot Time</th>
-            <th>Action</th>
-          </tr>
-        </thead>
-        <tbody id="appointments-table-body-all">
-          <!-- All appointments will be populated dynamically -->
-        </tbody>
-      </table>
-    </div>
-  </div>
-</div>
+             <div class="card">
+                <div class="card-body">
+                  <h4 class="card-title">Notifications</h4>
+                  <p class="page-description">Recent notices</p>
+              
+                  <div class="table-sorter-wrapper col-lg-12 table-responsive">
+                    <table id="sortable-table-1" class="table">
+                      <thead>
+                        <tr>
+                          <th>Title</th>
+                          <th>Content</th>
+                          <th>Created At</th>
+                          <th>Action</th>
+                        </tr>
+                      </thead>
+                      <tbody id="notices-table-body">
+                        <!-- Notices will be populated dynamically -->
+                      </tbody>
+                    </table>
+                  </div>
+              
+                  <!-- Load More Button -->
+                  <div class="load-more-container">
+                    <button id="load-more-btn" class="btn btn-primary">Load More</button>
+                  </div>
+                </div>
+              </div>
+              
+              
 
               
               
             </div>
-            <div class="col-12 grid-margin">
-              <!-- Completed Appointments Table -->
-<div class="card">
-  <div class="card-body">
-    <h4 class="card-title">Completed Appointments</h4>
-    <p class="page-description">List of completed appointments.</p>
-
-    <div class="row mt-3">
-      <div class="col-lg-2 col-md-4 col-sm-6">
-        <select id="entries-select2" class="form-control">
-          <option value="10">10</option>
-          <option value="20" selected>20</option>
-          <option value="50">50</option>
-          <option value="100">100</option>
-          <option value="200">200</option>
-          <option value="500">500</option>
-        </select>
-      </div>
-    </div>
-
-      <!-- Overlay and Popup Container -->
-      <div id="popup-overlay" class="popup-overlay"></div>
-      <div id="popup-container"></div>
-
-
-    <div class="table-sorter-wrapper col-lg-12 table-responsive">
-      <table id="appointments-table" class="table table-striped">
-        <thead>
-          <tr>
-            <th>User Name</th>
-            <th>User Email</th>
-            <th>Doctor Name</th>
-            <th>Doctor Email</th>
-            <th>Doctor Fees</th>
-            <th>Slot Date</th>
-            <th>Slot Time</th>
-            <th>Update Balance</th>
-          </tr>
-        </thead>
-        <tbody id="appointments-table-body-completed">
-          <!-- Completed appointments will be populated dynamically -->
-        </tbody>
-      </table>
-    </div>
-  </div>
-</div>
-
-
-              
-            
-            </div>
+         
           </div>
         </div>
         <!-- content-wrapper ends -->
@@ -662,265 +591,85 @@
 </script>
 
 
+ 
+  
+  
 <script>
-  let appointments = []; // Global appointments array
-
-  async function fetchAppointments() {
-    try {
-      const response = await fetch('https://morgphealth.onrender.com/api/admin/appointments');
-      const data = await response.json();
-      
-      if (data.success) {
-        appointments = data.appointments;
-
-        // Remove duplicates by appointment ID
-        appointments = removeDuplicatesById(appointments);
-
-        // Initial display with 20 entries
-        displayAppointments(appointments, 10);
-
-        // Save the filtered list in the global variable
-        window.appointments = appointments;
-      }
-    } catch (error) {
-      console.error('Error fetching appointments:', error);
-    }
-  }
-
-  function removeDuplicatesById(appointments) {
-    const seenIds = new Set();
-    return appointments.filter(appointment => {
-      if (seenIds.has(appointment._id)) {
-        return false; // Skip duplicate appointments
-      } else {
-        seenIds.add(appointment._id);
-        return true; // Keep the first occurrence
-      }
-    });
-  }
-
-  function displayAppointments(appointments, entriesToShow) {
-    const tableBody = document.getElementById('appointments-table-body-all');
-    tableBody.innerHTML = '';  // Clear previous data
-
-    const appointmentsToDisplay = appointments.slice(0, entriesToShow);
-
-    appointmentsToDisplay.forEach(appointment => {
-      const row = document.createElement('tr');
-      row.innerHTML = `
-        <td>${appointment._id}</td>
-        <td>${appointment.userData.name}</td>
-        <td>${appointment.userData.email}</td>
-        <td>${appointment.docData.name}</td>
-        <td>${appointment.docData.email}</td>
-        <td>${appointment.slotDate}</td>
-        <td>${appointment.slotTime}</td>
-        <td>
-          <button class="btn btn-primary update-payment" data-appointmentid="${appointment._id}">Mark paid</button>
-        </td>
-      `;
-      tableBody.appendChild(row);
-    });
-
-    // Add event listeners for 'Mark paid' buttons
-    const updateButtons = document.querySelectorAll('.update-payment');
-    updateButtons.forEach(button => {
-      button.addEventListener('click', handleMarkPaidClick);
-    });
-  }
-
-  async function handleMarkPaidClick(event) {
-    const appointmentId = event.target.getAttribute('data-appointmentid');
-    
-    try {
-      const response = await fetch(`https://morgphealth.onrender.com/api/doctor/update-appointment/${appointmentId}`, {
-        method: 'PUT', // Assuming the server supports PATCH for updating
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ paymentSuccessful: true }),
-      });
-
-      const data = await response.json();
-      
-      if (data.success) {
-        // Update the appointment in the local array
-        const appointment = appointments.find(app => app._id === appointmentId);
-        if (appointment) {
-          appointment.paymentSuccess = true;
-        }
-        displaySuccessPopup();
-        // Refresh the table display
-        displayAppointments(appointments, 10);
-      } else {
-        displayFailedPopup();
-      }
-    } catch (error) {
-      displayFailedPopup();
-    }
-  }
-
-  // Function to filter appointments based on search input
-  function filterAppointments(query) {
-    const lowerCaseQuery = query.toLowerCase(); // Normalize the query to lowercase
-    const filteredAppointments = appointments.filter(appointment => {
-      return (
-        (appointment._id.toLowerCase().includes(lowerCaseQuery)) || // Check appointment ID
-        (appointment.userData.name?.toLowerCase().includes(lowerCaseQuery)) || // Check user name
-        (appointment.userData.email?.toLowerCase().includes(lowerCaseQuery)) // Check user email
-      );
-    });
-    displayAppointments(filteredAppointments, 10); // Display the filtered appointments
-  }
-
-  // Handle search input event
-  document.getElementById('searchAppointments').addEventListener('input', (e) => {
-    filterAppointments(e.target.value);
-  });
-
-  // Initial fetch of appointments when page loads
-  document.addEventListener('DOMContentLoaded', fetchAppointments);
-</script>
+    let currentPage = 1; // For pagination
+    let noticesPerPage = 10; // Number of notices per page
   
+    // Function to fetch notices and update the table
+    function fetchNotices(page = 1) {
+      fetch(`https://morgphealth.onrender.com/api/notice/notices`)
+        .then(response => response.json())
+        .then(data => {
+          if (data.message === 'Notices retrieved successfully!') {
+            const notices = data.notices;
+            const tableBody = document.getElementById('notices-table-body');
+            
+            // Loop through the notices and create table rows
+            notices.forEach(notice => {
+              const row = document.createElement('tr');
   
+              const titleCell = document.createElement('td');
+              titleCell.textContent = notice.title;
+              row.appendChild(titleCell);
   
-  <script>
-    let completedAppointmentsList = []; // Global completed appointments list
+              const contentCell = document.createElement('td');
+              contentCell.textContent = notice.content;
+              row.appendChild(contentCell);
   
-    async function fetchCompletedAppointments() {
-      try {
-        const response = await fetch('https://morgphealth.onrender.com/api/admin/appointments');
-        const result = await response.json();
+              const createdAtCell = document.createElement('td');
+              createdAtCell.textContent = new Date(notice.createdAt).toLocaleString();
+              row.appendChild(createdAtCell);
   
-        if (result.success) {
-          const completedAppointments = result.appointments.filter(appointment => appointment.isCompleted);
-          renderAppointments(completedAppointments);
-        } else {
-          alert('Failed to fetch appointments');
-        }
-      } catch (error) {
-        console.error('Error fetching appointments:', error);
-      }
-    }
+              const actionCell = document.createElement('td');
+              const deleteBtn = document.createElement('button');
+              deleteBtn.textContent = 'Delete';
+              deleteBtn.classList.add('btn', 'btn-danger');
+              deleteBtn.addEventListener('click', () => deleteNotice(notice._id, row));
+              actionCell.appendChild(deleteBtn);
+              row.appendChild(actionCell);
   
-    function renderAppointments(completedAppointmentsList) {
-      const tableBody = document.getElementById('appointments-table-body-completed');
-      tableBody.innerHTML = '';  // Clear existing rows
-  
-      // Get the number of entries to show from the dropdown
-      const entriesToShow = parseInt(document.getElementById('entries-select2').value);
-  
-      // Limit the completed appointments to the selected number
-      const appointmentsToDisplay = completedAppointmentsList.slice(0, entriesToShow);
-  
-      appointmentsToDisplay.forEach(appointment => {
-        const row = document.createElement('tr');
-        row.innerHTML = `
-          <td>${appointment.userData.name}</td>
-          <td>${appointment.userData.email}</td>
-          <td>${appointment.docData.name}</td>
-          <td>${appointment.docData.email}</td>
-          <td>${appointment.docData.fees}</td>
-          <td>${appointment.slotDate}</td>
-          <td>${appointment.slotTime}</td>
-          <td>
-            <input type="number" id="balance-input-${appointment.docId}" class="form-control" placeholder="eg 50" min="0">
-            <button class="btn btn-primary update-balance" data-docid="${appointment.docId}" data-appointmentid="${appointment._id}">Update Balance</button>
-          </td>
-        `;
-        tableBody.appendChild(row);
-      });
-  
-      const updateButtons = document.querySelectorAll('.update-balance');
-      updateButtons.forEach(button => {
-        button.addEventListener('click', updateBalance);
-      });
-    }
-  
-    async function updateBalance(event) {
-      const docId = event.target.getAttribute('data-docid');
-      const appointmentId = event.target.getAttribute('data-appointmentid');
-      const balanceInput = document.getElementById(`balance-input-${docId}`);
-      const balance = parseFloat(balanceInput.value);
-  
-      if (!balance) {
-        alert('Please enter a valid balance change amount');
-        return;
-      }
-  
-      const data = { balance };
-  
-      try {
-        const response = await fetch(`https://morgphealth.onrender.com/api/doctor/update-profile/${docId}`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(data),
+              tableBody.appendChild(row);
+            });
+          }
+        })
+        .catch(error => {
+          console.error('Error fetching notices:', error);
         });
-  
-        const result = await response.json();
-  
-        if (result.success) {
-          displaySuccessPopup();
-        } else {
-          displayFailedPopup();
-        }
-      } catch (error) {
-        console.error('Error updating balance:', error);
-        alert('An error occurred while updating balance');
-      }
     }
   
-    // Function to display the custom success popup with overlay
-    function displaySuccessPopup() {
-      const successPopup = `
-        <div class="wrapper text-center">
-          <h4 class="card-title">Confirm</h4>
-          <p class="card-description">Update Successful!</p>
-          <button class="btn btn-outline-primary" onclick="closePopup()">Close</button>
-        </div>
-      `;
-      
-      const popupContainer = document.getElementById('popup-container');
-      const overlay = document.getElementById('popup-overlay');
-      
-      popupContainer.innerHTML = successPopup;
-      popupContainer.style.display = 'block';  // Show popup
-      overlay.style.display = 'block';  // Show overlay
+    // Function to delete a notice
+    function deleteNotice(id, row) {
+      fetch(`https://morgphealth.onrender.com/api/notice/notices/${id}`, {
+        method: 'DELETE',
+      })
+        .then(response => response.json())
+        .then(data => {
+          if (data.message === 'Notice deleted successfully!') {
+            // Remove the notice row from the table
+            row.remove();
+            alert('Notice deleted successfully!');
+          } else {
+            alert('Error deleting the notice.');
+          }
+        })
+        .catch(error => {
+          console.error('Error deleting notice:', error);
+        });
     }
   
-    function displayFailedPopup() {
-      const successPopup = `
-        <div class="wrapper text-center">
-          <h4 class="card-title">Failed</h4>
-          <p class="card-description">Update Failed !</p>
-          <button class="btn btn-outline-red" onclick="closePopup()">Close</button>
-        </div>
-      `;
-      
-      const popupContainer = document.getElementById('popup-container');
-      const overlay = document.getElementById('popup-overlay');
-      
-      popupContainer.innerHTML = successPopup;
-      popupContainer.style.display = 'block';  // Show popup
-      overlay.style.display = 'block';  // Show overlay
-    }
-  
-    function closePopup() {
-      const popupContainer = document.getElementById('popup-container');
-      const overlay = document.getElementById('popup-overlay');
-      
-      popupContainer.style.display = 'none';  // Hide popup
-      overlay.style.display = 'none';  // Hide overlay
-    }
-  
-    // Event listener for changes in the number of entries to show
-    document.getElementById('entries-select2').addEventListener('change', () => {
-      fetchCompletedAppointments();  // Re-fetch the appointments when the entry count changes
+    // Load More button event listener
+    document.getElementById('load-more-btn').addEventListener('click', () => {
+      currentPage++;
+      fetchNotices(currentPage);
     });
   
-    document.addEventListener('DOMContentLoaded', fetchCompletedAppointments);
-  
+    // Initial fetch
+    fetchNotices(currentPage);
   </script>
+
 
 
 

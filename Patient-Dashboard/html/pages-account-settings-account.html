@@ -361,7 +361,7 @@
 
         try {
           // Fetch user details from the API
-          const response = await fetch(`http://localhost:4000/api/user/get-profileId/${userId}`, {
+          const response = await fetch(`https://morgphealth.onrender.com/api/user/get-profileId/${userId}`, {
             method: 'GET',
             headers: {
               'Content-Type': 'application/json',
@@ -444,7 +444,7 @@
       // Fetch user data using the user ID from localStorage
       async function fetchUserProfile() {
         const userId = localStorage.getItem('userId'); // Get userId from localStorage
-        const response = await fetch(`http://localhost:4000/api/user/get-profileId/${userId}`);
+        const response = await fetch(`https://morgphealth.onrender.com/api/user/get-profileId/${userId}`);
         const data = await response.json();
 
         if (data.success && data.user) {
@@ -504,7 +504,7 @@
         }
 
         // Send the form data to the backend
-        const response = await fetch('http://localhost:4000/api/user/update-profilemobile', {
+        const response = await fetch('https://morgphealth.onrender.com/api/user/update-profilemobile', {
           method: 'POST',
           body: formData,
         });

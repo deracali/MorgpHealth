@@ -77,7 +77,7 @@
       if (appointmentId && userId) {
 
         // Fetch appointment data to get doctor details
-        axios.get(`http://localhost:4000/api/user/appointments/${userId}`)
+        axios.get(`https://morgphealth.onrender.com/api/user/appointments/${userId}`)
           .then(response => {
             const appointment = response.data.appointments.find(app => app._id === appointmentId);
             if (appointment) {

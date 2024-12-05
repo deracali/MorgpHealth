@@ -144,7 +144,7 @@
       <div class="signature-row">
         <div class="signature-block">
           <p class="signature-text" id="doctorName"></p>
-          <p>MD. Pathologist</p>
+          <p id="doctorSpeciality">MD. Pathologist</p>
         </div>
       </div>
       <p class="small">Generated On: <span id="generatedOn"></span></p>
@@ -190,7 +190,7 @@
       }
 
       try {
-        const response = await fetch(`http://localhost:4000/api/user/api/appointments/${appointmentId}`);
+        const response = await fetch(`https://morgphealth.onrender.com/api/user/api/appointments/${appointmentId}`);
         const data = await response.json();
         const appointments = data.appointment;
         console.log(appointments);
@@ -258,6 +258,7 @@
         // Populate doctor name
         document.getElementById("doctorName").textContent = appointments.docData?.name || "Dr. [Name]";
         document.getElementById("doctorEmail").textContent = appointments.docData?.email || "Dr. [Name]";
+        document.getElementById("doctorSpeciality").textContent = appointments.docData?.speciality || "Dr. [Name]";
 
         // Check timer from local storage
         const timer = localStorage.getItem("timer") === "true";
@@ -301,7 +302,7 @@
             const stripe = await loadStripe(stripePublicKey);
 
             try {
-              const response = await fetch("http://localhost:4000/create-intentss", {
+              const response = await fetch("https://morgphealth.onrender.com/create-intentss", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({

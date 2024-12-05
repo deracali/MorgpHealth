@@ -20,6 +20,7 @@ import  notificationRouter from "./routes/notificationRoute.js";
 import Stripe from 'stripe';
 import User from './models/userModel.js'
 import noticeRouter from './routes/noticRouter.js';
+import RequestRouter from './routes/requestRoute.js';
 
 // Initialize Stripe with the secret key
 const stripe = Stripe(process.env.STRIPE_SECRET_KEY);
@@ -174,6 +175,8 @@ app.use('/api/notice', noticeRouter);
 app.use('/api/staff', staffRouter);
 app.use('/api/blogs', blogRouter);
 app.use("/api/notifications", notificationRouter);
+app.use('/api/request', RequestRouter);
+
 
 app.get('/', (req, res) => {
     res.send('API WORKING');

@@ -295,36 +295,37 @@
                 </div>
                 <!-- Total Revenue -->
                 <div class="col-12 col-lg-8 order-2 order-md-3 order-lg-2 mb-4">
-                    <div class="card">
-                        <h5 class="card-header">Upcoming Appointments</h5>
-                        <div class="table-responsive text-nowrap">
-                          <table class="table table-dark">
-                            <thead>
-                              <tr>
-                                <th>Doctor Name</th>
-                                <th>SlotDate</th>
-                                <th>SlotTime</th>
-                                <th>Status</th>
-                                <th>Actions</th>
-                              </tr>
-                            </thead>
-                            <tbody id="appointmentsTable" class="table-border-bottom-0">
-                              <!-- Dynamic rows will be inserted here -->
-                            </tbody>
-                          </table>
-                        </div>
-                      
-                        <div class="d-flex justify-content-between">
-                          <label for="entriesSelect">Entries per page:</label>
-                          <select id="entriesSelect" class="form-select w-auto">
-                            <option value="10">10</option>
-                            <option value="20">20</option>
-                            <option value="50">50</option>
-                            <option value="100">100</option>
-                          </select>
-                        </div>
-                      </div>
+                  <div class="card" style="background-color: #fff; color: #000;">
+                    <h5 class="card-header" style="background-color: #fff; color: #000;">Upcoming Appointments</h5>
+                    <div class="table-responsive text-nowrap">
+                      <table class="table" style="background-color: #fff; color: #000;">
+                        <thead>
+                          <tr>
+                            <th>Doctor Name</th>
+                            <th>SlotDate</th>
+                            <th>SlotTime</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                          </tr>
+                        </thead>
+                        <tbody id="appointmentsTable" class="table-border-bottom-0">
+                          <!-- Dynamic rows will be inserted here -->
+                        </tbody>
+                      </table>
+                    </div>
+                
+                    <div class="d-flex justify-content-between">
+                      <label for="entriesSelect">Entries per page:</label>
+                      <select id="entriesSelect" class="form-select w-auto" style="background-color: #fff; color: #000;">
+                        <option value="10">10</option>
+                        <option value="20">20</option>
+                        <option value="50">50</option>
+                        <option value="100">100</option>
+                      </select>
+                    </div>
+                  </div>
                 </div>
+                
                 <!--/ Total Revenue -->
                 <div class="col-12 col-md-8 col-lg-4 order-3 order-md-2">
                   <div class="row">
@@ -380,10 +381,10 @@
               </div>
             
             
-              <div class="card">
-                <h5 class="card-header">Insurance Details</h5>
+              <div class="card" style="background-color: #fff; color: #000;">
+                <h5 class="card-header" style="background-color: #fff; color: #000;">Insurance Details</h5>
                 <div class="table-responsive text-nowrap">
-                  <table class="table table-dark">
+                  <table class="table" style="background-color: #fff; color: #000;">
                     <thead>
                       <tr>
                         <th>Name</th>
@@ -398,6 +399,7 @@
                   </table>
                 </div>
               </div>
+              
               
             </div>
 
@@ -449,7 +451,7 @@
 
     try {
       // Fetch the user's appointments
-      const response = await fetch(`http://localhost:4000/api/user/appointments/${userId}`);
+      const response = await fetch(`https://morgphealth.onrender.com/api/user/appointments/${userId}`);
       const result = await response.json();
 
       if (result.success && result.appointments) {
@@ -529,7 +531,7 @@
 
           try {
             // Fetch user details from the API
-            const response = await fetch(`http://localhost:4000/api/user/get-profileId/${userId}`, {
+            const response = await fetch(`https://morgphealth.onrender.com/api/user/get-profileId/${userId}`, {
               method: 'GET',
               headers: {
                 'Content-Type': 'application/json',
@@ -584,7 +586,7 @@
         // Fetch user appointments
         const fetchAppointments = async () => {
           try {
-            const response = await fetch(`http://localhost:4000/api/user/appointments/${userId}`);
+            const response = await fetch(`https://morgphealth.onrender.com/api/user/appointments/${userId}`);
             const result = await response.json();
 
             if (result.success && result.appointments) {
@@ -658,7 +660,7 @@
       const userId = localStorage.getItem('userId');
 
       // Define the API endpoint
-      const apiEndpoint = `http://localhost:4000/api/insurance/insurance/${userId}`;
+      const apiEndpoint = `https://morgphealth.onrender.com/api/insurance/insurance/${userId}`;
 
       // Function to fetch insurance data and populate the table
       async function fetchInsuranceData() {
