@@ -27,6 +27,7 @@ import PaymentFailed from "./pages/PaymentFailed"
 import PaymentSuccess from "./pages/Paymentsuccess"
 import LabStripe from "./pages/LabStripe"
 import LabFlutterWave from "./pages/LabFlutterwave"
+import DocRegisterMsg from "./pages/docRegisterMsg"
 
 
 function App() {
@@ -57,6 +58,7 @@ function App() {
 
 
          <Route path="/user-panel" element={<User/> } />    
+         <Route path="/registration-success" element={<DocRegisterMsg/> } />    
          <Route path="/paymentsuccess" element={<PaymentSuccess/> } />    
          <Route path="/paymentfailed" element={<PaymentFailed/> } />    
          <Route path="/stripe/:docName/:userName/:userEmail/:docFees" element={<Stripe />} />

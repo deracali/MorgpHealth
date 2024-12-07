@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { assets } from '../assets/assets_admin/assets';
 import { toast } from 'react-toastify';
 import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
 
 export default function AddDoctor() {
   const [docImg, setDocImg] = useState(null);
@@ -30,6 +31,8 @@ export default function AddDoctor() {
 
   const backendUrl = import.meta.env.VITE_BACKEND_URL;
   const utoken = localStorage.getItem('utoken');
+
+const navigate = useNavigate()
 
   const onSubmitHandler = async (event) => {
     event.preventDefault();
@@ -73,6 +76,7 @@ export default function AddDoctor() {
       if (data.success) {
         toast.success(data.message);
         // Reset form fields
+        navigate('/registration-success')
         resetFormFields();
       } else {
         toast.error(data.message);
@@ -110,7 +114,7 @@ export default function AddDoctor() {
   return (
     <form onSubmit={onSubmitHandler} className='m-5 w-full'>
       <p className='mb-3 text-lg font-medium'>Add Doctor</p>
-      <div className='bg-white px-8 py-8 border rounded w-full max-w-4xl max-h-[80vh] overflow-y-scroll'>
+      <div className='bg-white px-8 py-8 border rounded w-full max-w-4xl overflow-y-scroll'>
         <FileUploadField 
           label="Upload Doctor Picture" 
           file={docImg} 
@@ -140,7 +144,28 @@ export default function AddDoctor() {
           </div>
 
           <div className='w-full lg:flex-1 flex flex-col gap-4'>
-            <InputField label="Speciality" value={degree} onChange={setSpeciality} required />
+          <SelectField 
+    label="Speciality" 
+    value={speciality} 
+    onChange={(e) => setSpeciality(e.target.value)} 
+    options={[
+        { value: 'Cardiology', label: 'Cardiology' },
+        { value: 'Neurologist', label: 'Neurologist' },
+        { value: 'General physician', label: 'General physician' },
+        { value: 'pediatrics', label: 'Pediatrics' },
+        { value: 'Gynecologist', label: 'Gynecologist' },
+        { value: 'Neurologist', label: 'Neurologist' },
+        { value: 'Gastroenterologist', label: 'Gastroenterologist' },
+        { value: 'Dermatologist', label: 'Dermatologist' },
+        { value: 'Pediatricians', label: 'Pediatricians' },
+        { value: 'Homeopathy', label: 'Homeopathy' },
+        { value: 'Kidneyissue', label: 'Kidneyissue' },
+        { value: 'Mentalwellness', label: 'Mentalwellness' },
+        { value: 'Digestive', label: 'Digestive' },
+    ]}
+    required 
+/>
+
             <InputField label="Education" value={degree} onChange={setDegree} required />
             <InputField label="Address 1" value={address1} onChange={setAddress1} required />
             <InputField label="Address 2" value={address2} onChange={setAddress2} />

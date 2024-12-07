@@ -14,7 +14,7 @@ const userRouter = express.Router()
 userRouter.post('/register',registerUser)
 userRouter.post('/login',loginUser)
 
-userRouter.get('/get-profile',getProfile)
+userRouter.get('/get-profile', authUser, getProfile)
 userRouter.get('/get-profileId/:userId', getProfileId);
 userRouter.post('/update-profile',upload.single("image"),updateProfile)
 userRouter.post('/update-profilemobile',upload.single("image"),updateProfileMobile)

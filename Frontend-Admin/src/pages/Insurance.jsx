@@ -25,12 +25,15 @@ export default function Insurance() {
     <>
       <div className="hero-content">
         <div className="hero-text">
-          <h1>Feel Better About Finding The Best Health Insurance</h1>
-          <p>
-            Lorem, ipsum dolor sit amet consectetur adipisicing elit. Fuga
-            aliquam blanditiis assumenda accusamus facere, beatae ratione.
-            Temporibus iste ab fugit!
-          </p>
+        <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold leading-snug">
+  Find the Perfect Health Insurance for You
+</h1>
+<p className="text-gray-600 text-sm sm:text-base mt-4">
+  Discover health insurance plans tailored to your needs. Whether it's coverage for your family or individual plans, we make finding affordable and comprehensive options simple and stress-free.
+</p>
+<p className="text-gray-600 text-sm sm:text-base mt-2">
+  Compare policies, understand your benefits, and get insured with confidence—all in one place. Your health, your choice, your peace of mind.
+</p>
 
           <div className="hero-text-btns">
             <Link className="a" to="https://insurance-morgphealth.netlify.app">
@@ -51,7 +54,7 @@ export default function Insurance() {
 
           <div className="w-info-text">
             <strong>Specialised Service</strong>
-            <p>Lorem ipsum dolor sot0</p>
+            <p>Access tailored healthcare services designed to meet your unique needs. From routine checkups to advanced treatments, we've got you covered.</p>
           </div>
         </div>
 
@@ -62,7 +65,7 @@ export default function Insurance() {
 
           <div className="w-info-text">
             <strong>24/7 Advanced Care</strong>
-            <p>Lorem ipsum dolor sot0</p>
+            <p>Our dedicated team is here for you around the clock, offering expert care and support whenever you need it.</p>
           </div>
         </div>
 
@@ -73,7 +76,7 @@ export default function Insurance() {
 
           <div className="w-info-text">
             <strong>Get Result Online</strong>
-            <p>Lorem ipsum dolor sot0</p>
+            <p>Conveniently access your medical results and reports online, ensuring a seamless and efficient healthcare experience.</p>
           </div>
         </div>
       </div>
@@ -84,17 +87,16 @@ export default function Insurance() {
         </div>
 
         <div className="our-story-text">
-          <h2>Short Story About Our Clinic</h2>
-          <p>
-            Lorem ipsum dolor sit amet, consectetur adipisicing elit. Nobis
-            beatae nam eaque ea similique, doloribus animi vero quisquam
-            asperiores tempore?
-          </p>
-          <p>
-            Lorem ipsum dolor sit amet, consectetur adipisicing elit. Nobis
-            beatae nam eaque ea similique, doloribus animi vero quisquam
-            asperiores tempore?
-          </p>
+        <h2 className="text-2xl font-bold mb-4">Short Story About Our Clinic</h2>
+<p className="text-gray-600 mb-4">
+  MorgpHealth began with a simple mission: to make quality healthcare accessible to everyone. Founded in 2010 by a group of dedicated medical professionals, our clinic was established to bridge the gap between patients and the care they deserve. 
+</p>
+<p className="text-gray-600 mb-4">
+  Over the years, MorgpHealth has grown into a trusted name in the community. With state-of-the-art facilities and a passionate team of doctors and specialists, we are proud to offer comprehensive services, from preventive care to advanced treatments. Our commitment to innovation led us to integrate technology, enabling patients to book appointments, access prescriptions, and receive their test results online—making healthcare more convenient than ever.
+</p>
+<p className="text-gray-600">
+  At MorgpHealth, we believe in treating every patient like family. Your health is our priority, and we are here to support you every step of the way.
+</p>
 
           <div className="story-number-container">
             <div className="story-number-box s-n-box1">
@@ -145,12 +147,12 @@ export default function Insurance() {
                   <FaTooth />
                 </div>
 
-                <storng className="strong">Dental Care</storng>
+                <strong className="text-lg font-bold text-blue-600">Dental Care</strong>
 
-                <p>
-                  Lorem ipsum dolor sit amet consectetur adipisicing elit.
-                  Doloremque aliquid ut perspiciatis! Voluptatem, sed adipisci?
-                </p>
+<p className="text-gray-600 mt-2">
+  Keep your smile healthy and bright with our comprehensive dental care services. From routine cleanings to advanced treatments, our experienced team ensures you receive the best care in a comfortable and welcoming environment. Your oral health is our priority!
+</p>
+
 
                
               </div>
@@ -161,12 +163,11 @@ export default function Insurance() {
                   <FaEye />
                 </div>
 
-                <storng className="strong">Eye Care</storng>
+                <strong className="text-lg font-bold text-blue-600">Eye Care</strong>
 
-                <p>
-                  Lorem ipsum dolor sit amet consectetur adipisicing elit.
-                  Doloremque aliquid ut perspiciatis! Voluptatem, sed adipisci?
-                </p>
+<p className="text-gray-600 mt-2">
+  Protect and preserve your vision with our expert eye care services. Whether you need a routine eye exam, treatment for an eye condition, or assistance with corrective lenses, our specialists are here to provide personalized care for your unique needs. See the world clearly with us!
+</p>
 
               
               </div>
@@ -177,12 +178,11 @@ export default function Insurance() {
                   <AiFillSkin />
                 </div>
 
-                <storng className="strong">Skin Care</storng>
+                <strong className="text-lg font-bold text-blue-600">Skin Care</strong>
 
-                <p>
-                  Lorem ipsum dolor sit amet consectetur adipisicing elit.
-                  Doloremque aliquid ut perspiciatis! Voluptatem, sed adipisci?
-                </p>
+<p className="text-gray-600 mt-2">
+  Achieve healthy, glowing skin with our comprehensive skin care services. Whether it's acne treatment, anti-aging solutions, or personalized skincare routines, our experts are here to help you feel confident in your skin. Experience the best in skin care with treatments tailored just for you.
+</p>
 
                
               </div>
@@ -193,12 +193,12 @@ export default function Insurance() {
                   <FaTooth />
                 </div>
 
-                <storng className="strong">Dental Care</storng>
+                <strong className="text-lg font-bold text-blue-600">Health & Wellness</strong>
 
-                <p>
-                  Lorem ipsum dolor sit amet consectetur adipisicing elit.
-                  Doloremque aliquid ut perspiciatis! Voluptatem, sed adipisci?
-                </p>
+<p className="text-gray-600 mt-2">
+  Prioritize your overall well-being with our holistic health and wellness services. From preventive care to personalized fitness plans, we provide a range of treatments designed to improve your quality of life. Stay active, stay healthy, and live your best life with our expert guidance.
+</p>
+
 
                
               </div>
@@ -215,7 +215,7 @@ export default function Insurance() {
         </span>
       </div>
 
-      <div className="why-choose-us">
+      <div className="why-choose-us" style={{marginBottom:'40px'}}>
         <div className="why-choose-us-left">
           <h3>Why Choose Us</h3>
 
@@ -230,8 +230,10 @@ export default function Insurance() {
                 }}
               />
               <div className="why-choose-box-text">
-                <strong>Advance Care</strong>
-                <p>Lorem ipsum dolor sit</p>
+              <strong className="text-lg font-bold text-blue-600">Advanced Care</strong>
+  <p className="text-gray-600 mt-2">
+    Experience the highest standard of care with our advanced medical technologies and expert team. We are dedicated to providing innovative treatments that cater to your individual needs, ensuring the best outcomes for your health.
+  </p>
               </div>
             </div>
             <div className="why-choose-box">
@@ -244,8 +246,11 @@ export default function Insurance() {
                 }}
               />
               <div className="why-choose-box-text">
-                <strong>Advance Care</strong>
-                <p>Lorem ipsum dolor sit</p>
+              <strong className="text-lg font-bold text-blue-600">Comprehensive Healthcare</strong>
+<p className="text-gray-600 mt-2">
+  Our clinic offers a full range of healthcare services, ensuring that all aspects of your well-being are taken care of. From routine check-ups to specialized treatments, we provide comprehensive care that meets your unique needs.
+</p>
+
               </div>
             </div>
             <div className="why-choose-box">
@@ -259,8 +264,11 @@ export default function Insurance() {
               />
 
               <div className="why-choose-box-text">
-                <strong>Advance Care</strong>
-                <p>Lorem ipsum dolor sit</p>
+              <strong className="text-lg font-bold text-blue-600">Expert Consultation</strong>
+<p className="text-gray-600 mt-2">
+  Our team of experienced doctors and specialists are here to provide expert consultations for your specific health needs. Whether you're seeking advice on preventive care or complex conditions, we offer trusted insights and personalized guidance.
+</p>
+
               </div>
             </div>
             <div className="why-choose-box">
@@ -274,8 +282,11 @@ export default function Insurance() {
               />
 
               <div className="why-choose-box-text">
-                <strong>Advance Care</strong>
-                <p>Lorem ipsum dolor sit</p>
+              <strong className="text-lg font-bold text-blue-600">Personalized Care</strong>
+<p className="text-gray-600 mt-2">
+  At our clinic, we believe in treating each patient as an individual. Our personalized care approach means we take the time to understand your unique health needs and craft a tailored treatment plan that works best for you.
+</p>
+
               </div>
             </div>
           </div>
@@ -284,15 +295,15 @@ export default function Insurance() {
           </Link>
         </div>
         <div className="why-choose-us-right">
-          <h3>
-            Emergency?
-            <br />
-            Contact Us
-          </h3>
-          <p>
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Fugit,
-            nemo!
-          </p>
+        <h3 className="text-2xl font-bold text-red-600">
+  Emergency?
+  <br />
+  Contact Us Immediately
+</h3>
+<p className="text-gray-600 mt-2">
+  If you're facing a medical emergency, don't wait. Our team is ready to provide immediate assistance and care to address your urgent needs. Call us now for prompt, professional attention.
+</p>
+
 
           <div className="w-right-contact-container">
             <div className="w-right-contact-box">

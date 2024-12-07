@@ -30,17 +30,25 @@ export default function Navbar() {
         <NavLink to="/" className="hover:text-blue-600 transition">
           HOME
         </NavLink>
-        <NavLink to="/doctors" className="hover:text-blue-600 transition">
-          FIND A DOCTOR
-        </NavLink>
+        {userData? 
+            <NavLink to="/doctors" className="hover:text-blue-600 transition">
+            FIND A DOCTOR
+          </NavLink> : ""}
+    
         <NavLink to="/insurance" className="hover:text-blue-600 transition">
           INSURANCE
+        </NavLink>
+        <NavLink to="/add-doc">
+          Register As A Doctor
         </NavLink>
         <NavLink to="/about" className="hover:text-blue-600 transition">
           ABOUT US
         </NavLink>
         <NavLink to="/contact" className="hover:text-blue-600 transition">
           CONTACT US
+        </NavLink>
+        <NavLink  onClick={() => window.location.href = "https://updateddoctor-dashboard.netlify.app/index"} className="hover:text-blue-600 transition">
+          Doctor Dashboard
         </NavLink>
       </ul>
 
@@ -53,8 +61,14 @@ export default function Navbar() {
                     <img className='w-2.5' src={assets.dropdown_icon} alt=''/>
                     <div className='absolute top-0 right-0 pt-14 text-base font-medium text-gray z-20 hidden group-hover:block'>
                         <div className='min-w-48 bg-stone-100  rounded flex flex-col gap-4 p-4'>
-                            <p onClick={()=>navigate('/user-panel')} className='hover:text-black cursor-pointer'>Dashboard</p>
-                            <p onClick={()=>navigate('/add-doc')} className='hover:text-black cursor-pointer'>Register Doctor</p>
+                        <p
+  onClick={() => window.location.href = 'https://updatedpatient-dashboard.netlify.app/html/dashboard.html'}
+  className="hover:text-black cursor-pointer"
+>
+  Dashboard
+</p>
+
+                            <p onClick={()=>navigate(`/my-appointments/${userData._id}`)} className='hover:text-black cursor-pointer'>My Appointment</p>
                             <p onClick={logout} className='hover:text-black cursor-pointer'>Logout</p>
                         </div>
                     </div>

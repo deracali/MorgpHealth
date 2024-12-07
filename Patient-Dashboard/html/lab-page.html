@@ -266,7 +266,7 @@
         const actionButtonContainer = document.getElementById("actionButtonContainer");
 
 
-        if (timer) {
+        if (!timer) {
           confidentialElement.textContent = "Confidential";
           actionButtonContainer.innerHTML = `
         <button id="downloadButton" class="btn btn-primary">Download</button>
