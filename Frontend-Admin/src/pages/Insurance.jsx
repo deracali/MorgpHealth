@@ -18,9 +18,23 @@ import { FaSquarePollHorizontal } from "react-icons/fa6";
 import { FaTooth } from "react-icons/fa";
 import { FaPhone } from "react-icons/fa";
 import { MdOutlineMessage } from "react-icons/md";
-
+import { useEffect } from "react";
+import { useState } from "react";
+import { useNavigate } from 'react-router-dom';
 
 export default function Insurance() {
+
+  const [userId, setUserId] = useState(null);
+  const navigate = useNavigate();
+  
+  useEffect(() => {
+    const storedUserId = localStorage.getItem('userId');
+    if (storedUserId) {
+      setUserId(storedUserId);
+    }
+  }, []);
+
+
   return (
     <>
       <div className="hero-content">
@@ -36,9 +50,12 @@ export default function Insurance() {
 </p>
 
           <div className="hero-text-btns">
-            <Link className="a" to="https://insurance-morgphealth.netlify.app">
-              Get Insuranced
-            </Link>
+          <Link 
+      className="a" 
+      to={`https://insurance-morgphealth.netlify.app/${userId}`}
+    >
+      Get Insured
+    </Link>
           </div>
         </div>
 
@@ -80,6 +97,34 @@ export default function Insurance() {
           </div>
         </div>
       </div>
+
+
+      <div className="flex flex-col md:flex-row justify-center items-center gap-4 p-4">
+      <div className="text-center">
+        <p className="text-lg font-medium mb-2">I Need Health Insurance For Myself</p>
+        <button
+        onClick={() => (window.location.href = `https://insurance-morgphealth.netlify.app/${userId}`)}
+        className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-300">
+          Click here
+        </button>
+      </div>
+      <div className="text-center">
+        <p className="text-lg font-medium mb-2">I Need Cover For Myself And My Partner</p>
+        <button
+   onClick={() => (window.location.href = `https://insurance-morgphealth.netlify.app/patner/${userId}`)}
+        className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-300">
+          Click here
+        </button>
+      </div>
+      <div className="text-center">
+        <p className="text-lg font-medium mb-2">I Need Cover For My Whole Family</p>
+        <button
+        onClick={() => (window.location.href = `https://insurance-morgphealth.netlify.app/whole-family/${userId}`)}
+        className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-300">
+          Click here
+        </button>
+      </div>
+    </div>
 
       <div className="our-story">
         <div className="our-story-img">
@@ -290,7 +335,7 @@ export default function Insurance() {
               </div>
             </div>
           </div>
-          <Link to="https://insurance-morgphealth.netlify.app/" className="why-choose-us-btn">
+          <Link  to={`https://insurance-morgphealth.netlify.app/${userId}`} className="why-choose-us-btn">
             Apply for Insurance
           </Link>
         </div>

@@ -35,10 +35,22 @@ const addInsurance = async (req, res) => {
             spouse, // Coming from the body
             child, // Coming from the body
             mother, // Coming from the body
-            father // Coming from the body
+            father, // Coming from the body
+
+            // Fields for add-ons and frequency
+            title1,
+            frequency1,
+            title2,
+            frequency2,
+            title3,
+            frequency3,
+            title4,
+            frequency4,
+            title5,
+            frequency5
         } = req.body;
 
-        // Prepare the insurance data to be saved
+        // Prepare the insurance data to be saved, including the new fields for titles and frequencies
         const insuranceData = {
             name,
             email,
@@ -72,7 +84,19 @@ const addInsurance = async (req, res) => {
             spouse,
             child,
             mother,
-            father
+            father,
+
+            // Added dynamic values for add-on titles and frequencies
+            title1,
+            frequency1,
+            title2,
+            frequency2,
+            title3,
+            frequency3,
+            title4,
+            frequency4,
+            title5,
+            frequency5
         };
 
         // Create a new insurance document using the insurance data

@@ -1,5 +1,5 @@
 import express from 'express';
-import { sendMessage, getChatHistory, startChat, getDoctorChats, deleteChat } from '../controllers/chatController.js';
+import { sendMessage, getChatHistory, startChat, getDoctorChats, deleteChat, getUserChats, deleteUserChat } from '../controllers/chatController.js';
 
 const chatRoute = express.Router();
 
@@ -18,5 +18,9 @@ chatRoute.get('/doctor-chats/:doctorId', getDoctorChats); // Removed the optiona
 
 chatRoute.delete('/delete-chat/:chatId', deleteChat);  // Removed the optional parameter
 
+chatRoute.get('/user-chats/:userId', getUserChats);
+
+
+chatRoute.delete('/user-chats/:userId', deleteUserChat);
 
 export default chatRoute;

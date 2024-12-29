@@ -595,7 +595,7 @@
 <script>
     // Fetch reassign data and display it
     async function fetchReassigns() {
-      const response = await fetch('http://localhost:4000/api/reassign');
+      const response = await fetch('https://morgphealth.onrender.com/api/reassign');
       const data = await response.json();
       const tbody = document.getElementById('reassign-table').querySelector('tbody');
       tbody.innerHTML = ''; // Clear any existing rows
@@ -630,7 +630,7 @@
   
     // Utility function to delete a reassignment
     async function deleteReassign(reassignId) {
-      const response = await fetch(`http://localhost:4000/api/reassign/delete/${reassignId}`, {
+      const response = await fetch(`https://morgphealth.onrender.com/api/reassign/delete/${reassignId}`, {
         method: 'DELETE',
       });
   

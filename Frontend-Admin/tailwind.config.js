@@ -1,6 +1,6 @@
 /** @type {import('tailwindcss').Config} */
 
-const colors = require('tailwindcss/colors')
+import colors from 'tailwindcss/colors';
 
 export default {
   content: [
@@ -10,16 +10,16 @@ export default {
   theme: {
     extend: {},
     colors: {
-      'primary': "#5f6FFF",
-      'white': "#FFF",
+      primary: "#5f6FFF",
+      white: "#FFF",
       ...colors,
-        // or add them one by one and name whatever you want
-        amber: colors.amber,
-        emerald: colors.emerald,
+      // Add specific colors individually if needed
+      amber: colors.amber,
+      emerald: colors.emerald,
     },
-    gridTemplateColumns:{
-      'auto': 'repeat(auto-fill, minmax(200px, 1fr))'
-    }
+    gridTemplateColumns: {
+      auto: 'repeat(auto-fill, minmax(200px, 1fr))',
+    },
   },
   plugins: [],
-}
+};

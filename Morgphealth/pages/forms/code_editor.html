@@ -771,7 +771,7 @@ var editor = CodeMirror.fromTextArea(myTextarea, {
 
       try {
         // Make the POST request to the backend to log out and save the online duration
-        const response = await fetch(`http://localhost:4000/api/admin/logout/${staffId}`, {
+        const response = await fetch(`https://morgphealth.onrender.com/api/admin/logout/${staffId}`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',

@@ -1,5 +1,5 @@
 import express from 'express'
-import { appointmentCancel,updateStatus,getReviews,addReview,unlikeDoctor,likeDoctor,updateDoctorAvailability,appointmentComplete, appointmentsDoctor, decrementDoctorBalance, doctorDashboard, doctorFilter, doctorFilterController, doctorList,doctorProfile,loginDoctor, updateAppointment, updateDoctorProfile } from '../controllers/doctorController.js'
+import { appointmentCancel,updateStatus,getReviews,addReview,unlikeDoctor,likeDoctor,updateDoctorAvailability,appointmentComplete, appointmentsDoctor, decrementDoctorBalance, doctorDashboard, doctorFilter, doctorFilterController, doctorList,doctorProfile,loginDoctor, updateAppointment, updateDoctorProfile, deleteService } from '../controllers/doctorController.js'
 import {forgetPassword, verifyOtp,resetPassword} from '../controllers/docForgetpassword.js'
 
 const doctorRouter = express.Router()
@@ -25,5 +25,6 @@ doctorRouter.post('/doctor/:doctorId/review', addReview);
 doctorRouter.post('/forget-password', forgetPassword);
 doctorRouter.post('/reset-password', resetPassword);
 doctorRouter.post('/verify-otp',  verifyOtp);
+doctorRouter.delete("/delete-service/:docId", deleteService);
 
 export default doctorRouter

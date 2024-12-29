@@ -3,41 +3,95 @@ import { useNavigate } from "react-router-dom";
 import PlansContext from "../context/PlansContext";
 import { PersonalInfoContext } from "../context/PersonalInfoContext";
 
-
-
 const SelectPlan = () => {
   const navigate = useNavigate();
   const [toggleYearly, setToggleYearly] = useState(false);
   const [num, setNum] = useState(0);
 
-  const { monthlyPlans } = useContext(PlansContext);
-  const { yearlyPlans } = useContext(PlansContext);
-  const { selectedMonthlyPlan } = useContext(PlansContext);
-  const { selectedYearlyPlan} = useContext(PlansContext);
-  const {personalInfo} = useContext(PersonalInfoContext)
-  
+  // Example plan data
+  const monthlyPlans = [
+    {
+      id: '1',
+      type: 'Premium cover',
+      price: '$1,800/yr',
+     
+      details: { cover: '1 Crore', hospitalLocator: '65 view', policyTerm: '1 year' },
+      title1: "Dental Care",
+      frequency1: "Twice a year",
+      title2: "Dental Care",
+      frequency2: "Twice a year",
+      title3: "Dental Care",
+      frequency3: "Twice a year",
+      title4: "Dental Care",
+      frequency4: "Twice a year",
+      title5: "Dental Care",
+      frequency5: "Twice a year",
+    },
+    {
+      id: '2',
+      type: 'Platinum cover',
+      price: '$1,500/yr',
+   
+      details: { cover: '50 Lakhs', hospitalLocator: '65 view', policyTerm: '1 year' },
+      title1: "Dental Care",
+      frequency1: "Twice a year",
+      title2: "Dental Care",
+      frequency2: "Twice a year",
+      title3: "Dental Care",
+      frequency3: "Twice a year",
+      title4: "Dental Care",
+      frequency4: "Twice a year",
+      title5: "Dental Care",
+      frequency5: "Twice a year",
+    },
+    {
+      id: '3',
+      type: 'Gold cover',
+      price: '$1,500/yr',
+     
+      details: { cover: '50 Lakhs', hospitalLocator: '65 view', policyTerm: '1 year' },
+      title1: "Dental Care",
+      frequency1: "Twice a year",
+      title2: "Dental Care",
+      frequency2: "Twice a year",
+      title3: "Dental Care",
+      frequency3: "Twice a year",
+      title4: "Dental Care",
+      frequency4: "Twice a year",
+      title5: "Dental Care",
+      frequency5: "Twice a year",
+    }
+  ];
+
+  const yearlyPlans = [
+    // Include your yearly plans if needed
+    ...monthlyPlans,
+  ];
+
+  const { selectedMonthlyPlan, selectedYearlyPlan, setSelectedMonthlyPlan, setSelectedYearlyPlan } = useContext(PlansContext);
+  const { personalInfo } = useContext(PersonalInfoContext);
 
   const handleToggleYearly = () => {
     setToggleYearly((prev) => !prev);
   };
 
   const getMonthlyDetails = (id) => {
-    selectedMonthlyPlan.title = monthlyPlans[id].title;
-    selectedMonthlyPlan.price = monthlyPlans[id].price;
-
+    setSelectedMonthlyPlan(monthlyPlans[id]);
     setNum(id + 1);
   };
 
   const getYearlyDetails = (id) => {
-    selectedYearlyPlan.title = yearlyPlans[id].title;
-    selectedYearlyPlan.price = yearlyPlans[id].price;
-
+    setSelectedYearlyPlan(yearlyPlans[id]);
     setNum(id + 1);
   };
 
-  const handleSumbit = (event) => {
+  const handleSumbit = async (event) => {
     event.preventDefault();
-    if (selectedMonthlyPlan.title !== "" || selectedYearlyPlan.title !== "") {
+    if (selectedMonthlyPlan || selectedYearlyPlan) {
+      // Submit to API or context here
+      // For example, you can use an API call like: saveSelectedPlan(selectedMonthlyPlan or selectedYearlyPlan);
+
+      // Example redirect:
       navigate("/addons");
     } else {
       alert("Please choose a plan");
@@ -64,19 +118,18 @@ const SelectPlan = () => {
                 onClick={() => getMonthlyDetails(idx)}
                 key={item.id}
                 className={`plan ${
-                  num != idx + 1 ? "bg-white" : "bg-primary-lightBlue"
+                  num !== idx + 1 ? "bg-white" : "bg-primary-lightBlue"
                 } border-2 ${
-                  num != idx + 1
+                  num !== idx + 1
                     ? "border-neutral-lightGray"
                     : "border-primary-purplishBlue"
                 } rounded-md p-4 flex items-center justify-around mb-4 sm:mb-0 sm:block basis-[31%] transition-all duration-300 hover:border-primary-purplishBlue`}
               >
-                <img className="sm:mb-10" src={item.img} alt="plan image" />
                 <h4 className="text-primary-marineBlue font-[500]">
-                  {item.title}
+                  {item.type}
                 </h4>
                 <p className="text-neutral-coolGray text-[14px] font-[500]">
-                  ${item.price}/mo
+                  {item.price}
                 </p>
               </div>
             );
@@ -94,60 +147,25 @@ const SelectPlan = () => {
                 onClick={() => getYearlyDetails(idx)}
                 key={item.id}
                 className={`plan ${
-                  num != idx + 1 ? "bg-white" : "bg-primary-lightBlue"
+                  num !== idx + 1 ? "bg-white" : "bg-primary-lightBlue"
                 } border-2 ${
-                  num != idx + 1
+                  num !== idx + 1
                     ? "border-neutral-lightGray"
                     : "border-primary-purplishBlue"
                 } rounded-md p-4 flex items-center justify-around mb-4 sm:mb-0 sm:block sm:basis-[31%] transition-all duration-300 hover:border-primary-purplishBlue`}
               >
-                <img className="sm:mb-10" src={item.img} alt="plan image" />
+                {/* <img className="sm:mb-10" src={item.image} alt="plan image" /> */}
                 <h4 className="text-primary-marineBlue font-[500]">
-                  {item.title}
+                  {item.type}
                 </h4>
                 <p className="text-neutral-coolGray text-[14px] font-[500]">
-                  ${item.price}/mo
-                </p>
-                <p className="text-primary-marineBlue text-[12px]">
-                  {item.extra}
+                  {item.price}
                 </p>
               </div>
             );
           })}
         </div>
 
-        <div
-  className={`bg-neutral-alabaster flex justify-center items-center py-3 space-x-8 rounded-md ${
-    toggleYearly ? "mb-[50px]" : "mb-[57px]" // Reduced margin here
-  } ${
-    toggleYearly ? "sm:mb-[59px]" : "sm:mb-[30px]" // Reduced margin here
-  }`}
->
-
-          <p
-            className={`${
-              toggleYearly ? "text-neutral-coolGray" : "text-primary-marineBlue"
-            } text-[14px] font-[500]`}
-          >
-            Monthly
-          </p>
-          <label className="inline-flex relative items-center cursor-pointer">
-            <input type="checkbox" value="" className="sr-only peer" />
-            <div
-              onClick={handleToggleYearly}
-              className="w-11 h-6 peer-focus:outline-none  rounded-full peer dark:bg-primary-marineBlue peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[4px] after:left-[4px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all dark:border-gray-600"
-            ></div>
-          </label>
-          <p
-            className={`${
-              toggleYearly
-                ? "text-primary-marineBlue"
-                : "text-neutral-coolGray "
-            } text-[14px] font-[500]`}
-          >
-            Yearly
-          </p>
-        </div>
         <div className="flex justify-between items-center">
           <button
             onClick={() => navigate("/")}
@@ -158,7 +176,7 @@ const SelectPlan = () => {
 
           <button
             className="bg-primary-marineBlue text-white border-0 rounded-md px-6 py-3 transition-all duration-300 hover:opacity-75"
-            type="sumbit"
+            type="submit"
           >
             Next Step
           </button>

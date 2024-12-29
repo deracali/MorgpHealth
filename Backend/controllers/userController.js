@@ -204,7 +204,7 @@ const updateProfileMobile = async (req, res) => {
 
  const bookAppointment = async (req, res) => {
     try {
-        const { userId, docId, slotDate, slotTime, concern,description } = req.body;
+        const { userId, docId, slotDate, slotTime, concern,description,type } = req.body;
 
         // Fetch doctor data, excluding password field
         const docData = await doctorModel.findById(docId).select('-password');
@@ -250,6 +250,7 @@ const updateProfileMobile = async (req, res) => {
             slotDate,
             concern,
             description,
+            type,
             data: Date.now() // Use Date.now() for timestamp
         };
 

@@ -268,7 +268,7 @@ const updateDoctorProfile = async (req, res) => {
     if (name !== undefined) updateFields.name = name;
     if (email !== undefined) updateFields.email = email;
     if (gender !== undefined) updateFields.gender = gender;
-    if (phone !== undefined) updateFields.phone = phone; // Fixed the typo here
+    if (phone !== undefined) updateFields.phone = phone; 
     if (region !== undefined) updateFields.region = region;
     if (fees !== undefined) updateFields.fees = fees;
     if (address !== undefined) updateFields.address = address;
@@ -278,34 +278,44 @@ const updateDoctorProfile = async (req, res) => {
 
     // Handle balance update if provided
     if (balance !== undefined) {
-      // Determine if the balance is being added or withdrawn
-      const balanceChangeType = balance > 0 ? 'added' : 'withdrawn'; // Positive balance is added, negative is withdrawn
-
-      // Create balance history entry
+      const balanceChangeType = balance > 0 ? 'added' : 'withdrawn';
       const balanceHistoryEntry = {
-        amount: Math.abs(balance),  // Ensure the amount is positive for historical records
-        type: balanceChangeType,    // 'added' or 'withdrawn'
-        date: new Date()            // Record the current date
+        amount: Math.abs(balance),
+        type: balanceChangeType,
+        date: new Date()
       };
-
-      // Update balance using $inc and push the history entry
-      updateFields.$inc = { balance: balance };  // Update the balance
-      updateFields.$push = { balanceHistory: balanceHistoryEntry };  // Push to balanceHistory
+      
+      updateFields.$inc = { balance: balance };
+      updateFields.$push = { balanceHistory: balanceHistoryEntry };
     }
 
     // Handle services update if provided
     if (services !== undefined && Array.isArray(services)) {
-      // Update services by adding to the existing array without duplicates
-      updateFields.$addToSet = {
-        services: { $each: services }, // Adds multiple services uniquely
-      };
+      // Loop through the services and add/update each one
+      services.forEach(service => {
+        if (service._id) {
+          // Update existing service
+          updateFields.$set = {
+            'services.$[elem].name': service.name,
+            'services.$[elem].fee': service.fee,
+          };
+          
+          // Use arrayFilters to identify the service by its _id
+          updateFields.arrayFilters = [{ 'elem._id': service._id }];
+        } else {
+          // Add new service if _id is not provided
+          updateFields.$addToSet = {
+            services: { $each: [service] }, // Adds only unique services
+          };
+        }
+      });
     }
 
     // Perform the update using the docId
     const updatedDoctor = await doctorModel.findByIdAndUpdate(
       docId,
       updateFields,
-      { new: true } // Return the updated document
+      { new: true, arrayFilters: updateFields.arrayFilters || [] } // Include arrayFilters if used
     );
 
     // Check if the doctor was found and updated
@@ -321,6 +331,56 @@ const updateDoctorProfile = async (req, res) => {
     });
   } catch (error) {
     console.error("Error updating profile:", error);
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+
+const deleteService = async (req, res) => {
+  try {
+    const { docId } = req.params; // Extract doctor ID from URL parameters
+    const { services } = req.body; // Extract services to delete from the request body
+
+    // Validate that services is provided and is an array
+    if (!services || !Array.isArray(services)) {
+      return res.status(400).json({
+        success: false,
+        message: "Services must be provided as an array.",
+      });
+    }
+
+    // Log the service to check if it's correctly passed
+    // console.log("Deleting services with IDs:", services);
+
+    // Perform the update to remove the services
+    const updatedDoctor = await doctorModel.findByIdAndUpdate(
+      docId,
+      {
+        $pull: {
+          services: {
+            _id: { $in: services }, // Remove services by matching the _id
+          },
+        },
+      },
+      { new: true } // Return the updated document
+    );
+
+    // Check if the doctor was found and updated
+    if (!updatedDoctor) {
+      return res.status(404).json({
+        success: false,
+        message: "Doctor not found.",
+      });
+    }
+
+    // Return the updated profile data
+    res.json({
+      success: true,
+      message: "Services deleted successfully.",
+      profileData: updatedDoctor,
+    });
+  } catch (error) {
+    console.error("Error deleting services:", error);
     res.status(500).json({ success: false, message: error.message });
   }
 };
@@ -722,4 +782,4 @@ const updateStatus = async (req, res) => {
 };
 
 
-export {changeAvailablity,updateStatus,addReview,getReviews,unlikeDoctor,likeDoctor,updateDoctorAvailability,decrementDoctorBalance,doctorList,doctorFilterController,updateAppointment,doctorFilter, loginDoctor,appointmentsDoctor,appointmentCancel,appointmentComplete,doctorDashboard, doctorProfile, updateDoctorProfile}
+export {changeAvailablity,deleteService,updateStatus,addReview,getReviews,unlikeDoctor,likeDoctor,updateDoctorAvailability,decrementDoctorBalance,doctorList,doctorFilterController,updateAppointment,doctorFilter, loginDoctor,appointmentsDoctor,appointmentCancel,appointmentComplete,doctorDashboard, doctorProfile, updateDoctorProfile}

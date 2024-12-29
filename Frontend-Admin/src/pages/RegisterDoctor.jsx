@@ -13,6 +13,7 @@ export default function AddDoctor() {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [phone, setPhone] = useState('');
   const [gender, setGender] = useState('');
   const [experience, setExperience] = useState('1 Year');
   const [fees, setFees] = useState('');
@@ -50,6 +51,7 @@ const navigate = useNavigate()
     // Append other form fields
     formData.append('name', name);
     formData.append('email', email);
+    formData.append('phone', phone);
     formData.append('password', password);
     formData.append('gender', gender);
     formData.append('experience', experience);
@@ -102,6 +104,7 @@ const navigate = useNavigate()
     setDegree('');
     setAbout('');
     setFees('');
+    setPhone('');
     setDateOfBirth('');
     setUniversityName('');
     setUniversityCountry('');
@@ -124,13 +127,14 @@ const navigate = useNavigate()
 
         <div className='flex flex-col lg:flex-row items-start gap-10 text-gray-600'>
           <div className='w-full lg:flex-1 flex flex-col gap-4'>
-            <InputField label="Doctor Name" value={name} onChange={setName} required />
-            <InputField label="Doctor Email" value={email} onChange={setEmail} type="email" required />
-            <InputField label="Doctor Password" value={password} onChange={setPassword} type="password" required />
+            <InputField  placeholder='Doc Richard John' label="Doctor Name" value={name} onChange={setName} required />
+            <InputField  placeholder='example@gmail.com' label="Doctor Email" value={email} onChange={setEmail} type="email" required />
+            <InputField  label="Doctor Password" value={password} onChange={setPassword} type="password" required />
             <SelectField 
               label="Gender" 
               value={gender} 
               onChange={setGender} 
+               placeholder='gender'
               options={['Male', 'Female', 'Other']} 
               required 
             />
@@ -139,8 +143,9 @@ const navigate = useNavigate()
               value={experience} 
               onChange={setExperience} 
               options={experienceOptions} 
+               placeholder='4 years'
             />
-            <InputField label="Fees" value={fees} onChange={setFees} required />
+            <InputField  placeholder='50' label="Fees" value={fees} onChange={setFees} required />
           </div>
 
           <div className='w-full lg:flex-1 flex flex-col gap-4'>
@@ -164,10 +169,11 @@ const navigate = useNavigate()
   required 
 />
 
-            <InputField label="Education" value={degree} onChange={setDegree} required />
-            <InputField label="Address 1" value={address1} onChange={setAddress1} required />
-            <InputField label="Address 2" value={address2} onChange={setAddress2} />
-            <InputField label="Region" value={region} onChange={setRegion} required /> {/* Region Field */}
+            <InputField  placeholder='Phone' label="Phone" value={phone} onChange={setPhone} required />
+            <InputField label="Education"  placeholder='MBBS' value={degree} onChange={setDegree} required />
+            <InputField label="Address 1"  placeholder='street' value={address1} onChange={setAddress1} required />
+            <InputField label="Address 2" value={address2}  placeholder='street' onChange={setAddress2} />
+            <InputField label="Region" value={region} onChange={setRegion}  placeholder='Europe' required /> {/* Region Field */}
           </div>
         </div>
 
@@ -204,11 +210,11 @@ const navigate = useNavigate()
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 text-gray-600">
           <InputField label="Date of Birth" value={dateOfBirth} onChange={setDateOfBirth} type="date" required />
-          <InputField label="University Name" value={universityName} onChange={setUniversityName} required />
-          <InputField label="University Country" value={universityCountry} onChange={setUniversityCountry} required />
-          <InputField label="Medical Council Name" value={medicalCouncilName} onChange={setMedicalCouncilName} required />
-          <InputField label="Medical Council Country" value={medicalCouncilCountry} onChange={setMedicalCouncilCountry} required />
-          <InputField label="Graduation Year" value={graduationYear} onChange={setGraduationYear} type="number" required />
+          <InputField placeholder='University Name'  label="University Name" value={universityName} onChange={setUniversityName} required />
+          <InputField  placeholder='University Country' label="University Country" value={universityCountry} onChange={setUniversityCountry} required />
+          <InputField  placeholder='Medical Council Name' label="Medical Council Name" value={medicalCouncilName} onChange={setMedicalCouncilName} required />
+          <InputField  placeholder='Medical Council Country' label="Medical Council Country" value={medicalCouncilCountry} onChange={setMedicalCouncilCountry} required />
+          <InputField  placeholder='2019' label="Graduation Year" value={graduationYear} onChange={setGraduationYear} type="number" required />
         </div>
 
         <button type='submit' className='w-full mt-4 p-2 bg-green-600 text-white rounded'>Add Doctor</button>
@@ -218,12 +224,13 @@ const navigate = useNavigate()
 }
 
 // Helper component for input fields
-const InputField = ({ label, value, onChange, type = 'text', required = false }) => (
+const InputField = ({ label, value, onChange, type = 'text', required = false, placeholder = '' }) => (
   <div className='flex flex-col gap-1'>
     <label>{label}{required && '*'}</label>
     <input
       type={type}
       value={value}
+      placeholder={placeholder || "Enter value"}  
       onChange={(e) => onChange(e.target.value)}
       className='border rounded px-3 py-2'
       required={required}

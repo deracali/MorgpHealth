@@ -15,9 +15,15 @@ const AddOns = () => {
   };
 
   const handleChange = (e, id) => {
-    setSelectedAddOnsValue((prev) => [...prev, addOns[id]]);
+    if (e.target.checked) {
+      setSelectedAddOnsValue((prev) => [...prev, addOns[id]]);
+    } else {
+      setSelectedAddOnsValue((prev) =>
+        prev.filter((item) => item.id !== addOns[id].id)
+      );
+    }
     console.log(selectedAddOnsValue);
-    setNum(id + 1);
+    setNum(id + 1); // Marking the selection to change the background
   };
 
   return (
@@ -26,7 +32,7 @@ const AddOns = () => {
         Pick add-ons
       </h1>
       <p className="text-neutral-coolGray mb-6">
-        Add-ons help enhance your gaming experience.
+        Add-ons help enhance your experience.
       </p>
       <form
         onSubmit={handleSubmit}
@@ -37,9 +43,9 @@ const AddOns = () => {
             <div
               key={item.id}
               className={`${
-                num != idx + 1 ? "bg-white" : "bg-primary-lightBlue"
+                num !== idx + 1 ? "bg-white" : "bg-primary-lightBlue"
               } border-2 ${
-                num != idx + 1
+                num !== idx + 1
                   ? "border-neutral-lightGray"
                   : "border-primary-purplishBlue"
               } rounded-md flex items-center justify-between p-4 cursor-pointer transition-all duration-300 hover:border-primary-purplishBlue`}
@@ -55,20 +61,20 @@ const AddOns = () => {
                 </div>
                 <div>
                   <p className="font-[500] text-primary-marineBlue">
-                    {item.value}
+                    {item.type} {/* Using type instead of value */}
                   </p>
-                  <p className="text-neutral-coolGray text-[14px]">
-                    {item.desc}
-                  </p>
+                 
                 </div>
               </div>
               <div>
-                <p className="text-primary-purplishBlue">+${item.price}/mo</p>
+                <p className="text-primary-purplishBlue">
+                  {item.price}
+                </p>
               </div>
             </div>
           );
         })}
-       <div className="flex justify-between items-center pt-[50px] sm:pt-[12px]">
+        <div className="flex justify-between items-center pt-[50px] sm:pt-[12px]">
           <button
             onClick={() => navigate("/selectplan")}
             className="text-neutral-coolGray font-[500] capitalize transition-all duration-300 hover:text-primary-marineBlue cursor-pointer"
@@ -78,7 +84,7 @@ const AddOns = () => {
 
           <button
             className="bg-primary-marineBlue text-white border-0 rounded-md px-6 py-3 transition-all duration-300 hover:opacity-75"
-            type="sumbit"
+            type="submit"
           >
             Next Step
           </button>

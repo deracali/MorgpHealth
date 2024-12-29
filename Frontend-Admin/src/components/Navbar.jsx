@@ -38,18 +38,21 @@ export default function Navbar() {
         <NavLink to="/insurance" className="hover:text-blue-600 transition">
           INSURANCE
         </NavLink>
-        <NavLink to="/add-doc">
+        {/* <NavLink to="/add-doc">
           Register As A Doctor
-        </NavLink>
+        </NavLink> */}
         <NavLink to="/about" className="hover:text-blue-600 transition">
           ABOUT US
+        </NavLink>
+        <NavLink to="/specialization" className="hover:text-blue-600 transition">
+          SPECIALIZATION
         </NavLink>
         <NavLink to="/contact" className="hover:text-blue-600 transition">
           CONTACT US
         </NavLink>
-        <NavLink  onClick={() => window.location.href = "https://updateddoctor-dashboard.netlify.app/index"} className="hover:text-blue-600 transition">
+        {/* <NavLink  onClick={() => window.location.href = "https://updateddoctor-dashboard.netlify.app/index"} className="hover:text-blue-600 transition">
           Doctor Dashboard
-        </NavLink>
+        </NavLink> */}
       </ul>
 
       {/* Right Side - Buttons and User Menu */}
@@ -84,8 +87,10 @@ export default function Navbar() {
             </div>
             <ul className='flex flex-col items-center gap-2 mt-5 px-5 text-lg font-medium'>
                 <NavLink className='px-4 py-2 rounded inline-block' onClick={()=>setShowMenu(false)} to='/'><p className='px-4 py-2 rounded inline-block'>HOME</p></NavLink>
-                <NavLink className='px-4 py-2 rounded inline-block' onClick={()=>setShowMenu(false)} to='/doctors'><p className='px-4 py-2 rounded inline-block'>ALL DOCTORS</p></NavLink>
+                {userData?<NavLink className='px-4 py-2 rounded inline-block' onClick={()=>setShowMenu(false)} to='/doctors'><p className='px-4 py-2 rounded inline-block'>ALL DOCTORS</p></NavLink> : ""}
                 <NavLink className='px-4 py-2 rounded inline-block' onClick={()=>setShowMenu(false)} to='/about'><p className='px-4 py-2 rounded inline-block'>ABOUT</p></NavLink>
+                <NavLink className='px-4 py-2 rounded inline-block' onClick={()=>setShowMenu(false)} to='/specialization'><p className='px-4 py-2 rounded inline-block'>SPECIALIZATION</p></NavLink>
+              
                 <NavLink className='px-4 py-2 rounded inline-block' onClick={()=>setShowMenu(false)} to='/contact'><p className='px-4 py-2 rounded inline-block'>CONTACT</p></NavLink>
             </ul>
             </div>

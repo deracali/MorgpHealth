@@ -3,7 +3,7 @@ import { assets } from '../assets/assets_frontend/assets';
 
 const InsuranceBanner = () => {
   return (
-    <div className="flex flex-col lg:flex-row items-center bg-blue-900 text-white py-10 px-6 lg:px-20 space-y-8 lg:space-y-0 lg:space-x-10">
+    <div className="flex flex-col mb-40 lg:flex-row items-center bg-blue-900 text-white py-10 px-6 lg:px-20 space-y-8 lg:space-y-0 lg:space-x-10">
       {/* Image Section */}
       <div className="w-full lg:w-1/2">
         <img

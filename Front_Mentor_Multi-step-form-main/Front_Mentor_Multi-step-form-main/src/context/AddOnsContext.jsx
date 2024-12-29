@@ -5,23 +5,52 @@ const AddOnsContext = createContext();
 export const AddOnsProvider = ({ children }) => {
   const [addOns, setAddOns] = useState([
     {
-      id: 1,
-      value: "Premium Cover",
-      desc: "Access to full health insurance",
-      price: 150,
+      id: '1',
+      type: 'Health Plus cover',  // Changed the type
+      price: '$150/yr',
+  
+      title1: "Comprehensive Care",
+      frequency1: "Once a year",
+      title2: "Emergency Care",
+      frequency2: "Twice a year",
+      title3: "Dental Care",
+      frequency3: "Once a year",
+      title4: "Vision Care",
+      frequency4: "Twice a year",
+      title5: "General Checkup",
+      frequency5: "Once a year",
     },
     {
-      id: 2,
-      value: "Gold Cover",
-      desc: "Access to limited health insurance",
-      price: 125,
+      id: '2',
+      type: 'Wellness Plus cover',  // Changed the type
+      price: '$125/yr',
+
+      title1: "Dental Care",
+      frequency1: "Twice a year",
+      title2: "Eye Care",
+      frequency2: "Once a year",
+      title3: "Heart Checkup",
+      frequency3: "Twice a year",
+      title4: "Physiotherapy",
+      frequency4: "Once a year",
+      title5: "Mental Health Support",
+      frequency5: "Once a year",
     },
     {
-      id: 3,
-      value: "Platinum Cover",
-      desc: "Access to minimal health insurance",
-      price: 83,
-    },
+      id: '3',
+      type: 'Elite Care cover',  // Changed the type
+      price: '$83/yr',
+      title1: "Basic Dental Care",
+      frequency1: "Once a year",
+      title2: "Checkups",
+      frequency2: "Once a year",
+      title3: "Health Monitoring",
+      frequency3: "Quarterly",
+      title4: "Vaccination",
+      frequency4: "Once a year",
+      title5: "Emergency Services",
+      frequency5: "As needed",
+    }
   ]);
 
   const [selectedAddOnsValue, setSelectedAddOnsValue] = useState([]);

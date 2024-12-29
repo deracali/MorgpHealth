@@ -8,7 +8,7 @@ export default function Insurance() {
   useEffect(() => {
     const fetchInsurance = async () => {
       try {
-        const response = await fetch('http://localhost:4000/api/insurance/get');
+        const response = await fetch('https://morgphealth.onrender.com/api/insurance/get');
         if (response.ok) {
           const data = await response.json();
           console.log(data); // Log the response to check its structure

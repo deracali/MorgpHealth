@@ -1,10 +1,20 @@
-import React, { useContext } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { assets } from '../assets/assets_frontend/assets';
 import { AppContext } from '../context/AppContext';
 
 export default function Header() {
   const { userData } = useContext(AppContext);
+  
+    const [userId, setUserId] = useState(null);
+  
+    useEffect(() => {
+      const storedUserId = localStorage.getItem('userId');
+      if (storedUserId) {
+        setUserId(storedUserId);
+      }
+    }, []);
+  
   return (
     <div className="flex flex-col lg:flex-row items-center justify-between bg-white px-6 lg:px-16 py-10 gap-10">
       {/* Left Side - Text and Buttons */}

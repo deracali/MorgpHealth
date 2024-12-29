@@ -143,4 +143,47 @@ const deleteChat = async (req, res) => {
     }
 };
 
-export { startChat, getChatHistory, sendMessage, getDoctorChats, deleteChat };
+
+// Get all chats for a specific user
+const getUserChats = async (req, res) => {
+  try {
+      const { userId } = req.params;
+
+      // Find all chats for the user
+      const userChats = await Chat.find({ user: userId });
+
+      res.json({ success: true, chats: userChats });
+  } catch (error) {
+      console.error('Error fetching user chats:', error);
+      res.status(500).json({ success: false, message: 'Failed to fetch user chats' });
+  }
+};
+
+
+// Delete a specific chat for a user and its associated messages
+const deleteUserChat = async (req, res) => {
+  const { userId, chatId } = req.params;
+
+  try {
+      // Find the chat for the specific user
+      const chat = await Chat.findOne({ _id: chatId, user: userId });
+
+      if (!chat) {
+          return res.status(404).json({ success: false, message: 'Chat not found for the user' });
+      }
+
+      // Delete messages associated with the chat
+      await Message.deleteMany({ chat: chatId });
+
+      // Delete the chat
+      await Chat.findByIdAndDelete(chatId);
+
+      res.status(200).json({ success: true, message: 'User chat deleted successfully' });
+  } catch (error) {
+      console.error('Error deleting user chat:', error);
+      res.status(500).json({ success: false, error: 'Failed to delete user chat' });
+  }
+};
+
+
+export { startChat, getChatHistory, sendMessage,getUserChats,deleteUserChat, getDoctorChats, deleteChat };

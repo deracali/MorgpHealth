@@ -2,25 +2,26 @@ import React, { useContext, useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { PersonalInfoContext } from "../context/PersonalInfoContext";
 
-const PersonalInfo = () => {
+const PatnerForm = () => {
   const { setPersonalInfo } = useContext(PersonalInfoContext);
   const navigate = useNavigate();
-  const { userId } = useParams();
+  const { userId } = useParams();  // Extract userId from the URL
   const [formData, setLocalFormData] = useState({
-    userId: "",
+    userId: "",       // Added userId field
     name: "",
-    email: "",
+    spouseName: "",
+    spouseAge: "",
     age: "",
-    insured: false,
     location: "",
+    email: "",        // Added email field
+    insured: false,
   });
 
-  // Use useEffect to set the userId in the form data once the component is mounted
   useEffect(() => {
     if (userId) {
       setLocalFormData((prevData) => ({
         ...prevData,
-        userId: userId, // Populate the userId field
+        userId: userId,  // Populate the userId field
       }));
     }
   }, [userId]);
@@ -38,13 +39,13 @@ const PersonalInfo = () => {
 
     setPersonalInfo((prev) => ({
       ...prev,
-      userId: formData.userId, // Added userId field to context
+      userId: formData.userId,  // Added userId field to context
       name: formData.name,
-      email: formData.email,  // Added email field to context
       location: formData.location,
+      email: formData.email,     // Added email field to context
     }));
 
-    navigate("/selectplan");
+    navigate('/selectplan');
   };
 
   return (
@@ -65,17 +66,27 @@ const PersonalInfo = () => {
         />
       </div>
 
-      {/* Email Field */}
+      {/* Spouse Name and Age */}
       <div className="form-group">
-        <label className="block text-primary-marineBlue font-semibold mb-2">Email</label>
+        <label className="block text-primary-marineBlue font-semibold mb-2">Spouse Name</label>
         <input
-          type="email"
-          name="email"
-          value={formData.email}
+          type="text"
+          name="spouseName"
+          value={formData.spouseName}
           onChange={handleInputChange}
           className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-marineBlue"
-          placeholder="Enter your email"
-          required
+          placeholder="Enter spouse's name"
+        />
+      </div>
+      <div className="form-group">
+        <label className="block text-primary-marineBlue font-semibold mb-2">Spouse Age</label>
+        <input
+          type="text"
+          name="spouseAge"
+          value={formData.spouseAge}
+          onChange={handleInputChange}
+          className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-marineBlue"
+          placeholder="Enter spouse's age"
         />
       </div>
 
@@ -105,6 +116,19 @@ const PersonalInfo = () => {
         />
       </div>
 
+      {/* Email Field */}
+      <div className="form-group">
+        <label className="block text-primary-marineBlue font-semibold mb-2">Email</label>
+        <input
+          type="email"
+          name="email"
+          value={formData.email}
+          onChange={handleInputChange}
+          className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-marineBlue"
+          placeholder="Enter your email"
+        />
+      </div>
+
       {/* Insured Checkbox */}
       <div className="form-group flex items-center space-x-3">
         <label className="text-primary-marineBlue font-semibold">Insured</label>
@@ -127,4 +151,4 @@ const PersonalInfo = () => {
   );
 };
 
-export default PersonalInfo;
+export default PatnerForm;

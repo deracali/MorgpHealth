@@ -8,6 +8,8 @@ import Sidebar from "./components/Sidebar";
 import { PlansProvider } from "./context/PlansContext";
 import { AddOnsProvider } from "./context/AddOnsContext";
 import ThankYou from "./pages/ThankYou";
+import PatnerForm from "./pages/PatnerInsurance";
+import WholeFamilyForm from "./pages/wholefamily";
 
 const App = () => {
   return (
@@ -18,11 +20,14 @@ const App = () => {
 
             <Sidebar />
             <Routes>
-              <Route path="/" element={<PersonalInfo />} />
+              <Route path="/:userId" element={<PersonalInfo />} />
+              <Route path="/patner/:userId" element={<PatnerForm/>} />
+              <Route path="/whole-family/:userId" element={<WholeFamilyForm/>} />
               <Route path="/selectplan" element={<SelectPlan />} />
               <Route path="/addons" element={<AddOns />} />
               <Route path="/summary" element={<Summary />} />
               <Route path="/thankyou" element={<ThankYou />} />
+              <Route path="/error" element={<Error />} />
               <Route path="*" element={<NotFound />} />
             </Routes>
           </div>

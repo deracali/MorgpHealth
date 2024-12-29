@@ -28,6 +28,8 @@ import PaymentSuccess from "./pages/Paymentsuccess"
 import LabStripe from "./pages/LabStripe"
 import LabFlutterWave from "./pages/LabFlutterwave"
 import DocRegisterMsg from "./pages/docRegisterMsg"
+import SpecialistCards from "./pages/Specialization"
+import BlogDetails from "./components/BlogDetails"
 
 
 function App() {
@@ -52,6 +54,8 @@ function App() {
          <Route path="/doctors-prescription/:sessionId" element={<DoctorsPrescription/> } />    
          <Route path="/doctors-diagnosis/:sessionId" element={<DoctorsDiagnosis/> } />    
          <Route path="/insurance" element={<Insurance/> } />    
+         <Route path="/specialization" element={< SpecialistCards/> } />    
+         <Route path="/blogdetails/:id" element={< BlogDetails/> } />    
          <Route path="/video-call/:appointmentId" element={<VideoCall />} />
 
 

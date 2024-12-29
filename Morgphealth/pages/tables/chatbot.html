@@ -593,7 +593,7 @@
 
 <script>
     // Fetch data from the API and update the table
-    fetch('http://localhost:4000/api/request/requests')
+    fetch('https://morgphealth.onrender.com/api/request/requests')
       .then(response => response.json())
       .then(data => {
         const tableBody = document.getElementById('table-body');
@@ -627,7 +627,7 @@
     function deleteRequest(id) {
       const confirmation = confirm('Are you sure you want to delete this request?');
       if (confirmation) {
-        fetch(`http://localhost:4000/api/request/requests/${id}`, {
+        fetch(`https://morgphealth.onrender.com/api/request/requests/${id}`, {
           method: 'DELETE',
         })
           .then(response => response.json())

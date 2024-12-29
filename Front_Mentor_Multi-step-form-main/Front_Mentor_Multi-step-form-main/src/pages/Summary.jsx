@@ -1,5 +1,6 @@
-import React, { useContext, useEffect } from "react";
+import React, { useContext } from "react";
 import { useNavigate } from "react-router-dom";
+import { loadStripe } from "@stripe/stripe-js";
 import PlansContext from "../context/PlansContext";
 import AddOnsContext from "../context/AddOnsContext";
 import { PersonalInfoContext } from "../context/PersonalInfoContext";
@@ -12,27 +13,41 @@ const Summary = () => {
   const { selectedAddOnsValue } = useContext(AddOnsContext);
   const { personalInfo } = useContext(PersonalInfoContext);
 
-  // Determine if monthly or yearly plan is selected
-  const planPrice = selectedMonthlyPlan.price || selectedYearlyPlan.price;
-  const isMonthly = !!selectedMonthlyPlan.price;
-  
+  // Clean the price and ensure it's a number
+  const cleanPrice = (price) => {
+    if (!price) return 0;
+    // Remove non-numeric characters (e.g., $ and commas), then convert to a float number
+    return parseFloat(price.replace(/[^0-9.-]+/g, ""));
+  };
+
+  // Ensure data is valid and sanitize it (filter non-numeric values)
+  const plan = selectedMonthlyPlan?.price ? selectedMonthlyPlan : selectedYearlyPlan;
+  const planPrice = cleanPrice(plan?.price); // Clean and get valid price as a number
+  const isMonthly = selectedMonthlyPlan?.price > 0;
+
+  // Sanitize Add-ons to ensure all prices are valid numbers
+  const totalAddOnsPrice = selectedAddOnsValue.reduce((acc, item) => {
+    const addOnPrice = cleanPrice(item?.price); // Clean the add-on price
+    return !isNaN(addOnPrice) ? acc + addOnPrice : acc; // Only add if it's a valid number
+  }, 0);
+
   // Calculate total price (plan price + add-ons price)
-  const totalAddOnsPrice = selectedAddOnsValue.reduce((acc, item) => acc + item.price, 0);
   const totalPrice = planPrice + totalAddOnsPrice;
 
-  // Handle Confirm Button - Submit data to the server
+  console.log(planPrice);
+  console.log(totalAddOnsPrice);
+
+  // Handle Confirm Button - Submit data to the server and initiate Stripe checkout
   const handleConfirm = async () => {
-    // Retrieve userId from localStorage
     const userId = localStorage.getItem('userId') || (localStorage.getItem('userData') && JSON.parse(localStorage.getItem('userData')).userId);
-
-    // Redirect to login if no userId is found
-    // if (!userId) {
-    //   navigate("/login");
-    //   return;
-    // }
-
+    
+    const plan = selectedMonthlyPlan.price ? selectedMonthlyPlan : selectedYearlyPlan;
+    const planPrice = plan.price;
+    const isMonthly = !!selectedMonthlyPlan.price;
+  
     const insuranceData = {
       userId,
+      // Personal Info
       name: personalInfo.name,
       spouseName: personalInfo.spouseName,
       motherName: personalInfo.motherName,
@@ -45,18 +60,32 @@ const Summary = () => {
       motherAge: personalInfo.motherAge,
       fatherAge: personalInfo.fatherAge,
       childAge: personalInfo.childAge,
-      plan: selectedMonthlyPlan.title || selectedYearlyPlan.title,
+      // Plan Info
+      plan: plan.title,
       planType: isMonthly ? "Monthly" : "Yearly",
       planPrice,
+      // Add-ons Info
       addOns: selectedAddOnsValue.map(addOn => ({
-        title: addOn.value,
+        title: addOn.title,
+        frequency: addOn.frequency,
         price: addOn.price,
       })),
+      // Include title1 through title5 and frequency1 through frequency5
+      title1: plan.title1,
+      frequency1: plan.frequency1,
+      title2: plan.title2,
+      frequency2: plan.frequency2,
+      title3: plan.title3,
+      frequency3: plan.frequency3,
+      title4: plan.title4,
+      frequency4: plan.frequency4,
+      title5: plan.title5,
+      frequency5: plan.frequency5,
       totalPrice,
     };
-        // navigate("/thankyou");
-    
+  
     try {
+      // Call the API to submit the insurance data (keep this part for your backend)
       const response = await fetch("https://morgphealth.onrender.com/api/insurance/insurance/post", {
         method: "POST",
         headers: {
@@ -66,7 +95,29 @@ const Summary = () => {
       });
 
       if (response.ok) {
-        // Redirect to thank you page after successful submission
+        // Initiate Stripe Payment after data submission
+        const stripe = await loadStripe("pk_test_51QN8mWG2ozhLuxUAf8fdoD3MqAQnfNsZZoZdbc1fRx1fHUWRbpLjbGfdeR5VEAGOVCAUqH9hrlaJPQ5lEpAmrt7q00kPKajlEa");
+
+        const paymentResponse = await fetch("https://morgphealth.onrender.com/create-intents", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ amount: totalPrice * 100, name: personalInfo.name, email: personalInfo.email }), // Send amount in cents
+        });
+
+        const session = await paymentResponse.json();
+        
+        if (session.id) {
+          // Redirect to the Stripe Checkout session
+          const result = await stripe.redirectToCheckout({
+            sessionId: session.id,
+          });
+
+          if (result.error) {
+            console.error("Stripe Checkout Error:", result.error.message);
+          }
+        } else {
+          console.error("Session ID not received:", session);
+        }
       } else {
         console.error("Error submitting data", response);
       }
@@ -77,89 +128,51 @@ const Summary = () => {
 
   return (
     <div className="sm:basis-[60%] w-[300px] sm:w-[100%] h-[100%] sm:pr-[80px] text-center">
-      <h1 className="mt-10 text-3xl font-[800] mb-2 text-primary-marineBlue">
-        Finishing up
-      </h1>
-      {/* <p className="text-neutral-coolGray mb-6 hidden sm:block">
-        Double-check everything looks OK before confirming.
-      </p>
-      <p className="text-neutral-coolGray mb-6 sm:hidden">
-        Double-check everything <br /> looks OK before confirming.
-      </p> */}
+      <h1 className="mt-10 text-3xl font-[800] mb-2 text-primary-marineBlue">Finishing up</h1>
 
-      {/* Display Personal Info */}
-      {/* <div className="bg-neutral-alabaster rounded-lg p-5 mb-6">
-        <div className="mb-4">
-          <span className="text-primary-marineBlue font-[800]">Name:</span>
-          <p className="text-neutral-coolGray">{personalInfo.name}</p>
-        </div>
-        <div className="mb-4">
-          <span className="text-primary-marineBlue font-[800]">Location:</span>
-          <p className="text-neutral-coolGray">{personalInfo.location}</p>
-        </div>
-        <div className="mb-4">
-          <span className="text-primary-marineBlue font-[800]">Age:</span>
-          <p className="text-neutral-coolGray">{personalInfo.age}</p>
-        </div>
-      </div> */}
-
-      {/* Display Plan Info */}
+      {/* Display Plan Info (Monthly or Yearly) */}
       <div className="bg-neutral-alabaster rounded-lg p-5">
+        <h2 className="font-[800] text-primary-marineBlue mb-4">Your Selected Plan</h2>
+        
         <div className="plan flex justify-between items-center mb-4">
           <div>
-            <span className="text-primary-marineBlue font-[800]">
-              {selectedMonthlyPlan.title || selectedYearlyPlan.title}
-            </span>
-            {isMonthly ? (
-              <span className="text-primary-marineBlue font-[800]"> (Monthly)</span>
-            ) : (
-              <span className="text-primary-marineBlue font-[800]"> (Yearly)</span>
-            )}
-            <p
-              onClick={() => navigate("/selectplan")}
-              className="text-neutral-coolGray underline cursor-pointer"
-            >
-              Change
-            </p>
-          </div>
-          <div>
-            <span className="text-primary-marineBlue font-[800]">
-              ${planPrice}
-            </span>
-            {isMonthly ? (
-              <span className="text-primary-marineBlue font-[800]">/mo</span>
-            ) : (
-              <span className="text-primary-marineBlue font-[800]">/yr</span>
-            )}
+            <span className="text-primary-marineBlue font-[800]">{planPrice}</span>
           </div>
         </div>
-
         <hr />
+      </div>
 
-        {selectedAddOnsValue.map((item) => (
-          <div key={item.id} className="plan flex justify-between items-center mt-4">
+      {/* Display Selected Add-ons Dynamically */}
+      <div className="bg-neutral-alabaster rounded-lg p-5">
+        <h2 className="font-[800] text-primary-marineBlue mb-4">Selected Add-ons</h2>
+
+        {selectedAddOnsValue.map((addOn, index) => (
+          <div key={index} className="plan flex justify-between items-center mb-4">
             <div>
-              <p className="text-neutral-coolGray">{item.value}</p>
+              <span className="text-primary-marineBlue font-[800]">{addOn.title}</span>
+              <p className="text-neutral-coolGray">{addOn.frequency}</p>
             </div>
             <div>
-              <p className="text-primary-marineBlue mb-2 text-[14px] font-[500]">
-                +${item.price}/{isMonthly ? "mo" : "yr"}
-              </p>
+              <span className="text-primary-marineBlue font-[800]">
+                {addOn.price}
+              </span>
             </div>
           </div>
         ))}
       </div>
 
+      {/* Display Total Price */}
       <div className="flex justify-between p-5">
         <div>
-          <p className="text-neutral-coolGray">Total ({isMonthly ? "per month" : "per year"})</p>
+          <p className="text-neutral-coolGray">Total </p>
         </div>
         <div className="text-primary-purplishBlue font-[800]">
-          +${totalPrice}/{isMonthly ? "mo" : "yr"}
+          {totalPrice}
         </div>
       </div>
 
-      <div className="flex justify-around sm:justify-between items-center sm:pt-[79px]">
+      {/* Buttons */}
+      <div className="flex justify-around sm:justify-between items-center ">
         <button
           onClick={() => navigate("/addons")}
           className="text-neutral-coolGray font-[500] capitalize transition-all duration-300 hover:text-primary-marineBlue cursor-pointer"
