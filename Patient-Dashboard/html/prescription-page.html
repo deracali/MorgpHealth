@@ -35,6 +35,7 @@
 </head>
 
 <body>
+  
   <div class="container mt-5">
     <div
     id="confidentialElement"
@@ -94,11 +95,15 @@
       </div>
 
       <p style="margin-top: 30px; font-size: 16; font-weight: bold; text-align: center;" id="doctorName">Dr. [Name]</p>
+      <p style="margin-top: 30px; font-size: 16; font-weight: bold; text-align: center;" id="docId"></p>
+      <!-- <p style="margin-top: 30px; font-size: 16; font-weight: bold; text-align: center;" id="mdId"></p> -->
       
       
       
       <div style="text-align: center;" id="actionButtonContainer"></div>
     </div>
+</div>
+
 
   <script>
     document.addEventListener('DOMContentLoaded', () => {
@@ -142,8 +147,13 @@
      document.getElementById("patientName").textContent = appointments.userData.name || "N/A";
      document.getElementById("age").textContent = appointments.age || "N/A";
      document.getElementById("sex").textContent = appointments.userData.gender || "N/A";
+     document.getElementById("docId").textContent = "Doc Id: " + (appointments.docId?.slice(0, 6)) || "N/A";
+
+
+    //  document.getElementById("mdId").textContent = appointments.docData.medicalLicense || "N/A";
      document.getElementById("date").textContent = new Date(appointments.createdAt).toLocaleDateString() || "N/A";
  
+  
      // Destructure and prepare medication data using the provided pattern
      const { medicines = [], updatedmedicine = [] } = appointments;  // updated 'medicines2' to 'updatedmedicine'
  
@@ -338,7 +348,8 @@
      // Populate doctor name
      document.getElementById("doctorName").textContent = appointments.docData.name || "Dr. [Name]";
      // Action based on timer
-     const timer = localStorage.getItem("timer") === "true";
+     const timer = appointments.timer;
+     console.log(timer)
      const confidentialElement = document.getElementById("confidential");
      const actionButtonContainer = document.getElementById("actionButtonContainer");
      console.log(confidentialElement)

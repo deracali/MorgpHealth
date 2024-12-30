@@ -144,7 +144,8 @@
       <div class="signature-row">
         <div class="signature-block">
           <p class="signature-text" id="doctorName"></p>
-          <p id="doctorSpeciality">MD. Pathologist</p>
+          <p id="doctorSpeciality"></p>
+          <p id="doctorId"></p>
         </div>
       </div>
       <p class="small">Generated On: <span id="generatedOn"></span></p>
@@ -259,9 +260,11 @@
         document.getElementById("doctorName").textContent = appointments.docData?.name || "Dr. [Name]";
         document.getElementById("doctorEmail").textContent = appointments.docData?.email || "Dr. [Name]";
         document.getElementById("doctorSpeciality").textContent = appointments.docData?.speciality || "Dr. [Name]";
+        document.getElementById("doctorID").textContent = "Doc Id: " + appointments.docId?.slice(0, 6) || "";
+
 
         // Check timer from local storage
-        const timer = localStorage.getItem("timer") === "true";
+        const timer = appointments.timer;
         const confidentialElement = document.getElementById("confidential");
         const actionButtonContainer = document.getElementById("actionButtonContainer");
 

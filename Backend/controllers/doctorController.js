@@ -529,7 +529,20 @@ const updateAppointment = async (req, res) => {
       if (discontinue !== undefined) updateData.discontinue = discontinue;
       if (discontinue2 !== undefined) updateData.discontinue2 = discontinue2;
 
+      // Update the appointment before the timer change
       const updatedAppointment = await appointmentModel.findByIdAndUpdate(appointmentId, updateData, { new: true });
+
+      // Automatically set the timer field to false 48 hours after the meeting ends (if it's not already false)
+      const meetingEndTime = new Date(meetingEnd);
+      const currentTime = new Date();
+      
+      // Check if 48 hours have passed since the meeting end
+      const timeDifference = currentTime - meetingEndTime;
+
+      if (timeDifference >= 48 * 60 * 60 * 1000 && updatedAppointment.timer !== false) {
+          // If 48 hours have passed and timer is not already false, update it to false
+          await appointmentModel.findByIdAndUpdate(appointmentId, { timer: false });
+      }
 
       res.json({ success: true, message: "Appointment Updated", data: updatedAppointment });
   } catch (error) {

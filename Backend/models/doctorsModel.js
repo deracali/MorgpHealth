@@ -5,6 +5,7 @@ const doctorSchema = new mongoose.Schema({
      phone: { type: Number }, // Optional field
     email: { type: String, unique: true, required: true }, // Required
     password: { type: String, required: true }, // Required
+    pin:{type:String, required:true},
     services: [
       {
         name: { type: String, required: true }, // Name of the service (e.g., "Headache", "Malaria")
