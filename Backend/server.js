@@ -124,7 +124,7 @@ app.post('/create-intentss', async (req, res) => {
                     price_data: {
                         currency: 'usd',
                         product_data: {
-                            name: `Payment for ${userName}`,
+                            name: `Payment for Appointment`,
                             description: `Lab and Prescription update for: ${userName}, User Email: ${userEmail}, doctor Email: ${docEmail}, appointment Id:${appointmentId}`,
                         },
                         unit_amount: amount,

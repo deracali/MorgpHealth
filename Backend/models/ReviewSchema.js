@@ -14,6 +14,7 @@ const ReviewdoctorSchema = new mongoose.Schema({
     gender: { type: String }, // Optional field
     about: { type: String }, // Optional field
     available: { type: Boolean, default: true },
+    cancelled: { type: Boolean, default: false },
     fees: { type: Number }, // Optional field
     phone: { type: Number }, // Optional field
     balance: { type: Number, default: 0 }, // Optional field

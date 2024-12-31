@@ -265,10 +265,19 @@
                 <li class="nav-item"> <a class="nav-link" href="data-table.html">User table</a></li>
                 <li class="nav-item"> <a class="nav-link" href="js-grid.html">Doctors</a></li>
                 <li class="nav-item"> <a class="nav-link" href="sortable-table.html">Appointment table</a></li>
+                <li class="nav-item"> <a class="nav-link" href="Requests.html">Notice</a>
+                  <li class="nav-item"> <a class="nav-link" href="withdrawals.html">Withdrawals</a></li>
+                  <li class="nav-item"> <a class="nav-link" href="reviewdoc.html">Review Doctor</a></li>
+                  <li class="nav-item"> <a class="nav-link" href="insurance.html">Insurance</a></li>
               </ul>
             </div>
           </li>
-    
+          <li class="nav-item"> <a class="nav-link" href="reassign.html">
+            <i class="fas fa-table menu-icon"></i> Reassign Request</a></li>
+            <li class="nav-item"> <a class="nav-link" href="../forms/hospitals.html">
+              <i class="fas fa-table menu-icon"></i> Hospitals</a></li>
+            <li class="nav-item"> <a class="nav-link" href="managehospitals.html">
+              <i class="fas fa-table menu-icon"></i>Manage Hospitals</a></li>
         </ul>
       </nav>
       <!-- partial -->
@@ -295,7 +304,7 @@
     
     <div class="row">
       <div class="col-lg-4 col-md-6 col-sm-12">
-        <input type="text" id="searchAppointments" class="form-control" placeholder="Search by Appointment ID">
+        <input type="text" id="searchAppointments" class="form-control" placeholder="Search by Appointment ID User Name and Doctor Name">
       </div>
     </div>
 
@@ -327,7 +336,7 @@
             <th>Doctor Name</th>
             <th>Doctor Email</th>
             <th>Slot Date</th>
-            <th>Slot Time</th>
+            <th>Action</th>
             <th>Action</th>
           </tr>
         </thead>
@@ -664,6 +673,7 @@
 
 <script>
   let appointments = []; // Global appointments array
+  let timer = false; // Global timer variable
 
   async function fetchAppointments() {
     try {
@@ -707,16 +717,19 @@
 
     appointmentsToDisplay.forEach(appointment => {
       const row = document.createElement('tr');
-      row.innerHTML = `
-        <td>${appointment._id}</td>
+      row.innerHTML = ` 
+        <td>${appointment._id.slice(0, 8)}</td>
         <td>${appointment.userData.name}</td>
         <td>${appointment.userData.email}</td>
         <td>${appointment.docData.name}</td>
         <td>${appointment.docData.email}</td>
         <td>${appointment.slotDate}</td>
-        <td>${appointment.slotTime}</td>
+       
         <td>
           <button class="btn btn-primary update-payment" data-appointmentid="${appointment._id}">Mark paid</button>
+        </td>
+        <td>
+          <button class="btn btn-success update-timer" data-appointmentid="${appointment._id}">Update Timer</button>
         </td>
       `;
       tableBody.appendChild(row);
@@ -726,6 +739,12 @@
     const updateButtons = document.querySelectorAll('.update-payment');
     updateButtons.forEach(button => {
       button.addEventListener('click', handleMarkPaidClick);
+    });
+
+    // Add event listeners for 'Update Timer' buttons
+    const updateTimerButtons = document.querySelectorAll('.update-timer');
+    updateTimerButtons.forEach(button => {
+      button.addEventListener('click', handleUpdateTimerClick);
     });
   }
 
@@ -767,7 +786,10 @@
       return (
         (appointment._id.toLowerCase().includes(lowerCaseQuery)) || // Check appointment ID
         (appointment.userData.name?.toLowerCase().includes(lowerCaseQuery)) || // Check user name
-        (appointment.userData.email?.toLowerCase().includes(lowerCaseQuery)) // Check user email
+        (appointment.userData.email?.toLowerCase().includes(lowerCaseQuery)) || // Check user email
+        (appointment.docData.name?.toLowerCase().includes(lowerCaseQuery)) || // Check doctor name
+        (appointment.docData._id.toLowerCase().includes(lowerCaseQuery)) || // Check doctor ID
+        (appointment.docData.email?.toLowerCase().includes(lowerCaseQuery)) // Check doctor email
       );
     });
     displayAppointments(filteredAppointments, 10); // Display the filtered appointments
@@ -778,11 +800,38 @@
     filterAppointments(e.target.value);
   });
 
+  // Timer update function that also sends the update to the backend
+  async function handleUpdateTimerClick(event) {
+    const appointmentId = event.target.getAttribute('data-appointmentid');
+    timer = true; // Set timer to true when the button is clicked
+
+    // Make a PUT request to update the timer in the backend for this appointment
+    try {
+      const response = await fetch(`https://morgphealth.onrender.com/api/doctor/update-appointment/${appointmentId}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ timer: timer }),
+      });
+      const data = await response.json();
+
+      if (data.success) {
+        alert("Timer updated successfully for this appointment!");
+      } else {
+        alert("Failed to update timer for this appointment.");
+      }
+    } catch (error) {
+      console.error("Error updating timer:", error);
+      alert("Error updating timer.");
+    }
+  }
+
   // Initial fetch of appointments when page loads
   document.addEventListener('DOMContentLoaded', fetchAppointments);
 </script>
-  
-  
+
+
   
   <script>
     let completedAppointmentsList = []; // Global completed appointments list

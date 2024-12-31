@@ -20,7 +20,54 @@
   <!-- endinject -->
   <link rel="shortcut icon" href="../../images/morgp-logo.png" />
 </head>
+<style>
+  /* Container for the filters */
+  .filter {
+    display: flex;
+    align-items: center;
+    justify-content: space-between; /* Space out the items evenly */
+    gap: 20px;
+    flex-wrap: wrap; /* Allow items to wrap on smaller screens */
+    margin-bottom: 20px; /* Adds some spacing below the filters */
+  }
 
+  /* Styling for the search bar */
+  .search-container input {
+    width: 100%;
+    padding: 10px;
+    font-size: 1rem;
+  }
+
+  /* Styling for the dropdowns */
+  .filter-dropdown {
+    display: flex;
+    flex-direction: column;
+    width: 200px; /* Set a fixed width for consistency */
+  }
+
+  label {
+    margin-bottom: 8px;
+    font-size: 1rem;
+    font-weight: bold;
+  }
+
+  .form-control {
+    padding: 10px;
+    font-size: 1rem;
+  }
+
+  /* Responsive Design */
+  @media (max-width: 768px) {
+    .filter {
+      flex-direction: column;
+      align-items: stretch;
+    }
+
+    .filter-dropdown {
+      width: 100%;
+    }
+  }
+</style>
 <body>
   <div class="container-scroller">
     <!-- partial:../../partials/_navbar.html -->
@@ -267,10 +314,19 @@
                 <li class="nav-item"> <a class="nav-link" href="data-table.html">User table</a></li>
                 <li class="nav-item"> <a class="nav-link" href="js-grid.html">Doctors</a></li>
                 <li class="nav-item"> <a class="nav-link" href="sortable-table.html">Appointment table</a></li>
+                <li class="nav-item"> <a class="nav-link" href="Requests.html">Notice</a>
+                  <li class="nav-item"> <a class="nav-link" href="withdrawals.html">Withdrawals</a></li>
+                  <li class="nav-item"> <a class="nav-link" href="reviewdoc.html">Review Doctor</a></li>
+                  <li class="nav-item"> <a class="nav-link" href="insurance.html">Insurance</a></li>
               </ul>
             </div>
           </li>
-      
+          <li class="nav-item"> <a class="nav-link" href="reassign.html">
+            <i class="fas fa-table menu-icon"></i> Reassign Request</a></li>
+            <li class="nav-item"> <a class="nav-link" href="../forms/hospitals.html">
+              <i class="fas fa-table menu-icon"></i> Hospitals</a></li>
+            <li class="nav-item"> <a class="nav-link" href="managehospitals.html">
+              <i class="fas fa-table menu-icon"></i>Manage Hospitals</a></li>
         </ul>
       </nav>
       <!-- partial -->
@@ -292,21 +348,32 @@
               <h4 class="card-title">User Data Table</h4>
               <div class="row">
                 <div class="col-12">
-                  <!-- Search Bar -->
-                  <input type="text" id="search-input" class="form-control w-auto" placeholder="Search by name, email, or other..." />
-                  <div class="row mt-3">
-                    <!-- Show Entries Dropdown -->
+                  <div class="filter"> 
+
+                    <!-- Search Bar -->
+                    <input type="text" id="search-input" class="form-control w-auto" placeholder="Search by name, email, or other..." />
+                    <div class="row mt-3">
+                      <!-- Show Entries Dropdown -->
+                      <div class="col-6">
+                        <label for="entries">Show Entries:</label>
+                        <select id="entries" class="form-control w-auto">
+                          <option value="10">10</option>
+                          <option value="20">20</option>
+                          <option value="30">30</option>
+                          <option value="50">50</option>
+                          <option value="100">100</option>
+                          <option value="150">150</option>
+                          <option value="200">200</option>
+                          <option value="250">250</option>
+                        </select>
+                      </div>
+                    </div>
+            
                     <div class="col-6">
-                      <label for="entries">Show Entries:</label>
-                      <select id="entries" class="form-control w-auto">
-                        <option value="10">10</option>
-                        <option value="20">20</option>
-                        <option value="30">30</option>
-                        <option value="50">50</option>
-                        <option value="100">100</option>
-                        <option value="150">150</option>
-                        <option value="200">200</option>
-                        <option value="250">250</option>
+                      <label for="sort-order">Sort By:</label>
+                      <select id="sort-order" class="form-control w-auto">
+                        <option value="asc">Ascending</option>
+                        <option value="desc">Descending</option>
                       </select>
                     </div>
                   </div>
@@ -319,12 +386,12 @@
                     <table id="user-listing" class="table">
                       <thead>
                         <tr>
-                          <th>User ID</th>
+                          <th>E ID</th>
                           <th>Name</th>
                           <th>Email</th>
                           <th>Gender</th>
                           <th>Insured</th>
-                          <th>Timer</th>
+                          <!-- <th>Timer</th> -->
                           <th>Actions</th>
                         </tr>
                       </thead>
@@ -337,7 +404,6 @@
               </div>
             </div>
           </div>
-          
           
           
         </div>
@@ -608,181 +674,197 @@
 
 
 
-  <script>
-    const searchInput = document.getElementById('search-input');
-    const entriesDropdown = document.getElementById('entries');
-    let users = []; // This will hold all users
-    let searchQuery = ''; // Hold the search query
-    let entriesPerPage = parseInt(entriesDropdown.value); // Initial entries per page
-  
-    // Function to fetch user data from the API and populate the table
-    async function fetchUserData() {
-      try {
-        const response = await fetch('https://morgphealth.onrender.com/api/admin/all-users');
-        const data = await response.json();
-  
-        if (data.data && data.data.length > 0) {
-          users = data.data; // Store the users data globally
-          filterAndDisplayData();
-         
-        }
-        console.log(users)
-      } catch (error) {
-        console.error('Error fetching user data:', error);
+<script>
+  const searchInput = document.getElementById('search-input');
+  const entriesDropdown = document.getElementById('entries');
+  let users = []; // This will hold all users
+  let searchQuery = ''; // Hold the search query
+  let entriesPerPage = parseInt(entriesDropdown.value); // Initial entries per page
+
+  // Function to fetch user data from the API and populate the table
+  async function fetchUserData() {
+    try {
+      const response = await fetch('https://morgphealth.onrender.com/api/admin/all-users');
+      const data = await response.json();
+
+      if (data.data && data.data.length > 0) {
+        users = data.data; // Store the users data globally
+        filterAndDisplayData();
       }
+      console.log(users)
+    } catch (error) {
+      console.error('Error fetching user data:', error);
     }
-    // Function to filter and display the data based on the search query
-    function filterAndDisplayData() {
-      // Filter users based on search query
-      const filteredUsers = users.filter(user => {
-        const lowerCaseQuery = searchQuery.toLowerCase();
-        return (
-          user.name.toLowerCase().includes(lowerCaseQuery) ||
-          user.email.toLowerCase().includes(lowerCaseQuery) ||
-          user._id.toLowerCase().includes(lowerCaseQuery) ||
-          user.gender.toLowerCase().includes(lowerCaseQuery) ||
-          (user.insured ? 'insured' : 'not insured').toLowerCase().includes(lowerCaseQuery) ||
-          (user.timer ? 'active' : 'inactive').toLowerCase().includes(lowerCaseQuery)
-        );
-      });
-  
-      // Limit results to the number of entries selected
-      const entriesToDisplay = filteredUsers.slice(0, entriesPerPage);
-  
-      // Populate the table
-      const tbody = document.getElementById('user-tbody');
-      tbody.innerHTML = ''; // Clear existing rows
-      entriesToDisplay.forEach(user => {
-        const row = document.createElement('tr');
-        row.innerHTML = `
-          <td>${user._id}</td>
-          <td>${user.name}</td>
-          <td>${user.email}</td>
-          <td>${user.gender}</td>
-          <td><label class="badge badge-${user.insured ? 'success' : 'danger'}">${user.insured ? 'Insured' : 'Not Insured'}</label></td>
-          <td><label class="badge badge-${user.timer ? 'info' : 'danger'}">${user.timer ? 'Active' : 'Inactive'}</label></td>
-          <td class="d-flex">
-            <button class="btn btn-outline-primary" onclick="updateProfile('${user._id}', ${user.insured})">Insured</button>
-             <button class="btn btn-outline-primary" onclick="updateTimer('${user._id}', ${user.timer})">Timer</button>
-          </td>
-        `;
-        tbody.appendChild(row);
-      });
-    }
-  
-    // Fetch all users initially
-    fetchUserData();
-  
-    // Event listener for search input
-    searchInput.addEventListener('input', () => {
-      searchQuery = searchInput.value.trim(); // Update search query
-      filterAndDisplayData(); // Re-filter and display data based on the query
-    });
-  
-    // Event listener for 'Show Entries' dropdown
-    entriesDropdown.addEventListener('change', () => {
-      entriesPerPage = parseInt(entriesDropdown.value); // Update entries per page
-      filterAndDisplayData(); // Re-filter and display data based on the selected entries
-    });
-  
- // Function to toggle insured status and update profile
-async function updateProfile(userId, currentInsuredStatus) {
-  try {
-    // Toggle the insured status
-    const updatedInsuredStatus = !currentInsuredStatus;
-
-    const response = await fetch('https://morgphealth.onrender.com/api/user/update-profilemobile', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ userId, insured: updatedInsuredStatus }),
-    });
-
-    const result = await response.json();
-    if (response.ok) {
-      // Display custom success popup if update is successful
-      displaySuccessPopup();
-    } else {
-      displayFailedPopup();
-    }
-  } catch (error) {
-    console.error('Error updating insured status:', error);
   }
-}
 
-// Function to toggle timer status and update profile
-async function updateTimer(userId, currentTimerStatus) {
-  try {
-    // Toggle the timer status
-    const updatedTimerStatus = !currentTimerStatus;
+  // Event listener for 'Show Entries' dropdown
+  entriesDropdown.addEventListener('change', () => {
+    entriesPerPage = parseInt(entriesDropdown.value); // Update entries per page
+    filterAndDisplayData(); // Re-filter and display data based on the selected entries
+  });
 
-    const response = await fetch('https://morgphealth.onrender.com/api/user/update-profilemobile', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ userId, timer: updatedTimerStatus }),
+  // Event listener for search input
+  searchInput.addEventListener('input', () => {
+    searchQuery = searchInput.value.trim(); // Update search query
+    filterAndDisplayData(); // Re-filter and display data based on the query
+  });
+
+  // Event listener for 'Sort By' dropdown
+  document.getElementById('sort-order').addEventListener('change', () => {
+    filterAndDisplayData(); // Re-filter and display data based on the selected sort order
+  });
+
+  // Function to filter and display the data with sorting
+  function filterAndDisplayData() {
+    // Filter users based on search query
+    const filteredUsers = users.filter(user => {
+      const lowerCaseQuery = searchQuery.toLowerCase();
+      return (
+        user.name.toLowerCase().includes(lowerCaseQuery) ||
+        user.email.toLowerCase().includes(lowerCaseQuery) ||
+        user._id.toLowerCase().includes(lowerCaseQuery) ||
+        user.gender.toLowerCase().includes(lowerCaseQuery) ||
+        (user.insured ? 'insured' : 'not insured').toLowerCase().includes(lowerCaseQuery) ||
+        (user.timer ? 'active' : 'inactive').toLowerCase().includes(lowerCaseQuery)
+      );
     });
 
-    const result = await response.json();
-    if (response.ok) {
-      // Display custom success popup if update is successful
-      displaySuccessPopup();
-    } else {
-      displayFailedPopup();
-    }
-  } catch (error) {
-    console.error('Error updating timer status:', error);
+    // Sort users based on the selected sort order and sort field
+    const sortOrder = document.getElementById('sort-order').value;
+    const sortedUsers = filteredUsers.sort((a, b) => {
+      if (sortOrder === 'asc') {
+        return a.name.localeCompare(b.name) || a.email.localeCompare(b.email); // Sort by name and email in ascending order
+      } else {
+        return b.name.localeCompare(a.name) || b.email.localeCompare(a.email); // Sort by name and email in descending order
+      }
+    });
+
+    // Limit results to the number of entries selected
+    const entriesToDisplay = sortedUsers.slice(0, entriesPerPage);
+
+    // Populate the table
+    const tbody = document.getElementById('user-tbody');
+    tbody.innerHTML = ''; // Clear existing rows
+    entriesToDisplay.forEach(user => {
+      const row = document.createElement('tr');
+      row.innerHTML = `
+    <td>${user._id.substring(0, 8)}</td>
+        <td>${user.name}</td>
+        <td>${user.email}</td>
+        <td>${user.gender}</td>
+        <td><label class="badge badge-${user.insured ? 'success' : 'danger'}">${user.insured ? 'Insured' : 'Not Insured'}</label></td>
+       
+        <td class="d-flex">
+          <button class="btn btn-outline-primary" onclick="updateProfile('${user._id}', ${user.insured})">Insured</button>
+         
+        </td>
+      `;
+      tbody.appendChild(row);
+    });
   }
-}
 
-// Function to display the custom success popup with overlay
-function displaySuccessPopup() {
-  const successPopup = `
-    <div class="wrapper text-center">
-      <h4 class="card-title">Updated</h4>
-      <p class="card-description">Updated successfully !</p>
-      <button class="btn btn-outline-primary" onclick="closePopup()">Close</button>
-    </div>
-  `;
-  
-  // Insert the success popup into the DOM
-  const popupContainer = document.getElementById('popup-container');
-  const overlay = document.getElementById('popup-overlay');
-  
-  popupContainer.innerHTML = successPopup;
-  popupContainer.style.display = 'block';  // Show popup
-  overlay.style.display = 'block';  // Show overlay
-}
-// Function to display the custom success popup with overlay
-function displayFailedPopup() {
-  const successPopup = `
-    <div class="wrapper text-center">
-      <h4 class="card-title">Failed</h4>
-      <p class="card-description">Update Failed !</p>
-      <button class="btn btn-outline-red" onclick="closePopup()">Close</button>
-    </div>
-  `;
-  
-  // Insert the success popup into the DOM
-  const popupContainer = document.getElementById('popup-container');
-  const overlay = document.getElementById('popup-overlay');
-  
-  popupContainer.innerHTML = successPopup;
-  popupContainer.style.display = 'block';  // Show popup
-  overlay.style.display = 'block';  // Show overlay
-}
+  // Fetch all users initially
+  fetchUserData();
 
-// Function to close the popup and hide the overlay
-function closePopup() {
-  const popupContainer = document.getElementById('popup-container');
-  const overlay = document.getElementById('popup-overlay');
-  
-  popupContainer.style.display = 'none';  // Hide popup
-  overlay.style.display = 'none';  // Hide overlay
-}
-  </script>
+  // Function to toggle insured status and update profile
+  async function updateProfile(userId, currentInsuredStatus) {
+    try {
+      // Toggle the insured status
+      const updatedInsuredStatus = !currentInsuredStatus;
+
+      const response = await fetch('https://morgphealth.onrender.com/api/user/update-profilemobile', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ userId, insured: updatedInsuredStatus }),
+      });
+
+      const result = await response.json();
+      if (response.ok) {
+        // Display custom success popup if update is successful
+        displaySuccessPopup();
+      } else {
+        displayFailedPopup();
+      }
+    } catch (error) {
+      console.error('Error updating insured status:', error);
+    }
+  }
+
+  // Function to toggle timer status and update profile
+  async function updateTimer(userId, currentTimerStatus) {
+    try {
+      // Toggle the timer status
+      const updatedTimerStatus = !currentTimerStatus;
+
+      const response = await fetch('https://morgphealth.onrender.com/api/user/update-profilemobile', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ userId, timer: updatedTimerStatus }),
+      });
+
+      const result = await response.json();
+      if (response.ok) {
+        // Display custom success popup if update is successful
+        displaySuccessPopup();
+      } else {
+        displayFailedPopup();
+      }
+    } catch (error) {
+      console.error('Error updating timer status:', error);
+    }
+  }
+
+  // Function to display the custom success popup with overlay
+  function displaySuccessPopup() {
+    const successPopup = `
+      <div class="wrapper text-center">
+        <h4 class="card-title">Updated</h4>
+        <p class="card-description">Updated successfully !</p>
+        <button class="btn btn-outline-primary" onclick="closePopup()">Close</button>
+      </div>
+    `;
+
+    // Insert the success popup into the DOM
+    const popupContainer = document.getElementById('popup-container');
+    const overlay = document.getElementById('popup-overlay');
+
+    popupContainer.innerHTML = successPopup;
+    popupContainer.style.display = 'block';  // Show popup
+    overlay.style.display = 'block';  // Show overlay
+  }
+
+  // Function to display the custom success popup with overlay
+  function displayFailedPopup() {
+    const successPopup = `
+      <div class="wrapper text-center">
+        <h4 class="card-title">Failed</h4>
+        <p class="card-description">Update Failed !</p>
+        <button class="btn btn-outline-red" onclick="closePopup()">Close</button>
+      </div>
+    `;
+
+    // Insert the success popup into the DOM
+    const popupContainer = document.getElementById('popup-container');
+    const overlay = document.getElementById('popup-overlay');
+
+    popupContainer.innerHTML = successPopup;
+    popupContainer.style.display = 'block';  // Show popup
+    overlay.style.display = 'block';  // Show overlay
+  }
+
+  // Function to close the popup and hide the overlay
+  function closePopup() {
+    const popupContainer = document.getElementById('popup-container');
+    const overlay = document.getElementById('popup-overlay');
+
+    popupContainer.style.display = 'none';  // Hide popup
+    overlay.style.display = 'none';  // Hide overlay
+  }
+</script>
   <!-- container-scroller -->
   <!-- plugins:js -->
   <script src="../../vendors/js/vendor.bundle.base.js"></script>

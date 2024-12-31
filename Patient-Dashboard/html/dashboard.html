@@ -95,8 +95,8 @@
             <li class="menu-header small text-uppercase">
               <span class="menu-header-text">Pages</span>
             </li>
-            <li class="menu-item">
-              <a href="booking.html" class="menu-link">
+            <li class="menu-item"  id="bookMenuItem">
+              <a href="booking.html" class="menu-link" id="bookLink">
                 <i class="menu-icon tf-icons bx bx-table"></i>
                 <div data-i18n="Analytics">Book</div>
               </a>
@@ -453,7 +453,7 @@
               </div>
             
             
-              <div class="card" style="background-color: #fff; color: #000;">
+              <div class="card" id="insuranceCard" style="background-color: #fff; color: #000;">
                 <h5 class="card-header" style="background-color: #fff; color: #000;">Insurance Details</h5>
                 <div class="table-responsive text-nowrap">
                   <table class="table" style="background-color: #fff; color: #000;">
@@ -606,10 +606,33 @@
       
 
       
+<script>
+  // Check if the user is insured in localStorage
+  const isInsured = localStorage.getItem('insured');
+
+  // If the user is not insured, hide the component
+  if (isInsured !== 'true') {
+    document.getElementById('insuranceCard').style.display = 'none';
+  }
+</script>
 
 
-
-
+<script>
+  // Check if the user is insured in localStorage
+  const Insured = localStorage.getItem('insured');
+  
+  // Get the booking link element
+  const bookLink = document.getElementById('bookLink');
+  
+  // Add a click event listener to the booking link
+  bookLink.addEventListener('click', function(event) {
+    // If the user is not insured, prevent the default action (navigation) and redirect to the contact page
+    if (Insured === 'true') {
+      event.preventDefault(); // Prevent the default click behavior
+      window.location.href = 'https://frontend-morgphealth.netlify.app/contact'; // Redirect to the contact page
+    }
+  });
+</script>
 
       <script>
         document.addEventListener('DOMContentLoaded', async function () {

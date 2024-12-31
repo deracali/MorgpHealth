@@ -267,10 +267,19 @@
                 <li class="nav-item"> <a class="nav-link" href="data-table.html">Users table</a></li>
                 <li class="nav-item"> <a class="nav-link" href="js-grid.html">Doctos</a></li>
                 <li class="nav-item"> <a class="nav-link" href="sortable-table.html">Appointment table</a></li>
+                <li class="nav-item"> <a class="nav-link" href="Requests.html">Notice</a>
+                  <li class="nav-item"> <a class="nav-link" href="withdrawals.html">Withdrawals</a></li>
+                  <li class="nav-item"> <a class="nav-link" href="reviewdoc.html">Review Doctor</a></li>
+                  <li class="nav-item"> <a class="nav-link" href="insurance.html">Insurance</a></li>
               </ul>
             </div>
           </li>
-       
+          <li class="nav-item"> <a class="nav-link" href="reassign.html">
+            <i class="fas fa-table menu-icon"></i> Reassign Request</a></li>
+            <li class="nav-item"> <a class="nav-link" href="../forms/hospitals.html">
+              <i class="fas fa-table menu-icon"></i> Hospitals</a></li>
+            <li class="nav-item"> <a class="nav-link" href="managehospitals.html">
+              <i class="fas fa-table menu-icon"></i>Manage Hospitals</a></li>
         </ul>
       </nav>
       <!-- partial -->
@@ -291,72 +300,10 @@
       
           <div class="row">
             <div class="col-12">
-                <div class="card shadow-lg">
-                    <div class="card-body">
-                        <h4 class="card-title mb-3">Sortable & Searchable Doctor Table</h4>
-                        <p class="card-description mb-4">Use the controls below to sort, filter, and adjust the number of entries displayed.</p>
-                        
-                        <!-- Search Panel -->
-                        <div class="search-panel d-flex mb-4">
-                            <label class="d-flex align-items-center mr-3 mb-0">
-                                <span class="mr-2">Search:</span>
-                                <input type="text" id="searchField" class="form-control form-control-sm" placeholder="Search by name, email, or specialty">
-                            </label>
-                        </div>
-                        
-                        <!-- Sort Panel -->
-                        <div class="sort-panel d-flex align-items-center mb-4">
-                            <label class="d-flex align-items-center mr-3 mb-0">
-                                <span class="mr-2">Sort By:</span>
-                                <select id="sortingField" class="form-control form-control-sm">
-                                    <option>Name</option>
-                                    <option>Specialty</option>
-                                    <option>Degree</option>
-                                    <option>Experience</option>
-                                </select>
-                            </label>
-                            <button type="button" id="sort" class="btn btn-info btn-sm ml-2">Sort</button>
-                        </div>
-        
-                        <!-- Entries Display Panel -->
-                        <div class="entries-panel d-flex align-items-center mb-4">
-                            <label class="d-flex align-items-center mr-3 mb-0">
-                                <span class="mr-2">Show:</span>
-                                <select id="entriesCount" class="form-control form-control-sm">
-                                    <option value="10">10</option>
-                                    <option value="30" selected>30</option>
-                                    <option value="50">50</option>
-                                    <option value="100">100</option>
-                                    <option value="200">200</option>
-                                    <option value="300">300</option>
-                                </select>
-                            </label>
-                        </div>
-        
-                        <!-- Doctors Table -->
-                        <div class="table-responsive">
-                            <table class="table table-striped table-bordered table-hover" id="js-grid-sortable">
-                                <thead class="thead-dark">
-                                    <tr>
-                                      <th>Doctor Id</th>
-                                        <th>Name</th>
-                                        <th>Specialty</th>
-                                        <th>Degree</th>
-                                        <th>Experience</th>
-                                        <th>Availability</th>
-                                        <th>Action</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="doctorTableBody">
-                                    <!-- Doctors data will be populated here -->
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                </div>
+              
                 <div class="card shadow-lg">
                   <div class="card-body">
-                  <h4 class="card-title mb-3">Sortable & Searchable Review Doctors Table</h4>
+                  <h4 class="card-title mb-3">Sortable & Searchable Doctors Table</h4>
                   <p class="card-description mb-4">Use the controls below to sort, filter, and adjust the number of entries displayed.</p>
                   
                   <!-- Search Panel -->
@@ -792,89 +739,7 @@
 
 
 
-<script>
-  // Fetch the doctor data from the API
-  const apiUrl = "https://morgphealth.onrender.com/api/addDoc/review-docs";
-  const doctorTableBody = document.getElementById("doctorTableBody");
 
-  // Function to render doctor data in the table
-  function renderDoctors(doctors) {
-      doctorTableBody.innerHTML = ""; // Clear any existing data
-
-      doctors.forEach(doctor => {
-          const row = document.createElement("tr");
-          row.innerHTML = `
-              <td>${doctor._id}</td>
-              <td>${doctor.name || "N/A"}</td>
-              <td>${doctor.speciality || "N/A"}</td>
-              <td>${doctor.degree || "N/A"}</td>
-              <td>${doctor.experience || "N/A"}</td>
-              <td>${doctor.available ? "Available" : "Not Available"}</td>
-              <td>
-                 <a href="../doctor-details.html?id=${doctor._id}" class="btn btn-primary btn-sm">View</a> <!-- View button with doctor ID -->
-              </td>
-          `;
-          doctorTableBody.appendChild(row);
-      });
-  }
-
-  // Fetch data when the page loads
-  fetch(apiUrl)
-      .then(response => response.json())
-      .then(data => {
-          renderDoctors(data.reviewDocs);
-      })
-      .catch(error => console.error('Error fetching data:', error));
-
-  // Handle search functionality
-  document.getElementById('searchField').addEventListener('input', function() {
-      const searchQuery = this.value.toLowerCase();
-      fetch(apiUrl)
-          .then(response => response.json())
-          .then(data => {
-              const filteredDoctors = data.reviewDocs.filter(doctor => {
-                  return (doctor.name && doctor.name.toLowerCase().includes(searchQuery)) ||
-                      (doctor.email && doctor.email.toLowerCase().includes(searchQuery)) ||
-                      (doctor.speciality && doctor.speciality.toLowerCase().includes(searchQuery));
-              });
-              renderDoctors(filteredDoctors);
-          })
-          .catch(error => console.error('Error fetching data:', error));
-  });
-
-  // Handle sorting functionality
-  document.getElementById('sort').addEventListener('click', function() {
-      const sortBy = document.getElementById('sortingField').value;
-      fetch(apiUrl)
-          .then(response => response.json())
-          .then(data => {
-              let sortedDoctors = data.reviewDocs;
-              if (sortBy === "Name") {
-                  sortedDoctors = sortedDoctors.sort((a, b) => a.name.localeCompare(b.name));
-              } else if (sortBy === "Specialty") {
-                  sortedDoctors = sortedDoctors.sort((a, b) => a.speciality.localeCompare(b.speciality));
-              } else if (sortBy === "Degree") {
-                  sortedDoctors = sortedDoctors.sort((a, b) => a.degree.localeCompare(b.degree));
-              } else if (sortBy === "Experience") {
-                  sortedDoctors = sortedDoctors.sort((a, b) => a.experience - b.experience);
-              }
-              renderDoctors(sortedDoctors);
-          })
-          .catch(error => console.error('Error fetching data:', error));
-  });
-
-  // Handle entries display functionality
-  document.getElementById('entriesCount').addEventListener('change', function() {
-      const entriesCount = parseInt(this.value, 10);
-      fetch(apiUrl)
-          .then(response => response.json())
-          .then(data => {
-              const limitedDoctors = data.reviewDocs.slice(0, entriesCount);
-              renderDoctors(limitedDoctors);
-          })
-          .catch(error => console.error('Error fetching data:', error));
-  });
-</script>
   <!-- plugins:js -->
   <script src="../../vendors/js/vendor.bundle.base.js"></script>
   <script src="../../vendors/js/vendor.bundle.addons.js"></script>

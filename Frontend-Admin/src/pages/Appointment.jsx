@@ -22,16 +22,40 @@ export default function Appointment() {
   const [messageContent, setMessageContent] = useState('');
   const [chatId, setChatId] = useState(null); // Added to store chatId
   const socket = io(backendUrl); // Initialize socket connection
+  const [selectedService, setSelectedService] = useState('');
+  const [serviceFee, setServiceFee] = useState(0);
+  const [communicationMethod, setCommunicationMethod] = useState('video-call');
 
   // Fetch doctor info based on docId
+
   const fetchDocInfo = async () => {
-    const docInfo = doctors.find(doc => doc._id === docId);
+    const docInfo = doctors.find((doc) => doc._id === docId);
     if (!docInfo) {
-      toast.error("Doctor not found!");
+      toast.error('Doctor not found!');
       return;
     }
     setDocInfo(docInfo);
+
+    // Pre-select the first service (if available)
+    if (docInfo.services && docInfo.services.length > 0) {
+      setSelectedService(docInfo.services[0].name);
+      setServiceFee(docInfo.services[0].fee);
+    }
   };
+
+  
+  const handleServiceChange = (e) => {
+    const selectedServiceName = e.target.value;
+    setSelectedService(selectedServiceName);
+
+    // Update the service fee based on the selected service
+    const service = docInfo.services.find((s) => s.name === selectedServiceName);
+    if (service) {
+      setServiceFee(service.fee);
+    }
+  };
+
+
 
   // Get available slots for the doctor
   const getAvailableSlots = async () => {
@@ -97,7 +121,12 @@ export default function Appointment() {
 
       const slotDate = day + "_" + "_" + year;
 
-      const { data } = await axios.post(backendUrl + 'api/user/book-appointment', { docId, slotDate, slotTime }, { headers: { token } });
+      const { data } = await axios.post(backendUrl + 'api/user/book-appointment', {  docId: docInfo._id,
+        slotDate,
+        slotTime,
+        concern: selectedService,
+        amount: serviceFee,
+        type: communicationMethod, }, { headers: { token } });
 
       if (data.success) {
         getDoctorsData();
@@ -227,43 +256,58 @@ export default function Appointment() {
   }, [docInfo]);
 
   return docInfo && (
-    <div>
-      <div className='flex flex-col sm:flex-row gap-4'>
-        <div>
-          <img className='bg-primary w-full sm:max-w-72 rounded-lg' src={docInfo.image} alt='' />
-        </div>
-
-        <div className='flex-1 border border-gray-400 rounded-lg p-8 bg-white mx-2 sm:mx-0 mt-[80px] sm:mt-0'>
-          <p className='flex items-center gap-2 text-2xl font-medium text-gray-900'>
-            {docInfo.name}
-            <img className='w-5' src={assets.verified_icon} alt='Verified Icon' />
-          </p>
-          <div className='flex items-center gap-2 text-sm mt-1 text-gray-600'>
-            <p>{docInfo.degree} - {docInfo.specialty}</p>
-            <button className='py-0.5 px-2 border text-xs rounded-full'>{docInfo.experience}</button>
-          </div>
-
-          <p className='text-gray-600 mt-3'>
-            Appointment fee: <span>{currencySymbol}{docInfo.fees}</span>
-          </p>
-         
-          <div>
-            <p className='flex pt-1 items-center gap-1 text-sm font-medium text-gray-900'>
-              About <img className='w-4 h-4' src={assets.info_icon} alt='' />
-            </p>
-            <p className='text-sm text-gray-500 max-w-[700px] mt-1'>{docInfo.about}</p>
-          </div>
-
-          {/* Chat with Doctor Button */}
-          <button onClick={startChat} className='mt-4 bg-blue-500 text-white py-2 px-4 rounded-full'>
-            Chat with Doctor
-          </button>
-        </div>
+    <div className='mb-20'>
+    <div className="flex flex-col sm:flex-row gap-4">
+      <div>
+        <img
+          className="bg-primary w-full sm:max-w-72 rounded-lg"
+          src={docInfo.image}
+          alt={docInfo.name}
+        />
       </div>
 
-      <div className='sm:ml-72 sm:pl-4 mt-4 font-medium text-gray-700'>
-        <p>Booking slots</p>
-        <div className='flex gap-3 items-center w-full overflow-x-scroll mt-4'>
+      <div className="flex-1 border border-gray-400 rounded-lg p-8 bg-white mx-2 sm:mx-0 mt-[80px] sm:mt-0">
+        <p className="flex items-center gap-2 text-2xl font-medium text-gray-900">
+          {docInfo.name}
+        </p>
+        <p className="text-gray-600 mt-3">Appointment fee: ${serviceFee}</p>
+
+        {/* Services Dropdown */}
+        <h4 className="mt-4">Select Service</h4>
+        <div>
+          <select
+            className="form-control"
+            value={selectedService}
+            onChange={handleServiceChange}
+          >
+            {docInfo.services.map((service, index) => (
+              <option key={index} value={service.name}>
+                {service.name} (${service.fee})
+              </option>
+            ))}
+          </select>
+        </div>
+
+        {/* Communication Preference */}
+        <h4 className="mt-4">Select Communication Preference</h4>
+        <div className="form-group" style={{ maxWidth: '300px' }}>
+          <label htmlFor="communication-method">Preferred Method</label>
+          <select
+            id="communication-method"
+            className="form-control"
+            value={communicationMethod}
+            onChange={(e) => setCommunicationMethod(e.target.value)}
+          >
+            <option value="video-call">Video Call</option>
+            <option value="whatsapp">WhatsApp</option>
+            <option value="phone">Phone</option>
+          </select>
+        </div>
+
+        {/* Booking Slots */}
+        <div className="sm:ml-72 sm:pl-4 mt-4 font-medium text-gray-700">
+          <p>Booking slots</p>
+          <div className="flex gap-3 items-center w-full overflow-x-scroll mt-4">
           {docSlots.length && docSlots.map((item, index) => (
             <div 
               className={`text-center py-2 px-3 border rounded-lg cursor-pointer ${index === slotIndex ? 'bg-blue-500 text-white' : 'text-gray-600'}`} 
@@ -274,67 +318,17 @@ export default function Appointment() {
               <span className='block text-xs'>{item[0].time}</span>
             </div>
           ))}
+          </div>
+
+          <button
+            onClick={bookAppointment}
+            className="mt-4 bg-blue-500 text-white py-2 px-4 rounded-full"
+          >
+            Book Appointment
+          </button>
         </div>
-        
-        <button onClick={bookAppointment} className='mt-4 bg-blue-500 text-white py-2 px-4 rounded-full'>
-          Book Appointment
-        </button>
-      </div>
-
-      {/* Chat Popup */}
-      {showChatPopup && (
-    <div className="fixed inset-0 bg-gray-500 bg-opacity-50 flex justify-center items-center">
-    <div className="bg-white rounded-lg shadow-lg p-4 w-80 max-w-sm">
-    <div className="h-60 overflow-y-scroll flex flex-col gap-4">
-    {chatMessages.map((msg, index) => (
-  <div
-    key={index}
-    className={`flex ${
-      msg.senderModel === 'User' ? 'justify-end' : 'justify-start'
-    } mb-4`}
-  >
-    <div
-      className={`p-3 rounded-lg max-w-xs ${
-        msg.senderModel === 'User'
-          ? 'bg-[#03A9F4] text-white text-right' // User message styling (right)
-          : 'bg-[#000] text-white text-left'    // Doctor message styling (left)
-      }`}
-    >
-      <p>{msg.content}</p>
-    </div>
-  </div>
-))}
-</div>
-
-
-      <input
-        type="text"
-        value={messageContent}
-        onChange={(e) => setMessageContent(e.target.value)}
-        placeholder="Type your message..."
-        className="border border-gray-300 rounded-lg w-full p-2 mt-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-      />
-      <div className="flex justify-between mt-2">
-        <button
-          onClick={sendMessage}
-          className="bg-[#03A9F4] text-white py-2 px-4 rounded-full hover:bg-blue-600"
-        >
-          Send
-        </button>
-        <button
-          onClick={() => setShowChatPopup(false)}
-          className="bg-[#000] text-white py-2 px-4 rounded-full hover:bg-red-600"
-        >
-          Close
-        </button>
       </div>
     </div>
   </div>
-)}
-
-
-      
-      <RelatedDoctors />
-    </div>
   );
 }

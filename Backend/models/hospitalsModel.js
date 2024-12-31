@@ -34,7 +34,7 @@ const HospitalSchema = new Schema(
       },
     },
     services: {
-      type: [String], // Array of strings representing services offered
+      type: String, // Array of strings representing services offered
       default: [],
     },
     createdAt: {

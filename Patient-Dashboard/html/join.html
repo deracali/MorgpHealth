@@ -96,8 +96,8 @@
             <li class="menu-header small text-uppercase">
               <span class="menu-header-text">Pages</span>
             </li>
-            <li class="menu-item">
-              <a href="booking.html" class="menu-link">
+            <li class="menu-item"  id="bookMenuItem">
+              <a href="booking.html" class="menu-link" id="bookLink">
                 <i class="menu-icon tf-icons bx bx-table"></i>
                 <div data-i18n="Analytics">Book</div>
               </a>
@@ -573,6 +573,26 @@
         });
       </script>
       
+
+
+
+      <script>
+        // Check if the user is insured in localStorage
+        const Insured = localStorage.getItem('insured');
+        
+        // Get the booking link element
+        const bookLink = document.getElementById('bookLink');
+        
+        // Add a click event listener to the booking link
+        bookLink.addEventListener('click', function(event) {
+          // If the user is not insured, prevent the default action (navigation) and redirect to the contact page
+          if (Insured === 'true') {
+            event.preventDefault(); // Prevent the default click behavior
+            window.location.href = 'https://frontend-morgphealth.netlify.app/contact'; // Redirect to the contact page
+          }
+        });
+      </script>
+
 
 
     <!-- Core JS -->

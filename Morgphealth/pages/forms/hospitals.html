@@ -316,7 +316,7 @@
         <div class="content-wrapper">
           <div class="page-header">
             <h3 class="page-title">
-                Blog
+                Hospital
             </h3>
             <nav aria-label="breadcrumb">
                 <ol class="breadcrumb">
@@ -327,132 +327,103 @@
           </div>
           <div class="row grid-margin">
             <div class="col-12">
-              <div class="card">
-                <div class="card-body">
-                  <h4 class="card-title">Create Blog Post</h4>
-                  <form id="blogForm">
-                    <!-- Author -->
-                    <div class="form-group row">
-                      <div class="col-lg-3">
-                        <label for="author" class="col-form-label">Author</label>
-                      </div>
-                          <!-- Overlay and Popup Container -->
-                     <div id="popup-overlay" class="popup-overlay"></div>
-                     <div id="popup-container"></div>
-
-                      <div class="col-lg-8">
-                        <input 
-                          type="text" 
-                          id="author" 
-                          name="author" 
-                          class="form-control" 
-                          placeholder="Enter author name" 
-                          required />
-                      </div>
+                <div class="card">
+                    <div class="card-body">
+                      <h4 class="card-title">Add Hospital</h4>
+                      <form id="hospitalForm">
+                        <!-- Hospital Name -->
+                        <div class="form-group row">
+                          <div class="col-lg-3">
+                            <label for="name" class="col-form-label">Hospital Name</label>
+                          </div>
+                          <div class="col-lg-8">
+                            <input 
+                              type="text" 
+                              id="name" 
+                              name="name" 
+                              class="form-control" 
+                              placeholder="Enter hospital name" 
+                              required />
+                          </div>
+                        </div>
+                  
+                        <!-- Address -->
+                        <div class="form-group row">
+                          <div class="col-lg-3">
+                            <label for="address" class="col-form-label">Address</label>
+                          </div>
+                          <div class="col-lg-8">
+                            <input 
+                              type="text" 
+                              id="address" 
+                              name="address" 
+                              class="form-control" 
+                              placeholder="Enter hospital address" 
+                              required />
+                          </div>
+                        </div>
+                  
+                        <!-- Phone -->
+                        <div class="form-group row">
+                          <div class="col-lg-3">
+                            <label for="phone" class="col-form-label">Phone</label>
+                          </div>
+                          <div class="col-lg-8">
+                            <input 
+                              type="text" 
+                              id="phone" 
+                              name="phone" 
+                              class="form-control" 
+                              placeholder="Enter hospital phone number" 
+                              required />
+                          </div>
+                        </div>
+                  
+                        <!-- Email -->
+                        <div class="form-group row">
+                          <div class="col-lg-3">
+                            <label for="email" class="col-form-label">Email</label>
+                          </div>
+                          <div class="col-lg-8">
+                            <input 
+                              type="email" 
+                              id="email" 
+                              name="email" 
+                              class="form-control" 
+                              placeholder="Enter hospital email" 
+                              required />
+                          </div>
+                        </div>
+                  
+                        <!-- Services -->
+                        <!-- <div class="form-group row">
+                          <div class="col-lg-3">
+                            <label for="services" class="col-form-label">Services</label>
+                          </div>
+                          <div class="col-lg-8">
+                            <input 
+                              type="text" 
+                              id="services" 
+                              name="services" 
+                              class="form-control" 
+                              placeholder="Enter services offered (comma separated)" />
+                          </div>
+                        </div> -->
+                  
+                        <!-- Submit Button -->
+                        <div class="form-group row">
+                          <div class="col-lg-12 text-center">
+                            <button type="submit" class="btn btn-primary">Add Hospital</button>
+                          </div>
+                        </div>
+                      </form>
                     </div>
-                    
-                    <!-- Title -->
-                    <div class="form-group row">
-                      <div class="col-lg-3">
-                        <label for="title" class="col-form-label">Title</label>
-                      </div>
-                      <div class="col-lg-8">
-                        <input 
-                          type="text" 
-                          id="title" 
-                          name="title" 
-                          class="form-control" 
-                          placeholder="Enter blog title" 
-                          required />
-                      </div>
-                    </div>
-          
-                    <!-- Content -->
-                    <div class="form-group row">
-                      <div class="col-lg-3">
-                        <label for="content" class="col-form-label">Content</label>
-                      </div>
-                      <div class="col-lg-8">
-                        <textarea 
-                          id="content" 
-                          name="content" 
-                          class="form-control" 
-                          rows="4" 
-                          placeholder="Write your blog content here..." 
-                          required></textarea>
-                      </div>
-                    </div>
-          
-                    <!-- Image Upload -->
-                    <div class="form-group row">
-                      <div class="col-lg-3">
-                        <label for="image" class="col-form-label">Upload Image</label>
-                      </div>
-                      <div class="col-lg-8">
-                        <input 
-                          type="file" 
-                          id="image" 
-                          name="image" 
-                          class="form-control" 
-                          accept="image/*" 
-                          required />
-                      </div>
-                    </div>
-          
-                    <!-- Submit Button -->
-                    <div class="form-group row">
-                      <div class="col-lg-12 text-center">
-                        <button type="submit" class="btn btn-primary">Submit Blog Post</button>
-                      </div>
-                    </div>
-                  </form>
-                </div>
-              </div>
+                  </div>
+                  
             </div>
           </div>
           
-          <div class="card">
-            <div class="card-body">
-              <h4 class="card-title">Blog Posts</h4>
-              <p class="card-description">
-                A list of all available blog posts. You can delete any blog using the "Delete" button.
-              </p>
-          
-              <!-- Load More Selector -->
-              <div class="form-group">
-                <label for="entries">Entries per load:</label>
-                <select id="entries" class="form-control" style="width: 150px; display: inline-block;">
-                  <option value="10">10</option>
-                  <option value="20" selected>20</option>
-                  <option value="50">50</option>
-                  <option value="100">100</option>
-                </select>
-                <button id="loadMoreBtn" class="btn btn-primary">Load More</button>
-              </div>
-          
-                   <!-- Overlay and Popup Container -->
-                   <div id="popup-overlay" class="popup-overlay"></div>
-                   <div id="popup-container"></div>
-
-
-              <div class="table-responsive">
-                <table class="table table-dark">
-                  <thead>
-                    <tr>
-                      <th>#</th>
-                      <th>Title</th>
-                      <th>Author</th>
-                      <th>Date</th>
-                      <th>Actions</th>
-                    </tr>
-                  </thead>
-                  <tbody id="blogTableBody">
-                    <!-- Blog rows will be dynamically added here -->
-                  </tbody>
-                </table>
-              </div>
-            </div>
-          </div>
+         
           
           
          
@@ -628,212 +599,47 @@
     });
 
   </script>
-  <!-- container-scroller -->
-  <script>
-    document.getElementById('blogForm').addEventListener('submit', async function (e) {
-      e.preventDefault();
   
-      const formData = new FormData();
-      formData.append('author', document.getElementById('author').value);
-      formData.append('title', document.getElementById('title').value);
-      formData.append('content', document.getElementById('content').value);
-      formData.append('image', document.getElementById('image').files[0]);
-  
-      try {
-        const response = await fetch('https://morgphealth.onrender.com/api/blogs/create', {
-          method: 'POST',
-          body: formData,
-        });
-  
-        if (response.ok) {
-          const result = await response.json();
-          displaySuccessPopup();
-          console.log(result);
-        } else {
-          displayFailedPopup()
-        }
-      } catch (error) {
-        console.error('Error:', error);
-        displayFailedPopup()
-      }
-    });
 
+ <script>
+    document.getElementById('hospitalForm').addEventListener('submit', function(event) {
+  event.preventDefault();
 
+  const formData = {
+    name: document.getElementById('name').value,
+    address: document.getElementById('address').value,
+    phone: document.getElementById('phone').value,
+    email: document.getElementById('email').value,
+    // services: document.getElementById('services').value.split(',').map(service => service.trim()),
+  };
 
-    // Function to display the custom success popup with overlay
-function displaySuccessPopup() {
-  const successPopup = `
-    <div class="wrapper text-center">
-      <h4 class="card-title">Successfull</h4>
-      <p class="card-description">Blog Uploaded!</p>
-      <button class="btn btn-outline-primary" onclick="closePopup()">Close</button>
-    </div>
-  `;
-  
-  // Insert the success popup into the DOM
-  const popupContainer = document.getElementById('popup-container');
-  const overlay = document.getElementById('popup-overlay');
-  
-  popupContainer.innerHTML = successPopup;
-  popupContainer.style.display = 'block';  // Show popup
-  overlay.style.display = 'block';  // Show overlay
-}
-// Function to display the custom success popup with overlay
-function displayFailedPopup() {
-  const successPopup = `
-    <div class="wrapper text-center">
-      <h4 class="card-title">Failed</h4>
-      <p class="card-description">Upload Failed !</p>
-      <button class="btn btn-outline-red" onclick="closePopup()">Close</button>
-    </div>
-  `;
-  
-  // Insert the success popup into the DOM
-  const popupContainer = document.getElementById('popup-container');
-  const overlay = document.getElementById('popup-overlay');
-  
-  popupContainer.innerHTML = successPopup;
-  popupContainer.style.display = 'block';  // Show popup
-  overlay.style.display = 'block';  // Show overlay
-}
-
-// Function to close the popup and hide the overlay
-function closePopup() {
-  const popupContainer = document.getElementById('popup-container');
-  const overlay = document.getElementById('popup-overlay');
-  
-  popupContainer.style.display = 'none';  // Hide popup
-  overlay.style.display = 'none';  // Hide overlay
-}
-  </script>
-
-
-
-
-<script>
-  const apiUrl = "https://morgphealth.onrender.com/api/blogs";
-
-  let currentOffset = 0; // Tracks the current offset for fetching blogs
-  let limit = 20; // Default initial limit
-
-  // Fetch and display blogs
-  async function fetchBlogs(offset = 0, limit = 20, append = false) {
-    try {
-      const response = await fetch(`${apiUrl}?offset=${offset}&limit=${limit}`);
-      if (!response.ok) {
-        throw new Error("Failed to fetch blogs");
-      }
-
-      const blogs = await response.json();
-      displayBlogs(blogs, append);
-    } catch (error) {
-      console.error("Error fetching blogs:", error);
-      alert("Unable to fetch blogs at this time.");
+  fetch('https://morgphealth.onrender.com/api/hospitals/create', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(formData), // Ensure this is the correct payload
+  })
+  .then(response => response.json())
+  .then(data => {
+    if (data) {
+      alert('Hospital added successfully!');
+      // Reset form
+      window.location.href = 'index-2.html';
+      document.getElementById('hospitalForm').reset();
+    } else {
+      alert('Error adding hospital: ' + data.message);
     }
-  }
-
-  // Display blogs in the table
-  function displayBlogs(blogs, append = false) {
-    const blogTableBody = document.getElementById("blogTableBody");
-    if (!append) {
-      blogTableBody.innerHTML = ""; // Clear existing rows if not appending
-    }
-
-    blogs.forEach((blog, index) => {
-      const row = document.createElement("tr");
-      row.innerHTML = `
-        <td>${currentOffset + index + 1}</td>
-        <td>${blog.title}</td>
-        <td>${blog.author}</td>
-        <td>${new Date(blog.date).toLocaleDateString()}</td>
-        <td>
-          <button class="btn btn-danger btn-sm" onclick="deleteBlog('${blog._id}')">Delete</button>
-        </td>
-      `;
-
-      blogTableBody.appendChild(row);
-    });
-  }
-
-  // Delete a blog
-  async function deleteBlog(blogId) {
-    if (!confirm("Are you sure you want to delete this blog?")) return;
-
-    try {
-      const response = await fetch(`${apiUrl}/delete/${blogId}`, {
-        method: "DELETE",
-      });
-
-      if (!response.ok) {
-        throw new Error("Failed to delete blog");
-      }
-
-      displaySuccessPopup(); // Show success popup
-      fetchBlogs(0, currentOffset + limit); // Refresh the blog list
-    } catch (error) {
-      console.error("Error deleting blog:", error);
-      displayFailedPopup(); // Show failure popup
-    }
-  }
-
-  // Handle Load More functionality
-  document.getElementById("loadMoreBtn").addEventListener("click", () => {
-    const entries = parseInt(document.getElementById("entries").value, 10);
-    currentOffset += limit; // Increment offset by the previous limit
-    limit = entries; // Update limit based on selection
-    fetchBlogs(currentOffset, limit, true); // Fetch blogs and append to the list
+  })
+  .catch(error => {
+    console.error('Error:', error);
+    alert('An error occurred while adding the hospital.');
   });
+});
 
-  // Fetch initial blogs when the page loads
-  document.addEventListener("DOMContentLoaded", () => {
-    fetchBlogs(0, 20); // Fetch the initial 20 blogs
-  });
+ </script>
 
-  // Function to display the custom success popup with overlay
-  function displaySuccessPopup() {
-    const successPopup = `
-      <div class="wrapper text-center">
-        <h4 class="card-title">Deleted</h4>
-        <p class="card-description">Blog Deleted!</p>
-        <button class="btn btn-outline-primary" onclick="closePopup()">Close</button>
-      </div>
-    `;
 
-    const popupContainer = document.getElementById("popup-container");
-    const overlay = document.getElementById("popup-overlay");
-
-    popupContainer.innerHTML = successPopup;
-    popupContainer.style.display = "block"; // Show popup
-    overlay.style.display = "block"; // Show overlay
-  }
-
-  // Function to display the custom failure popup with overlay
-  function displayFailedPopup() {
-    const failedPopup = `
-      <div class="wrapper text-center">
-        <h4 class="card-title">Failed</h4>
-        <p class="card-description">Failed To Delete Blog!</p>
-        <button class="btn btn-outline-red" onclick="closePopup()">Close</button>
-      </div>
-    `;
-
-    const popupContainer = document.getElementById("popup-container");
-    const overlay = document.getElementById("popup-overlay");
-
-    popupContainer.innerHTML = failedPopup;
-    popupContainer.style.display = "block"; // Show popup
-    overlay.style.display = "block"; // Show overlay
-  }
-
-  // Function to close the popup and hide the overlay
-  function closePopup() {
-    const popupContainer = document.getElementById("popup-container");
-    const overlay = document.getElementById("popup-overlay");
-
-    popupContainer.style.display = "none"; // Hide popup
-    overlay.style.display = "none"; // Hide overlay
-  }
-</script>
 
 
 

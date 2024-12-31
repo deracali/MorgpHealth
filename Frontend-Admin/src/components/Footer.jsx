@@ -57,16 +57,16 @@ export default function Footer() {
   <ul className="space-y-2 text-gray-700">
     <li className="flex items-center space-x-2">
       <FiPhone />
-      <a href="tel:+12124567890" className="hover:text-gray-900">+1-212-456-7890</a>
+      <a href="tel:+12124567890" className="hover:text-gray-900">+1-780-628-2778</a>
     </li>
     <li className="flex items-center space-x-2">
       <FiMail />
-      <a href="mailto:morgphealth@gmail.com" className="hover:text-gray-900">morgphealth@gmail.com</a>
+      <a href="mailto:morgphealth@gmail.com" className="hover:text-gray-900">support@morgphealth.com</a>
     </li>
     <li className="flex items-start space-x-2">
       <FiMapPin />
       <address className="not-italic">
-        49 Harristown Road, Castlermerry, Co. Dublin, E18 F075, Ireland
+      42 Hazelbury Park, Castaheany, Clonee, Co. Dublin, D15 FD76, Ireland
       </address>
     </li>
   </ul>

@@ -2,7 +2,7 @@
 <html lang="en">
 
 
-<!-- Mirrored from www.urbanui.com/melody/template/pages/tables/sortable-table.html by HTTrack Website Copier/3.x [XR&CO'2014], Sat, 15 Sep 2018 06:08:43 GMT -->
+<!-- Mirrored from www.urbanui.com/melody/template/pages/tables/basic-table.html by HTTrack Website Copier/3.x [XR&CO'2014], Sat, 15 Sep 2018 06:08:40 GMT -->
 <head>
   <!-- Required meta tags -->
   <meta charset="utf-8">
@@ -32,7 +32,7 @@
           <span class="fas fa-bars"></span>
         </button>
         <ul class="navbar-nav">
-        
+     
         </ul>
         <ul class="navbar-nav navbar-nav-right">
         
@@ -208,7 +208,7 @@
               <span class="menu-title">Dashboard</span>
             </a>
           </li>
-          
+      
           <li class="nav-item">
             <a class="nav-link" data-toggle="collapse" href="#page-layouts" aria-expanded="false" aria-controls="page-layouts">
               <i class="fab fa-trello menu-icon"></i>
@@ -223,8 +223,8 @@
               </ul>
             </div>
           </li>
-       
-    
+        
+  
           <li class="nav-item">
             <a class="nav-link" data-toggle="collapse" href="#form-elements" aria-expanded="false" aria-controls="form-elements">
               <i class="fab fa-wpforms menu-icon"></i>
@@ -236,6 +236,7 @@
                 <li class="nav-item"><a class="nav-link" href="../forms/basic_elements.html">Staff Form</a></li>                
                 <li class="nav-item"><a class="nav-link" href="../forms/wizard.html">Appointment Form</a></li>
                 <li class="nav-item"><a class="nav-link" href="../forms/validation.html">Blog Form</a></li>
+                
               </ul>
             </div>
           </li>
@@ -252,7 +253,7 @@
               </ul>
             </div>
           </li>
-       
+      
           <li class="nav-item">
             <a class="nav-link" data-toggle="collapse" href="#tables" aria-expanded="false" aria-controls="tables">
               <i class="fas fa-table menu-icon"></i>
@@ -281,52 +282,52 @@
         <div class="content-wrapper">
           <div class="page-header">
             <h3 class="page-title">
-              Sortable table
+              Basic Tables
             </h3>
             <nav aria-label="breadcrumb">
               <ol class="breadcrumb">
                 <li class="breadcrumb-item"><a href="#">Tables</a></li>
-                <li class="breadcrumb-item active" aria-current="page">Sortable table</li>
+                <li class="breadcrumb-item active" aria-current="page">Basic tables</li>
               </ol>
             </nav>
           </div>
           <div class="row">
-            <div class="col-12 grid-margin">
-             <!-- All Appointments Table -->
-             <div class="card">
-                <div class="card-body">
-                  <h4 class="card-title">Notifications</h4>
-                  <p class="page-description">Recent notices</p>
+      
+            <div class="col-lg-12 grid-margin stretch-card">
+                <div class="card">
+                  <div class="card-body">
+                    <h4 class="card-title">Hospital Management</h4>
+                    <p class="card-description">
+                      Add class <code>.table-striped</code>
+                    </p>
               
-                  <div class="table-sorter-wrapper col-lg-12 table-responsive">
-                    <table id="sortable-table-1" class="table">
-                      <thead>
-                        <tr>
-                          <th>Title</th>
-                          <th>Content</th>
-                          <th>Created At</th>
-                          <th>Action</th>
-                        </tr>
-                      </thead>
-                      <tbody id="notices-table-body">
-                        <!-- Notices will be populated dynamically -->
-                      </tbody>
-                    </table>
-                  </div>
+                    <!-- Overlay and Popup Container -->
+                    <div id="popup-overlay" class="popup-overlay"></div>
+                    <div id="popup-container"></div>
               
-                  <!-- Load More Button -->
-                  <div class="load-more-container">
-                    <button id="load-more-btn" class="btn btn-primary">Load More</button>
+                    <div class="table-responsive">
+                      <table class="table table-striped" id="reassign-table">
+                        <thead>
+                            <tr>
+                              <th>Hospital Name</th>
+                              <th>Location</th>
+                              <th>Contact</th>
+                              <th>Email</th>
+                              <th>Created At</th>
+                              <th>Action</th>
+                            </tr>
+                          </thead>
+                          
+                        <tbody>
+                          <!-- Rows will be dynamically added here -->
+                        </tbody>
+                      </table>
+                    </div>
                   </div>
                 </div>
               </div>
               
-              
-
-              
-              
-            </div>
-         
+           
           </div>
         </div>
         <!-- content-wrapper ends -->
@@ -341,59 +342,7 @@
     </div>
     <!-- page-body-wrapper ends -->
   </div>
-
-
-
-  <script>
-    document.addEventListener('DOMContentLoaded', () => {
-      // Fetch all staff details and filter by staffId
-      const getStaffDetails = async () => {
-        const urlParams = new URLSearchParams(window.location.search);
-        const staffId = urlParams.get('staffId'); // Get staffId from query parameter
-        if (!staffId) {
-          console.error('No staffId provided');
-          return;
-        }
-        
-        try {
-          // Fetch all staff data from the backend API
-          const response = await fetch('https://morgphealth.onrender.com/api/staff');
-          
-          // Check if the response is valid
-          if (!response.ok) {
-            throw new Error('Failed to fetch staff data');
-          }
-          
-          const staffList = await response.json();
-          
-          // Find the staff with the provided staffId
-          const staff = staffList.find(staff => staff._id === staffId);
-        
-          if (staff) {
-            // Update the DOM elements with the staff details
-            const staffNameElement = document.querySelector('.name');
-            const staffDesignationElement = document.querySelector('.designation');
-  
-            staffNameElement.textContent = `Welcome ${staff.name}`;
-            staffDesignationElement.textContent = staff.admin ? 'Super Admin' : 'Staff';
-  
-            // Hide the Form Elements link if the staff is not an admin
-            if (!staff.admin) {
-              const formElementsLink = document.querySelector('#form-elements').parentElement;
-              formElementsLink.style.display = 'none'; // Hide the entire list item
-            }
-          } else {
-            console.error('Staff not found');
-          }
-        } catch (error) {
-          console.error('Error fetching staff details:', error);
-        }
-      };
-  
-      // Call the function
-      getStaffDetails();
-    });
-  </script>
+  <!-- container-scroller -->
   <script>
     document.addEventListener('DOMContentLoaded', () => {
       const token = localStorage.getItem('authToken'); // Get the auth token from local storage
@@ -552,6 +501,57 @@
 </script>
 
 <script>
+  document.addEventListener('DOMContentLoaded', () => {
+    // Fetch all staff details and filter by staffId
+    const getStaffDetails = async () => {
+      const urlParams = new URLSearchParams(window.location.search);
+      const staffId = urlParams.get('staffId'); // Get staffId from query parameter
+      if (!staffId) {
+        console.error('No staffId provided');
+        return;
+      }
+      
+      try {
+        // Fetch all staff data from the backend API
+        const response = await fetch('https://morgphealth.onrender.com/api/staff');
+        
+        // Check if the response is valid
+        if (!response.ok) {
+          throw new Error('Failed to fetch staff data');
+        }
+        
+        const staffList = await response.json();
+        
+        // Find the staff with the provided staffId
+        const staff = staffList.find(staff => staff._id === staffId);
+      
+        if (staff) {
+          // Update the DOM elements with the staff details
+          const staffNameElement = document.querySelector('.name');
+          const staffDesignationElement = document.querySelector('.designation');
+
+          staffNameElement.textContent = `Welcome ${staff.name}`;
+          staffDesignationElement.textContent = staff.admin ? 'Super Admin' : 'Staff';
+
+          // Hide the Form Elements link if the staff is not an admin
+          if (!staff.admin) {
+            const formElementsLink = document.querySelector('#form-elements').parentElement;
+            formElementsLink.style.display = 'none'; // Hide the entire list item
+          }
+        } else {
+          console.error('Staff not found');
+        }
+      } catch (error) {
+        console.error('Error fetching staff details:', error);
+      }
+    };
+
+    // Call the function
+    getStaffDetails();
+  });
+</script>
+
+<script>
   document.getElementById('signoutLink').addEventListener('click', async function (event) {
     event.preventDefault();  // Prevent the default behavior of the link
 
@@ -596,96 +596,76 @@
 </script>
 
 
- 
-  
-  
+
 <script>
-    let currentPage = 1; // For pagination
-    let noticesPerPage = 10; // Number of notices per page
-  
-    // Function to fetch notices and update the table
-    function fetchNotices(page = 1) {
-      fetch(`https://morgphealth.onrender.com/api/notice/notices`)
-        .then(response => response.json())
-        .then(data => {
-          if (data.message === 'Notices retrieved successfully!') {
-            const notices = data.notices;
-            const tableBody = document.getElementById('notices-table-body');
-            
-            // Loop through the notices and create table rows
-            notices.forEach(notice => {
-              const row = document.createElement('tr');
-  
-              const titleCell = document.createElement('td');
-              titleCell.textContent = notice.title;
-              row.appendChild(titleCell);
-  
-              const contentCell = document.createElement('td');
-              contentCell.textContent = notice.content;
-              row.appendChild(contentCell);
-  
-              const createdAtCell = document.createElement('td');
-              createdAtCell.textContent = new Date(notice.createdAt).toLocaleString();
-              row.appendChild(createdAtCell);
-  
-              const actionCell = document.createElement('td');
-              const deleteBtn = document.createElement('button');
-              deleteBtn.textContent = 'Delete';
-              deleteBtn.classList.add('btn', 'btn-danger');
-              deleteBtn.addEventListener('click', () => deleteNotice(notice._id, row));
-              actionCell.appendChild(deleteBtn);
-              row.appendChild(actionCell);
-  
-              tableBody.appendChild(row);
-            });
-          }
-        })
-        .catch(error => {
-          console.error('Error fetching notices:', error);
+    // Fetch hospitals and render them in the table
+    const fetchHospitals = async () => {
+      try {
+        const response = await fetch('https://morgphealth.onrender.com/api/hospitals');
+        const data = await response.json();
+        const tableBody = document.querySelector('#reassign-table tbody');
+        tableBody.innerHTML = ''; // Clear existing rows
+  console.log(data)
+        // Populate the table with hospital data
+        data.data.forEach(hospital => {
+          const row = document.createElement('tr');
+          row.innerHTML = `
+            <td>${hospital.name}</td>
+            <td>${hospital.address}</td>
+            <td>${hospital.phone}</td>
+            <td>${hospital.email}</td>
+            <td>${new Date(hospital.createdAt).toLocaleDateString()}</td>
+            <td><button class="delete-btn btn-primary p-2" data-id="${hospital._id}">Delete</button></td>
+          `;
+          tableBody.appendChild(row);
         });
-    }
   
-    // Function to delete a notice
-    function deleteNotice(id, row) {
-      fetch(`https://morgphealth.onrender.com/api/notice/notices/${id}`, {
-        method: 'DELETE',
-      })
-        .then(response => response.json())
-        .then(data => {
-          if (data.message === 'Notice deleted successfully!') {
-            // Remove the notice row from the table
-            row.remove();
-            alert('Notice deleted successfully!');
+        // Add event listener to the delete buttons
+        document.querySelectorAll('.delete-btn').forEach(button => {
+          button.addEventListener('click', handleDelete);
+        });
+      } catch (error) {
+        console.error('Error fetching hospitals:', error);
+      }
+    };
+  
+    // Handle deletion of a hospital
+    const handleDelete = async (event) => {
+      const hospitalId = event.target.getAttribute('data-id');
+      if (confirm('Are you sure you want to delete this hospital?')) {
+        try {
+          const response = await fetch(`https://morgphealth.onrender.com/api/hospitals/delete/${hospitalId}`, {
+            method: 'DELETE',
+          });
+          if (response.ok) {
+            alert('Hospital deleted successfully');
+            fetchHospitals(); // Refresh the table
           } else {
-            alert('Error deleting the notice.');
+            alert('Error deleting hospital');
           }
-        })
-        .catch(error => {
-          console.error('Error deleting notice:', error);
-        });
-    }
+        } catch (error) {
+          console.error('Error deleting hospital:', error);
+        }
+      }
+    };
   
-    // Load More button event listener
-    document.getElementById('load-more-btn').addEventListener('click', () => {
-      currentPage++;
-      fetchNotices(currentPage);
-    });
-  
-    // Initial fetch
-    fetchNotices(currentPage);
+    // Call fetchHospitals when the page loads
+    document.addEventListener('DOMContentLoaded', fetchHospitals);
   </script>
-
-
-
-
   
-  <!-- container-scroller -->
+
+
+
+
+
+
+<script src="../../js/alerts.js"></script>
+<script src="../../js/avgrund.js"></script>
   <!-- plugins:js -->
   <script src="../../vendors/js/vendor.bundle.base.js"></script>
   <script src="../../vendors/js/vendor.bundle.addons.js"></script>
   <!-- endinject -->
   <!-- Plugin js for this page-->
-  <!-- <script src="../../js/jq.tablesort.js"></script> -->
   <!-- End plugin js for this page-->
   <!-- inject:js -->
   <script src="../../js/off-canvas.js"></script>
@@ -695,12 +675,9 @@
   <script src="../../js/todolist.js"></script>
   <!-- endinject -->
   <!-- Custom js for this page-->
-  <!-- <script src="../../js/tablesorter.js"></script> -->
-  <script src="../../js/alerts.js"></script>
-  <script src="../../js/avgrund.js"></script>
   <!-- End custom js for this page-->
 </body>
 
 
-<!-- Mirrored from www.urbanui.com/melody/template/pages/tables/sortable-table.html by HTTrack Website Copier/3.x [XR&CO'2014], Sat, 15 Sep 2018 06:08:45 GMT -->
+<!-- Mirrored from www.urbanui.com/melody/template/pages/tables/basic-table.html by HTTrack Website Copier/3.x [XR&CO'2014], Sat, 15 Sep 2018 06:08:40 GMT -->
 </html>

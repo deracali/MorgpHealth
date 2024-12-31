@@ -152,6 +152,33 @@ const getSingleReviewDoc = async (req, res) => {
   };
   
 
+  const updateCancelledStatus = async (req, res) => {
+    try {
+        const { id } = req.params; // Extract doctor ID from request parameters
+
+        // Update the cancelled field to true
+        const updatedDoctor = await ReviewdocModel.findByIdAndUpdate(
+            id,
+            { cancelled: true },
+            { new: true } // Return the updated document
+        );
+
+        if (!updatedDoctor) {
+            return res.status(404).json({ message: 'Doctor not found' });
+        }
+
+        res.status(200).json({
+            message: 'Doctor cancellation status updated successfully',
+            data: updatedDoctor
+        });
+    } catch (error) {
+        res.status(500).json({
+            message: 'An error occurred while updating the cancellation status',
+            error: error.message
+        });
+    }
+};
+
 
 
 const deleteReviewDoctor = async (req, res) => {
@@ -187,4 +214,4 @@ const deleteReviewDoctor = async (req, res) => {
     }
 };
 
-export { ReviewController, deleteReviewDoctor,getAllReviewDocs, getSingleReviewDoc };
+export { ReviewController,updateCancelledStatus, deleteReviewDoctor,getAllReviewDocs, getSingleReviewDoc };

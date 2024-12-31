@@ -24,7 +24,7 @@ const HospitalServices = () => {
           </span>
         </div>
         <h4 className="text-2xl font-semibold mb-3 text-gray-800">
-          <a href="service-detail.html">Emergency Care</a>
+          <div>Emergency Care</div>
         </h4>
         <p className="text-gray-600 mb-4">
           Fast and reliable emergency care to save lives and provide immediate treatment.
@@ -40,7 +40,7 @@ const HospitalServices = () => {
           </span>
         </div>
         <h4 className="text-2xl font-semibold mb-3 text-gray-800">
-          <a href="service-detail.html">General Medicine</a>
+          <div>General Medicine</div>
         </h4>
         <p className="text-gray-600 mb-4">
           Comprehensive healthcare services for diagnosis, treatment, and prevention.
@@ -56,7 +56,7 @@ const HospitalServices = () => {
           </span>
         </div>
         <h4 className="text-2xl font-semibold mb-3 text-gray-800">
-          <a href="service-detail.html">Health Screening</a>
+          <div>Health Screening</div>
         </h4>
         <p className="text-gray-600 mb-4">
           Advanced health screening for early detection and prevention of diseases.
@@ -72,7 +72,7 @@ const HospitalServices = () => {
           </span>
         </div>
         <h4 className="text-2xl font-semibold mb-3 text-gray-800">
-          <a href="service-detail.html">Surgical Services</a>
+          <div>Surgical Services</div>
         </h4>
         <p className="text-gray-600 mb-4">
           High-quality surgical care provided by experienced surgeons for various procedures.
@@ -88,7 +88,7 @@ const HospitalServices = () => {
           </span>
         </div>
         <h4 className="text-2xl font-semibold mb-3 text-gray-800">
-          <a href="service-detail.html">Pediatric Care</a>
+          <div>Pediatric Care</div>
         </h4>
         <p className="text-gray-600 mb-4">
           Specialized care for children, from newborns to adolescents, with expert pediatricians.
@@ -104,7 +104,7 @@ const HospitalServices = () => {
           </span>
         </div>
         <h4 className="text-2xl font-semibold mb-3 text-gray-800">
-          <a href="service-detail.html">Maternity Services</a>
+          <div>Maternity Services</div>
         </h4>
         <p className="text-gray-600 mb-4">
           Comprehensive maternity care, including prenatal and postnatal services for mothers and babies.

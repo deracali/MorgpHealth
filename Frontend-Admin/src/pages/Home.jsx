@@ -15,7 +15,7 @@ export default function Home() {
   return (
     <div>
       <Header/>
-      <SpecialityMenu/>
+      {/* <SpecialityMenu/> */}
       <TopDoctors/>
       <AboutClinic/>
       <FeaturesSection/>

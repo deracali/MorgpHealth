@@ -14,6 +14,7 @@ export default function AddDoctor() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [phone, setPhone] = useState('');
+  const [pin, setPin] = useState('');
   const [gender, setGender] = useState('');
   const [experience, setExperience] = useState('1 Year');
   const [fees, setFees] = useState('');
@@ -52,6 +53,7 @@ const navigate = useNavigate()
     formData.append('name', name);
     formData.append('email', email);
     formData.append('phone', phone);
+    formData.append('pin', pin);
     formData.append('password', password);
     formData.append('gender', gender);
     formData.append('experience', experience);
@@ -105,6 +107,7 @@ const navigate = useNavigate()
     setAbout('');
     setFees('');
     setPhone('');
+    setPin('');
     setDateOfBirth('');
     setUniversityName('');
     setUniversityCountry('');
@@ -170,6 +173,7 @@ const navigate = useNavigate()
 />
 
             <InputField  placeholder='Phone' label="Phone" value={phone} onChange={setPhone} required />
+            <InputField  placeholder='1234' label="Pin" value={pin} onChange={setPhone} required />
             <InputField label="Education"  placeholder='MBBS' value={degree} onChange={setDegree} required />
             <InputField label="Address 1"  placeholder='street' value={address1} onChange={setAddress1} required />
             <InputField label="Address 2" value={address2}  placeholder='street' onChange={setAddress2} />

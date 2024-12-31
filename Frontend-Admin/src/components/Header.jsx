@@ -14,6 +14,14 @@ export default function Header() {
         setUserId(storedUserId);
       }
     }, []);
+
+    const handleLinkClick = (e) => {
+      if (localStorage.getItem('insured') === 'true') {
+        // Prevent default navigation and redirect to contact page if insured
+        e.preventDefault();
+        navigate('/contact');
+      }
+    };
   
   return (
     <div className="flex flex-col lg:flex-row items-center justify-between bg-white px-6 lg:px-16 py-10 gap-10">
@@ -36,13 +44,17 @@ export default function Header() {
           >
             Buy Insurance
           </Link>
-          { userData ?  <Link
-            to="/doctors"
-            className="border-2 border-blue-600 text-blue-600 hover:text-white hover:bg-blue-600 py-3 px-6 rounded-full transition duration-300"
-          >
-            Book Appointment
-          </Link> : ""}
-         
+          {userData ? (
+        <Link
+          to="/doctors"
+          className="border-2 border-blue-600 text-blue-600 hover:text-white hover:bg-blue-600 py-3 px-6 rounded-full transition duration-300"
+          onClick={handleLinkClick} // Check insurance status on click
+        >
+          Book Appointment
+        </Link>
+      ) : (
+        ''
+      )}
         </div>
       </div>
 
