@@ -152,7 +152,7 @@
          
             
             
-              <li class="menu-item">
+              <li class="menu-item" id="insurance-menu">
                 <a href="insurance.html" class="menu-link">
                   <i class="menu-icon tf-icons bx bx-table"></i>
                   <div data-i18n="Analytics">Insurance</div>
@@ -423,7 +423,16 @@ function bookAppointment(doctorId) {
 </script>
 
 
+<script>
+  // Get the 'insured' value from localStorage
+  const insured = localStorage.getItem('insured');
 
+  // Check if insured is 'false' and hide the menu item if so
+  if (insured === 'false') {
+    const insuranceMenu = document.getElementById('insurance-menu');
+    insuranceMenu.style.display = 'none';
+  }
+</script>
 
 
 <script>

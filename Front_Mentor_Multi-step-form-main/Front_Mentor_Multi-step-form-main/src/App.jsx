@@ -16,6 +16,8 @@ const App = () => {
     <PlansProvider>
       <AddOnsProvider>
         <BrowserRouter>
+        <h2 class="text-3xl font-semibold text-center text-gray-800 mb-6">Insurance Form</h2>
+
         <div className="bg-white w-full sm:w-[40rem] md:w-[50rem] lg:w-[60rem] h-auto sm:h-[30rem] mt-[100px] sm:mt-0 rounded-xl shadow-xl p-4 flex flex-col sm:flex-row justify-between">
 
             <Sidebar />

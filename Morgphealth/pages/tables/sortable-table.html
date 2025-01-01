@@ -224,8 +224,11 @@
             </div>
           </li>
        
-    
-          <li class="nav-item">
+          <li class="nav-item"><a class="nav-link" href="../forms/basic_elements.html"> <i class="fas fa-table menu-icon"></i> Staff Form</a></li>                
+          <li class="nav-item"><a class="nav-link" href="../forms/wizard.html"> <i class="fas fa-table menu-icon"></i> Book Appointment</a></li>
+          <li class="nav-item"><a class="nav-link" href="../forms/validation.html"> <i class="fas fa-table menu-icon"></i> Blog Form</a></li>
+          
+          <!-- <li class="nav-item">
             <a class="nav-link" data-toggle="collapse" href="#form-elements" aria-expanded="false" aria-controls="form-elements">
               <i class="fab fa-wpforms menu-icon"></i>
               <span class="menu-title">Form elements</span>
@@ -238,7 +241,7 @@
                 <li class="nav-item"><a class="nav-link" href="../forms/validation.html">Blog Form</a></li>
               </ul>
             </div>
-          </li>
+          </li> -->
           <li class="nav-item">
             <a class="nav-link" data-toggle="collapse" href="#editors" aria-expanded="false" aria-controls="editors">
               <i class="fas fa-pen-square menu-icon"></i>
@@ -252,8 +255,15 @@
               </ul>
             </div>
           </li>
-       
-          <li class="nav-item">
+          <li class="nav-item"> <a class="nav-link" href="basic-table.html"> <i class="fas fa-table menu-icon"></i> Staff</a></li>
+          <li class="nav-item"> <a class="nav-link" href="data-table.html"> <i class="fas fa-table menu-icon"></i> User table</a></li>
+          <li class="nav-item"> <a class="nav-link" href="js-grid.html"> <i class="fas fa-table menu-icon"></i> Doctors</a></li>
+          <li class="nav-item"> <a class="nav-link" href="sortable-table.html"> <i class="fas fa-table menu-icon"></i> Appointment table</a></li>
+         <li class="nav-item"> <a class="nav-link" href="Requests.html"> <i class="fas fa-table menu-icon"></i> Notice</a></li>
+            <li class="nav-item"> <a class="nav-link" href="withdrawals.html"> <i class="fas fa-table menu-icon"></i> Withdrawals</a></li>
+            <li class="nav-item"> <a class="nav-link" href="reviewdoc.html"> <i class="fas fa-table menu-icon"></i> Review Doctor</a></li>
+            <li class="nav-item"> <a class="nav-link" href="insurance.html"> <i class="fas fa-table menu-icon"></i> Insurance</a></li>
+          <!-- <li class="nav-item">
             <a class="nav-link" data-toggle="collapse" href="#tables" aria-expanded="false" aria-controls="tables">
               <i class="fas fa-table menu-icon"></i>
               <span class="menu-title">Data</span>
@@ -271,7 +281,7 @@
                   <li class="nav-item"> <a class="nav-link" href="insurance.html">Insurance</a></li>
               </ul>
             </div>
-          </li>
+          </li> -->
           <li class="nav-item"> <a class="nav-link" href="reassign.html">
             <i class="fas fa-table menu-icon"></i> Reassign Request</a></li>
             <li class="nav-item"> <a class="nav-link" href="../forms/hospitals.html">
@@ -387,7 +397,7 @@
             <th>Doctor Fees</th>
             <th>Slot Date</th>
             <th>Slot Time</th>
-            <th>Update Balance</th>
+            <!-- <th>Update Balance</th> -->
           </tr>
         </thead>
         <tbody id="appointments-table-body-completed">
@@ -670,6 +680,7 @@
   });
 </script>
 
+<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
 
 <script>
   let appointments = []; // Global appointments array
@@ -749,35 +760,64 @@
   }
 
   async function handleMarkPaidClick(event) {
-    const appointmentId = event.target.getAttribute('data-appointmentid');
-    
-    try {
-      const response = await fetch(`https://morgphealth.onrender.com/api/doctor/update-appointment/${appointmentId}`, {
-        method: 'PUT', // Assuming the server supports PATCH for updating
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ paymentSuccessful: true }),
-      });
+  const appointmentId = event.target.getAttribute('data-appointmentid');
+  
+  try {
+    // Step 1: Update appointment payment status
+    const response = await fetch(`https://morgphealth.onrender.com/api/doctor/update-appointment/${appointmentId}`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ paymentSuccessful: true }),
+    });
 
-      const data = await response.json();
+    const data = await response.json();
+    console.log('Appointment update response:', data);
+
+    if (data.success) {
+      // Update the appointment in the local array
+      const appointment = appointments.find(app => app._id === appointmentId);
+      if (appointment) {
+        appointment.paymentSuccess = true;
+        console.log('Updated appointment:', appointment);
+      }
+
+      // Step 2: Calculate 35% of the appointment amount
+      const paymentAmount = appointment.amount * 0.35; // 35% of the appointment amount
+      console.log('Calculated payment amount:', paymentAmount);
+
+      // Get the doctor's ID from the appointment
+      const docId = appointment.docId;
+      console.log('Doctor ID:', docId);
+
+      // Step 3: Update doctor's balance
+      const addData = { amount: paymentAmount };
+      const incrementResponse = await axios.post(
+        `https://morgphealth.onrender.com/api/doctor/update-profile/${docId}`,
+        { amount: addData.amount }
+      );
       
-      if (data.success) {
-        // Update the appointment in the local array
-        const appointment = appointments.find(app => app._id === appointmentId);
-        if (appointment) {
-          appointment.paymentSuccess = true;
-        }
+      console.log('Doctor balance update response:', incrementResponse);
+
+      if (incrementResponse && incrementResponse.data.success) {
+        const balance = incrementResponse.data.balance; // Assuming the response contains the updated balance
+        console.log('Updated balance:', balance);
         displaySuccessPopup();
-        // Refresh the table display
         displayAppointments(appointments, 10);
       } else {
+        console.error('Failed to update balance');
         displayFailedPopup();
       }
-    } catch (error) {
+    } else {
+      console.error('Failed to update appointment');
       displayFailedPopup();
     }
+  } catch (error) {
+    console.error('Error occurred:', error);
+    displayFailedPopup();
   }
+}
 
   // Function to filter appointments based on search input
   function filterAppointments(query) {
@@ -869,13 +909,10 @@
           <td>${appointment.userData.email}</td>
           <td>${appointment.docData.name}</td>
           <td>${appointment.docData.email}</td>
-          <td>${appointment.docData.fees}</td>
+          <td>${appointment.amount}</td>
           <td>${appointment.slotDate}</td>
           <td>${appointment.slotTime}</td>
-          <td>
-            <input type="number" id="balance-input-${appointment.docId}" class="form-control" placeholder="eg 50" min="0">
-            <button class="btn btn-primary update-balance" data-docid="${appointment.docId}" data-appointmentid="${appointment._id}">Update Balance</button>
-          </td>
+         
         `;
         tableBody.appendChild(row);
       });

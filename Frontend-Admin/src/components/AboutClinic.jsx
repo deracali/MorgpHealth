@@ -2,7 +2,7 @@ import React from 'react';
 
 const AboutClinic = () => {
   return (
-    <div className="bg-pink-50 flex flex-col lg:flex-row justify-center items-center p-10">
+    <div className="bg-pink-50 flex flex-col-reverse lg:flex-row justify-center items-center p-10">
       {/* Left Section */}
       <div className="lg:w-1/2">
         <h4 className="text-pink-600 font-semibold mb-2">About Morgphealth</h4>

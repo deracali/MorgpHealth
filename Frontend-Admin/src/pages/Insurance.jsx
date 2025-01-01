@@ -50,7 +50,7 @@ export default function Insurance() {
 </p>
 
           <div className="hero-text-btns">
-          <Link 
+          <Link style={{background:"blue"}}
       className="a" 
       to={`https://insurance-morgphealth.netlify.app/${userId}`}
     >
@@ -373,7 +373,7 @@ export default function Insurance() {
               </div>
               <div className="w-right-contact-box-text">
                 <span>Call Us Now</span>
-                <strong>+123 456 789</strong>
+                <strong>+1-780-628-2778</strong>
               </div>
             </div>
             <div className="w-right-contact-box">
@@ -398,7 +398,7 @@ export default function Insurance() {
               </div>
               <div className="w-right-contact-box-text">
                 <span>Mail Us</span>
-                <strong>info@gmail.com</strong>
+                <strong>support@morgphealth.com</strong>
               </div>
             </div>
           </div>

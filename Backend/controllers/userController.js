@@ -204,7 +204,7 @@ const updateProfileMobile = async (req, res) => {
 
  const bookAppointment = async (req, res) => {
     try {
-        const { userId, docId, slotDate, slotTime, concern,description,type } = req.body;
+        const { userId, docId, slotDate, slotTime, concern,description,type,amount } = req.body;
 
         // Fetch doctor data, excluding password field
         const docData = await doctorModel.findById(docId).select('-password');
@@ -245,7 +245,7 @@ const updateProfileMobile = async (req, res) => {
             docId,
             userData,
             docData,
-            amount: docData.fees,
+            amount,
             slotTime,
             slotDate,
             concern,

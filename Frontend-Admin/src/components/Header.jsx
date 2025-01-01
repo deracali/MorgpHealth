@@ -38,12 +38,22 @@ export default function Header() {
   </p>
         {/* Buttons */}
         <div className="flex gap-4 mt-4">
-          <Link
+          {/* <Link
             to="/insurance"
             className="bg-blue-600 hover:bg-blue-700 text-white py-3 px-6 rounded-full transition duration-300"
           >
             Buy Insurance
-          </Link>
+          </Link> */}
+           <div className="flex justify-center items-center space-x-4">
+            {/* App Store Button */}
+            <a href="#" className="block w-40">
+              <img src={assets.appstore} alt="Download on the App Store" />
+            </a>
+            {/* Google Play Button */}
+            <a href="#" className="block w-40">
+              <img src={assets.googleplay} alt="Get it on Google Play" />
+            </a>
+          </div>
           {userData ? (
         <Link
           to="/doctors"

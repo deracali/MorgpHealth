@@ -137,7 +137,7 @@
        
           
           
-            <li class="menu-item">
+            <li class="menu-item" id="insurance-menu">
               <a href="insurance.html" class="menu-link">
                 <i class="menu-icon tf-icons bx bx-table"></i>
                 <div data-i18n="Analytics">Insurance</div>
@@ -370,7 +370,16 @@
     </div>
     <!-- / Layout wrapper -->
 
+    <script>
+      // Get the 'insured' value from localStorage
+      const insured = localStorage.getItem('insured');
     
+      // Check if insured is 'false' and hide the menu item if so
+      if (insured === 'false') {
+        const insuranceMenu = document.getElementById('insurance-menu');
+        insuranceMenu.style.display = 'none';
+      }
+    </script>
 
    
     
@@ -652,7 +661,7 @@
     // If the user is not insured, prevent the default action (navigation) and redirect to the contact page
     if (Insured === 'true') {
       event.preventDefault(); // Prevent the default click behavior
-      window.location.href = 'https://frontend-morgphealth.netlify.app/contact'; // Redirect to the contact page
+      window.location.href = 'contact.html'; // Redirect to the contact page
     }
   });
 </script>

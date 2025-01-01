@@ -83,6 +83,7 @@
             <div class="doctor-info-container">
                 <h3>Doctor Information</h3>
                 <button class="btn btn-primary" type="button" id="accept-doctor-button">Accept</button>
+                <button class="btn btn-danger" type="button" id="danger-doctor-button">Cancel</button>
             </div>
             
             <div class="docimage">
@@ -161,6 +162,14 @@
 
     <script>
 
+// Function to close the popup and hide the overlay
+function closePopup() {
+  const popupContainer = document.getElementById('popup-container');
+  const overlay = document.getElementById('popup-overlay');
+  
+  popupContainer.style.display = 'none';  // Hide popup
+  overlay.style.display = 'none';  // Hide overlay
+}
 
         // Fetching the review doc ID from URL params and sending a request to get the data
         const urlParams = new URLSearchParams(window.location.search);
@@ -415,19 +424,70 @@ function displayFailedPopup() {
   overlay.style.display = 'block';  // Show overlay
 }
 
-// Function to close the popup and hide the overlay
-function closePopup() {
-  const popupContainer = document.getElementById('popup-container');
-  const overlay = document.getElementById('popup-overlay');
-  
-  popupContainer.style.display = 'none';  // Hide popup
-  overlay.style.display = 'none';  // Hide overlay
-}
 
             })
             .catch(error => console.log('Error fetching doctor data: ' + error.message));
     </script>
     
+
+
+    <script>
+        document.getElementById("danger-doctor-button").addEventListener("click", function () {
+            const doctorId = urlParams.get('id'); // Prompt for the doctor ID
+      
+            if (!doctorId) {
+                alert("Doctor ID is required to cancel.");
+                return;
+            }
+      
+            const cancelApiUrl = `https://morgphealth.onrender.com/api/addDoc/cancel/${doctorId}`;
+      
+            // Make the PATCH request to update cancelled status
+            fetch(cancelApiUrl, {
+                method: "PUT",
+                headers: {
+                    "Content-Type": "application/json"
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.message) {
+                    alert("Doctor request cancelled successfully");
+                    // Optionally, refresh the data or update the UI here
+                } else {
+                    alert("Failed to cancel doctor request");
+                }
+            })
+            .catch(error => {
+                console.error("Error cancelling doctor request:", error);
+                alert("An error occurred while cancelling the request");
+            });
+        });
+      </script>
+      
+
+      <script>
+        // Fetch data from the API
+        const reviewDoc = urlParams.get('id'); // Replace with the actual reviewDocId
+    
+        fetch(`https://morgphealth.onrender.com/api/addDoc/review-docs/${reviewDoc}`)
+          .then(response => response.json())
+          .then(data => {
+            // Assuming the 'cancelled' value is part of the data object
+            const cancelled = data.reviewDoc.cancelled;  // Adjust if the data structure is different
+    
+            // Get the button element
+            const acceptButton = document.getElementById("accept-doctor-button");
+    
+            // Hide the button if cancelled is true
+            if (cancelled) {
+              acceptButton.style.display = "none";
+            }
+          })
+          .catch(error => {
+            console.error('Error fetching data:', error);
+          });
+      </script>
 
     <script src="../../js/alerts.js"></script>
 <script src="../../js/avgrund.js"></script>

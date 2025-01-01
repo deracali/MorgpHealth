@@ -1,6 +1,7 @@
 import React from "react";
 import { useParams } from "react-router-dom";
 import {loadStripe} from "@stripe/stripe-js";
+import { FaCheck } from "react-icons/fa";
 const Stripe = () => {
   const { docName, userName, userEmail, docFees } = useParams();
 
@@ -32,17 +33,19 @@ const Stripe = () => {
     <div className="bg-gradient-to-b from-[#f8fafc] to-[#e2e8f0] mx-auto mt-10 p-8 rounded-lg shadow-lg font-sans">
     <div className="bg-white w-full rounded-lg p-8 text-center relative shadow-xl">
       {/* Success Icon */}
-      <div className="absolute -top-12 left-1/2 transform -translate-x-1/2 w-[90px] h-[90px] rounded-full bg-[#f5f7fa] flex items-center justify-center border-4 border-white shadow-md">
-        <i className="text-[#0bbf69] text-4xl fas fa-check"></i>
-      </div>
+    
+<div className="absolute -top-12 left-1/2 transform -translate-x-1/2 w-[90px] h-[90px] rounded-full bg-[#f5f7fa] flex items-center justify-center border-4 border-white shadow-md">
+  <FaCheck className="text-[#0bbf69] text-4xl" />
+</div>
+
   
       {/* Main Message */}
       <h1 className="text-[#1e293b] font-bold text-xl mt-8">
-        Payment Complete
+        Proceed to Checkout
       </h1>
-      <p className="text-[#64748b] text-sm font-medium mt-2">
+      {/* <p className="text-[#64748b] text-sm font-medium mt-2">
         Thank you for your transfer
-      </p>
+      </p> */}
   
       {/* Payment Details */}
       <div className="bg-[#f9fafb] rounded-lg mt-8 p-6">
@@ -79,14 +82,14 @@ const Stripe = () => {
         </StripeCheckout> */}
   
         {/* Tags */}
-        <div className="flex justify-center space-x-3 mt-6">
-          <button onClick={handleToken} className="uppercase text-xs font-medium bg-[#0bbf69] text-white px-3 py-1 rounded-full">
-            Pay
-          </button>
-          <span className="uppercase text-xs font-medium bg-[#f1f5f9] text-[#64748b] px-3 py-1 rounded-full">
-            #123456789
-          </span>
-        </div>
+        <div className="flex justify-center mt-6">
+  <button 
+    onClick={handleToken} 
+    className="uppercase text-sm font-semibold bg-[#0bbf69] text-white px-6 py-3 rounded-lg shadow-lg hover:bg-[#099f57] transition duration-200 ease-in-out">
+    Pay
+  </button>
+</div>
+
       </div>
     </div>
   </div>
