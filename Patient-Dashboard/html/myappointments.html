@@ -603,7 +603,18 @@
     
     
     
-    
+<script>
+  // Get the 'insured' value from localStorage
+  const insured = localStorage.getItem('insured');
+
+  // Check if insured is 'false' and hide the menu item if so
+  if (insured === 'false') {
+    const insuranceMenu = document.getElementById('insurance-menu');
+    insuranceMenu.style.display = 'none';
+  }
+</script>
+
+
     
     
     <!-- build:js assets/vendor/js/core.js -->

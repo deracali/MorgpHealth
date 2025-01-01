@@ -38,7 +38,8 @@ const addDoctor = async (req, res) => {
       image: imageBody,
       medicalLicense: licenseBody,
       diplomaCertificates: diplomaBody,
-      proofOfID: proofIDBody
+      proofOfID: proofIDBody,
+      services,
     } = req.body;
 
     // Destructure files from req.files if available
@@ -108,7 +109,8 @@ const addDoctor = async (req, res) => {
       medicalLicense: medicalLicenseUrl,
       diplomaCertificates: diplomaCertificatesUrl,
       proofOfID: proofOfIDUrl,
-      balance: balance || 0
+      balance: balance || 0,
+      services: services || [] // Saving services as part of doctor data
     };
 
     // Save new doctor to the database

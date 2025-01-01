@@ -123,12 +123,12 @@
                   <div data-i18n="Analytics">Appointments</div>
                 </a>
               </li>
-              <li class="menu-item">
+              <!-- <li class="menu-item">
                 <a href="appointmentsactions.html" class="menu-link">
                   <i class="menu-icon tf-icons bx bx-table"></i>
                   <div data-i18n="Analytics">Appointments Actions</div>
                 </a>
-              </li>
+              </li> -->
             
               <li class="menu-item">
                 <a href="javascript:void(0);" class="menu-link menu-toggle">
@@ -332,7 +332,9 @@
                   </table>
                 </div>
               </div>
-              
+              <div id="stripe-key"
+            data-key="pk_test_51QN8mWG2ozhLuxUAf8fdoD3MqAQnfNsZZoZdbc1fRx1fHUWRbpLjbGfdeR5VEAGOVCAUqH9hrlaJPQ5lEpAmrt7q00kPKajlEa"
+            style="display: none;"></div>
               
               <!--/ Bootstrap Dark Table -->
 
@@ -574,61 +576,104 @@
     <!-- Core JS -->
 
 
+    <script src="https://js.stripe.com/v3/"></script>
     <script>
+      async function loadStripe(publicKey) {
+        if (!window.Stripe) {
+          throw new Error("Stripe.js not loaded");
+        }
+        return window.Stripe(publicKey);
+      }
+    
       const sendNotice = async (title, content, buttonId) => {
         try {
           const userId = localStorage.getItem('userId');
           if (!userId) {
             console.error('User ID not found in localStorage');
             alert('User not logged in.');
-            return;
+            return false;
           }
-
+    
           // Change the button text to "Sending..."
           const button = document.getElementById(buttonId);
           if (button) {
             button.innerHTML = 'Sending...';
             button.disabled = true; // Optionally disable the button while sending
           }
-
+    
           // Send the notice
           const response = await fetch('https://morgphealth.onrender.com/api/notice/notices', {
             method: 'POST',
             headers: {
-              'Content-Type': 'application/json'
+              'Content-Type': 'application/json',
             },
             body: JSON.stringify({
-              userId,  // Adding userId to the body
+              userId, // Adding userId to the body
               title,
-              content
-            })
+              content,
+            }),
           });
-
+    
           const result = await response.json();
           if (result) {
-            alert('Notice sent successfully!');
+            // alert('Notice sent successfully!');
+            return true; // Indicate success for continuing to Stripe checkout
           } else {
-            // alert('Failed to send notice.');
+            console.error('Failed to send notice');
+            return false;
           }
         } catch (error) {
           console.error('Error sending notice:', error);
           alert('Error sending notice');
+          return false;
         } finally {
           // Reset the button text back to original after request completion
           const button = document.getElementById(buttonId);
           if (button) {
-            button.innerHTML = 'Request Diagnosis';  // Reset to the original text (you can customize this text)
+            button.innerHTML = 'Request Diagnosis'; // Reset to the original text
             button.disabled = false; // Enable the button again
           }
         }
       };
-
+    
+      const initiateStripePayment = async (appointment) => {
+        // Assuming you already have Stripe integration set up
+        const stripePublicKey = document.getElementById('stripe-key').getAttribute('data-key');
+        const stripe = await loadStripe(stripePublicKey);
+        const fee = 1
+        try {
+          const response = await fetch('https://morgphealth.onrender.com/create-intentss', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              amount: parseInt(fee) * 100,
+              docName: appointment.docData.name,
+              docEmail: appointment.docData.email,
+              userName: appointment.userData.name,
+              userEmail: appointment.userData.email,
+              appointmentId: appointment._id,  // Use specific appointment's ID
+               
+            }),
+          });
+    
+          const session = await response.json();
+          if (session.id) {
+            const result = await stripe.redirectToCheckout({
+              sessionId: session.id,
+            });
+    
+            if (result.error) {
+              console.error('Stripe Checkout Error:', result.error.message);
+            }
+          } else {
+            console.error('Session ID not received:', session);
+          }
+        } catch (error) {
+          console.error('Payment initialization failed:', error);
+        }
+      };
+    
       document.addEventListener('DOMContentLoaded', () => {
-        // Function to send the notice to the server
-
-
-
-
         const fetchAppointments = async () => {
           try {
             const userId = localStorage.getItem('userId');
@@ -636,25 +681,15 @@
               console.error('User ID not found in localStorage');
               return [];
             }
-
+    
             const response = await fetch(`https://morgphealth.onrender.com/api/user/appointments/${userId}`);
             const result = await response.json();
-
-            console.log('API response:', result);
-
+    
             if (result.success && Array.isArray(result.appointments)) {
-              // Log each appointment's isCompleted value to verify the condition
-              result.appointments.forEach(appointment => {
-                console.log(`Appointment isCompleted: ${appointment.isCompleted}`);
-              });
-
-              // Filter completed appointments based on isCompleted boolean
               const completedAppointments = result.appointments.filter(appointment => appointment.isCompleted);
-
-              console.log('Filtered completed appointments:', completedAppointments);
               return completedAppointments;
             } else {
-              console.error('No appointments found or error in fetching appointments.');
+              console.error('No completed appointments found.');
               return [];
             }
           } catch (error) {
@@ -662,20 +697,27 @@
             return [];
           }
         };
-
+    
+        // Store appointments when fetched
+        let appointments = []; // Global variable to store appointments
+        fetchAppointments().then(fetchedAppointments => {
+          appointments = fetchedAppointments; // Storing the fetched appointments here
+          displayAppointments(appointments); // Then display the fetched appointments
+        });
+    
         const displayAppointments = (appointments) => {
           const appointmentTable = document.getElementById('completedAppointments');
           appointmentTable.innerHTML = '';
-
+    
           if (appointments.length === 0) {
             appointmentTable.innerHTML = '<tr><td colspan="5">No completed appointments found.</td></tr>';
           }
-
+    
           appointments.forEach(appointment => {
             const row = document.createElement('tr');
             let userName = 'Unknown User';
             let userAvatars = '';
-
+    
             if (appointment.userData && appointment.userData.name) {
               userName = appointment.userData.name;
               userAvatars = `
@@ -684,42 +726,46 @@
                 </li>
               `;
             }
-
+    
             row.innerHTML = `
               <td><strong>${appointment.docData.name}</strong></td>
-              
               <td>
                 <ul class="list-unstyled users-list m-0 avatar-group d-flex align-items-center">
                   ${userAvatars}
                 </ul>
               </td>
               <td><span class="badge bg-label-success me-1">Completed</span></td>
-              <td>
-  
-  <button 
-    id="requestPrescriptionBtn"
-    class="dropdown-item btn-rounded btn-primary" 
-    onclick="sendNotice('prescription request', 'I need updated prescription details', 'requestPrescriptionBtn')">
-    Request Prescription
-  </button>
-</td>
-
-
-</td>
-
+              <td>        
+                <button 
+                  id="requestDiagnosisBtn"
+                  class="dropdown-item btn-rounded btn-primary" 
+                  onclick="handleDiagnosisRequest('${appointment._id}')">
+                  Request Prescription
+                </button>
               </td>
             `;
             appointmentTable.appendChild(row);
           });
         };
-
-
-
-
-
-        fetchAppointments().then(appointments => {
-          displayAppointments(appointments);
-        });
+    
+        // Handle diagnosis request and payment initiation
+        window.handleDiagnosisRequest = async (appointmentId) => {
+          // Fetch the appointment details based on appointmentId
+          const appointment = appointments.find(app => app._id === appointmentId);
+    
+          if (appointment) {
+            const title = 'prescription request';
+            const content = `I need updated prescription for appointment with ${appointment.docData.name}`;
+            const buttonId = 'requestDiagnosisBtn';
+    
+            const noticeSuccess = await sendNotice(title, content, buttonId);
+            if (noticeSuccess) {
+              initiateStripePayment(appointment); // Passing the specific appointment to the payment function
+            }
+          } else {
+            console.error('Appointment not found');
+          }
+        };
       });
     </script>
     

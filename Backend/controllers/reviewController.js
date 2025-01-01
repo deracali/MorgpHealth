@@ -23,6 +23,7 @@ const ReviewController = async (req, res) => {
       age,
       gender,
       region,
+      services,
       universityName,
       universityCountry,
       medicalCouncilName,
@@ -103,7 +104,8 @@ const ReviewController = async (req, res) => {
       medicalLicense: medicalLicenseUrl,
       diplomaCertificates: diplomaCertificatesUrl,
       proofOfID: proofOfIDUrl,
-      balance: balance || 0
+      balance: balance || 0,
+      services: services || [] // Saving services as part of doctor data
     };
 
     // Save new doctor to the database

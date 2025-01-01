@@ -202,26 +202,35 @@ const updateProfileMobile = async (req, res) => {
 };
 
 
- const bookAppointment = async (req, res) => {
+const bookAppointment = async (req, res) => {
     try {
-        const { userId, docId, slotDate, slotTime, concern,description,type,amount } = req.body;
+        console.log("Request Body:", req.body); // Log incoming request payload
+
+        const { userId, docId, slotDate, slotTime, concern, description, type, amount } = req.body;
 
         // Fetch doctor data, excluding password field
+        console.log("Fetching doctor data for ID:", docId); // Log doctor ID
         const docData = await doctorModel.findById(docId).select('-password');
         if (!docData) {
+            console.error("Doctor not found for ID:", docId);
             return res.json({ success: false, message: "Doctor not found" });
         }
 
         if (!docData.available) {
+            console.error("Doctor not available for ID:", docId);
             return res.json({ success: false, message: "Doctor not available" });
         }
 
+        console.log("Doctor data fetched:", docData);
+
         // Ensure slots_booked exists in doctor data
         let slots_booked = docData.slots_booked || {};
+        console.log("Initial slots_booked:", slots_booked);
 
         // Check if the specific date is already booked
         if (slots_booked[slotDate]) {
             if (slots_booked[slotDate].includes(slotTime)) {
+                console.error("Slot already booked:", { slotDate, slotTime });
                 return res.json({ success: false, message: "Slot not available" });
             } else {
                 slots_booked[slotDate].push(slotTime); // Add slot to the existing array
@@ -230,11 +239,17 @@ const updateProfileMobile = async (req, res) => {
             slots_booked[slotDate] = [slotTime]; // Initialize the array with the new slot
         }
 
+        console.log("Updated slots_booked:", slots_booked);
+
         // Fetch user data, excluding password field
+        console.log("Fetching user data for ID:", userId); // Log user ID
         const userData = await userModel.findById(userId).select('-password');
         if (!userData) {
+            console.error("User not found for ID:", userId);
             return res.json({ success: false, message: "User not found" });
         }
+
+        console.log("User data fetched:", userData);
 
         // Remove slots_booked from docData as it's not needed in the appointment
         delete docData.slots_booked;
@@ -251,17 +266,23 @@ const updateProfileMobile = async (req, res) => {
             concern,
             description,
             type,
-            data: Date.now() // Use Date.now() for timestamp
+            data: Date.now(), // Use Date.now() for timestamp
         };
+
+        console.log("Prepared appointment data:", appointmentData);
 
         // Create a new appointment
         const newAppointment = new appointmentModel(appointmentData);
+        console.log("Saving new appointment...");
 
         // Save new appointment to the database
         await newAppointment.save();
+        console.log("Appointment saved successfully");
 
         // Update the doctor's available slots in the database
+        console.log("Updating doctor's slots_booked in the database");
         await doctorModel.findByIdAndUpdate(docId, { slots_booked });
+        console.log("Doctor's slots updated successfully");
 
         // Respond with success
         res.json({ success: true, message: "Appointment Booked", appointment: appointmentData });
@@ -271,6 +292,7 @@ const updateProfileMobile = async (req, res) => {
         res.status(500).json({ success: false, message: "Something went wrong. Please try again later." });
     }
 };
+
 
 
 

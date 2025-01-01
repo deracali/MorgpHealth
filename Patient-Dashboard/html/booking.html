@@ -123,12 +123,12 @@
                   <div data-i18n="Analytics">Appointments</div>
                 </a>
               </li>
-              <li class="menu-item">
+              <!-- <li class="menu-item">
                 <a href="appointmentsactions.html" class="menu-link">
                   <i class="menu-icon tf-icons bx bx-table"></i>
                   <div data-i18n="Analytics">Appointments Actions</div>
                 </a>
-              </li>
+              </li> -->
             
               <li class="menu-item">
                 <a href="javascript:void(0);" class="menu-link menu-toggle">
@@ -302,16 +302,31 @@
               <div class="container my-4 text-center">
                 <h1 class="h4 mb-2">Top Doctors to Book</h1>
                 <p class="text-muted small mb-4">Browse through our list of trusted doctors.</p>
-              
+                
+                <!-- Filter Options -->
+                <div class="mb-3 d-flex justify-content-center">
+                  <select id="specialty-filter" class="form-select mr-2" aria-label="Filter by Specialty" style="width: 250px;">
+                    <option value="">Filter by Specialty</option>
+                    <!-- Specialties options will be dynamically generated -->
+                  </select>
+                
+                  <select id="service-filter" class="form-select ml-2" aria-label="Filter by Service" style="width: 250px;">
+                    <option value="">Filter by Service</option>
+                    <!-- Services options will be dynamically generated -->
+                  </select>
+                </div>
+                
+                
                 <!-- Doctor Grid -->
                 <div id="doctor-grid" class="row"></div>
-              
+                
                 <!-- Login Prompt -->
                 <p id="login-prompt" class="text-danger mt-3 d-none small">Login To See Doctors</p>
-              
+                
                 <!-- More Button -->
                 <button id="more-button" class="btn btn-outline-primary btn-sm mt-3">More</button>
               </div>
+              
               
               
               
@@ -353,13 +368,17 @@
 
    
 <script>
-    const apiEndpoint = 'https://morgphealth.onrender.com/api/doctor/list'; // Replace with your backend URL
-const userData = localStorage.getItem('userId'); // Replace with actual authentication logic
+  const apiEndpoint = 'https://morgphealth.onrender.com/api/doctor/list'; 
+const userData = localStorage.getItem('userId'); 
 
 document.addEventListener('DOMContentLoaded', () => {
   const doctorGrid = document.getElementById('doctor-grid');
   const loginPrompt = document.getElementById('login-prompt');
   const moreButton = document.getElementById('more-button');
+  const specialtyFilter = document.getElementById('specialty-filter');
+  const serviceFilter = document.getElementById('service-filter');
+
+  let allDoctors = [];  // Store the complete list of doctors
 
   if (!userData) {
     loginPrompt.classList.remove('d-none');
@@ -371,7 +390,9 @@ document.addEventListener('DOMContentLoaded', () => {
     .then((response) => response.json())
     .then((data) => {
       if (data.success) {
-        renderDoctors(data.doctors);
+        allDoctors = data.doctors; // Save all doctors to filter locally
+        populateFilters(allDoctors); // Populate filter dropdowns
+        renderDoctors(allDoctors);  // Initially render all doctors
       } else {
         console.error(data.message);
       }
@@ -380,9 +401,47 @@ document.addEventListener('DOMContentLoaded', () => {
       console.error('Error fetching doctors:', error);
     });
 
+  function populateFilters(doctors) {
+    // Populate specialty filter options
+    const specialties = [...new Set(doctors.map((doctor) => doctor.speciality))]; // Get unique specialties
+    specialties.forEach((specialty) => {
+      specialtyFilter.innerHTML += `<option value="${specialty}">${specialty}</option>`;
+    });
+
+    // Populate service filter options
+    const services = [...new Set(doctors.flatMap((doctor) => doctor.services.map(service => service.name)))]; // Get unique services
+    services.forEach((service) => {
+      serviceFilter.innerHTML += `<option value="${service}">${service}</option>`;
+    });
+  }
+
+  // Listen to filter changes
+  specialtyFilter.addEventListener('change', filterDoctors);
+  serviceFilter.addEventListener('change', filterDoctors);
+
+  // Filter doctors based on selected filters
+  function filterDoctors() {
+    const specialty = specialtyFilter.value;
+    const service = serviceFilter.value;
+
+    let filteredDoctors = allDoctors;
+
+    if (specialty) {
+      filteredDoctors = filteredDoctors.filter((doctor) => doctor.speciality === specialty);
+    }
+
+    if (service) {
+      filteredDoctors = filteredDoctors.filter((doctor) =>
+        doctor.services.some((svc) => svc.name === service)
+      );
+    }
+
+    renderDoctors(filteredDoctors);
+  }
+
+  // Render doctors to the page
   function renderDoctors(doctors) {
-    // Show only the first 10 doctors
-    const topDoctors = doctors.slice(0, 10);
+    const topDoctors = doctors.slice(0, 10); // Show only the first 10 doctors
 
     doctorGrid.innerHTML = topDoctors
       .map(
@@ -392,18 +451,14 @@ document.addEventListener('DOMContentLoaded', () => {
               <img class="card-img-top" src="${doctor.image}" alt="${doctor.name}">
               <div class="card-body">
                 <div class="d-flex align-items-center mb-2">
-                  <span class="available-indicator ${
-                    doctor.available ? 'available' : 'not-available'
-                  }"></span>
+                  <span class="available-indicator ${doctor.available ? 'available' : 'not-available'}"></span>
                   <span class="ml-2 text-${doctor.available ? 'success' : 'muted'}">
                     ${doctor.available ? 'Available' : 'Not Available'}
                   </span>
                 </div>
                 <h5 class="card-title">${doctor.name}</h5>
                 <p class="card-text text-muted">${doctor.speciality}</p>
-                <button class="btn btn-primary btn-block" onclick="bookAppointment('${
-                  doctor._id
-                }')">Book Appointment</button>
+                <button class="btn btn-primary btn-block" onclick="bookAppointment('${doctor._id}')">Book Appointment</button>
               </div>
             </div>
           </div>
@@ -411,14 +466,12 @@ document.addEventListener('DOMContentLoaded', () => {
       )
       .join('');
   }
+
+  function bookAppointment(doctorId) {
+    window.location.href = `bookingdetails.html?doctorId=${doctorId}`;
+    window.scrollTo(0, 0);
+  }
 });
-
-function bookAppointment(doctorId) {
-  // Navigate to the appointment booking page
-  window.location.href = `bookingdetails.html?doctorId=${doctorId}`;
-
-  window.scrollTo(0, 0);
-}
 
 </script>
 

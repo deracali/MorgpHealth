@@ -4,6 +4,12 @@ const ReviewdoctorSchema = new mongoose.Schema({
     name: { type: String }, // Optional field
     email: { type: String, unique: true, required: true }, // Required
     password: { type: String, required: true }, // Required
+    services: [
+        {
+          name: { type: String, required: true }, // Name of the service (e.g., "Headache", "Malaria")
+          fee: { type: Number, required: true }, // Fee for the service
+        },
+      ],
     image: { 
         type: String,
         default: 'https://example.com/placeholder-image.jpg' // Placeholder image

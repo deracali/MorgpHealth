@@ -30,6 +30,21 @@ export default function AddDoctor() {
   const [medicalCouncilCountry, setMedicalCouncilCountry] = useState('');
   const [graduationYear, setGraduationYear] = useState('');
   const [region, setRegion] = useState('');
+  const [services, setServices] = useState([
+    { name: '', fee: '' }, // Initial empty service
+  ]);
+
+  const addService = () => {
+    setServices([...services, { name: '', fee: '' }]);
+  };
+
+  
+  const handleServiceChange = (index, field, value) => {
+    const updatedServices = [...services];
+    updatedServices[index][field] = value;
+    setServices(updatedServices);
+  };
+  
 
   const backendUrl = import.meta.env.VITE_BACKEND_URL;
   const utoken = localStorage.getItem('utoken');
@@ -69,6 +84,7 @@ const navigate = useNavigate()
     formData.append('medicalCouncilCountry', medicalCouncilCountry);
     formData.append('graduationYear', graduationYear);
     formData.append('region', region); // Add region to form data
+    formData.append('services', JSON.stringify(services));
 
     try {
       const { data } = await axios.post(`${backendUrl}api/addDoc/reviewDoc`, formData, {
@@ -115,6 +131,7 @@ const navigate = useNavigate()
     setMedicalCouncilCountry('');
     setGraduationYear('');
     setRegion(''); // Reset region
+    setServices([{ name: '', fee: '' }]);
   };
 
   return (
@@ -180,6 +197,29 @@ const navigate = useNavigate()
             <InputField label="Region" value={region} onChange={setRegion}  placeholder='Europe' required /> {/* Region Field */}
           </div>
         </div>
+        <div>
+  <p>Services</p>
+  {services.map((service, index) => (
+    <div key={index} className="flex gap-4 mb-4">
+      <InputField 
+        placeholder="Service Name" 
+        label={`Service ${index + 1} Name`} 
+        value={service.name} 
+        onChange={(e) => handleServiceChange(index, 'name', e.target.value)} 
+        required 
+      />
+      <InputField 
+        placeholder="Fee" 
+        label={`Service ${index + 1} Fee`} 
+        value={service.fee} 
+        onChange={(e) => handleServiceChange(index, 'fee', e.target.value)} 
+        type="number" 
+        required 
+      />
+    </div>
+  ))}
+  <button type="button" onClick={addService}>Add Another Service</button>
+</div>
 
         <div className='flex-1 flex flex-col gap-1'>
           <p>About Doctor</p>

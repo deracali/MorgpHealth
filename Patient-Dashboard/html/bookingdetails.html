@@ -176,12 +176,12 @@
                   <div data-i18n="Analytics">Appointments</div>
                 </a>
               </li>
-              <li class="menu-item">
+              <!-- <li class="menu-item">
                 <a href="appointmentsactions.html" class="menu-link">
                   <i class="menu-icon tf-icons bx bx-table"></i>
                   <div data-i18n="Analytics">Appointments Actions</div>
                 </a>
-              </li>
+              </li> -->
             
               <li class="menu-item">
                 <a href="javascript:void(0);" class="menu-link menu-toggle">
@@ -483,7 +483,7 @@
           const getUserData = () => {
               return fetch(`${apiBase}/user/get-profileId/${userId}`)
                   .then((res) => res.json())
-                  .then((data) => data.userData)
+                  .then((data) => data.user)
                   .catch((err) => console.error("Failed to fetch user data", err));
           };
   

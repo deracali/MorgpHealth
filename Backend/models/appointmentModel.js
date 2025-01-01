@@ -32,10 +32,6 @@ const appointmentSchema = new mongoose.Schema({
   diagnosis: {
     type: String,
   },
-  service: {
-    name: { type: String, required: true }, // Name of the service (e.g., "Headache")
-    fee: { type: Number, required: true }, // Fee for the selected service
-  },
   age: { type: String, required: false },
   sex: { type: String, required: false },
   meetingStart: { type: Date, required: false },      // Start time of the meeting

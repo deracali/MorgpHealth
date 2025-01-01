@@ -108,13 +108,13 @@
                 <div data-i18n="Analytics">Appointments</div>
               </a>
             </li>
-            <li class="menu-item">
+            <!-- <li class="menu-item">
               <a href="appointmentsactions.html" class="menu-link">
                 <i class="menu-icon tf-icons bx bx-table"></i>
                 <div data-i18n="Analytics">Appointments Actions</div>
               </a>
             </li>
-          
+           -->
             <li class="menu-item">
               <a href="javascript:void(0);" class="menu-link menu-toggle">
                 <i class="menu-icon tf-icons bx bx-dock-top"></i>
@@ -298,9 +298,9 @@
                         <thead>
                           <tr>
                             <th>Doctor Name</th>
-                            <th>SlotDate</th>
-                            <th>SlotTime</th>
                             <th>Status</th>
+                            <th>SlotDate</th>
+                            <th>Appointment</th>
                             <th>Actions</th>
                           </tr>
                         </thead>
@@ -467,7 +467,7 @@
                 <td><i class="fab fa-angular fa-lg text-danger me-3"></i> <strong>${appointment.docData.name}</strong></td>
                 <td><span class="badge bg-label-info me-1">${appointment.status}</span></td>
                 <td><span class="badge bg-label-info me-1">${appointment.slotDate}</span></td>
-                <td><span class="badge bg-label-info me-1">${appointment.slotTime}</span></td>
+                <td><span class="badge bg-label-info me-1">${appointment.type}</span></td>
                 <td>
                   <button 
                     class="btn btn-primary join-btn" 

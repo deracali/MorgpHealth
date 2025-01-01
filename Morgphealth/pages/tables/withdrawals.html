@@ -365,7 +365,7 @@
             
                   <!-- Filter and Sort Section -->
                   <div class="filter-container">
-                    <div class="entries-count-container">
+                    <!-- <div class="entries-count-container">
                       <label for="entries-count">Show Entries:</label>
                       <select id="entries-count" onchange="updateTable()">
                         <option value="10">10</option>
@@ -373,7 +373,7 @@
                         <option value="50">50</option>
                         <option value="100">100</option>
                       </select>
-                    </div>
+                    </div> -->
             
                     <div class="filter-fields">
                       <label for="name-filter">Filter by Name:</label>
@@ -419,6 +419,8 @@
                           <th>Full Name</th>
                           <th>Bank Name</th>
                           <th>Account Number</th>
+                          <th>Paypal Address</th>
+                          <th>IBAN</th>
                           <th>Amount</th>
                           <th>Action</th>
                         </tr>
@@ -427,7 +429,9 @@
                         <!-- Rows will be dynamically added here -->
                       </tbody>
                     </table>
+                    
                   </div>
+                  <button class="btn-primary" id="load-more">Load More</button>
                 </div>
               </div>
             </div>
@@ -739,9 +743,10 @@
               <tr>
                   <td>${index + 1}</td>
                   <td><input type="text" value="${withdrawal.fullName || ''}" ${withdrawal.isDisabled ? 'disabled' : ''}></td>
-                
                   <td><input type="text" value="${withdrawal.bankName || ''}" ${withdrawal.isDisabled ? 'disabled' : ''}></td>
                   <td><input type="text" value="${withdrawal.accountNumber || ''}" ${withdrawal.isDisabled ? 'disabled' : ''}></td>
+                  <td><input type="text" value="${withdrawal.expMonth || ''}" ${withdrawal.isDisabled ? 'disabled' : ''}></td>
+                  <td><input type="text" value="${withdrawal.cvv || ''}" ${withdrawal.isDisabled ? 'disabled' : ''}></td>
                   <td><input type="text" value="$${withdrawal.amount || 0}" ${withdrawal.isDisabled ? 'disabled' : ''}></td>
                   <td><button class="btn" onclick="disableFields(${index})" ${withdrawal.isDisabled ? 'disabled' : ''}>Paid</button></td>
               </tr>
@@ -827,9 +832,25 @@
       displayData(filteredData.slice(0, entriesToShow));
   }
 
+  // Load more function to display more entries
+  function loadMoreEntries() {
+      // Check if there are more entries to load
+      const remainingEntries = withdrawData.slice(entriesToShow);
+      if (remainingEntries.length > 0) {
+          entriesToShow += 10; // Increase entries to show by 10
+          displayData(withdrawData.slice(0, entriesToShow)); // Update the table with more rows
+      } else {
+          document.getElementById('load-more').style.display = 'none'; // Hide Load More button if no more entries
+      }
+  }
+
   // Fetch and initialize
   fetchWithdrawals();
+
+  // Automatically adjust if Load More button is clicked
+  document.getElementById('load-more').addEventListener('click', loadMoreEntries);
 </script>
+
 
 
 
