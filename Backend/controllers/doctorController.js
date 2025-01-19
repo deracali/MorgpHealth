@@ -258,7 +258,7 @@ const doctorProfile = async (req, res) => {
 const updateDoctorProfile = async (req, res) => {
   try {
     const { 
-      fees, address, available, phone, docAddress, balance, name, email, gender, region, speciality, services 
+      fees, address, available, phone, docAddress, balance, name, email, gender, region, speciality, services, paymentMethods 
     } = req.body;
     const { docId } = req.params;
 
@@ -291,31 +291,36 @@ const updateDoctorProfile = async (req, res) => {
 
     // Handle services update if provided
     if (services !== undefined && Array.isArray(services)) {
-      // Loop through the services and add/update each one
       services.forEach(service => {
         if (service._id) {
-          // Update existing service
           updateFields.$set = {
             'services.$[elem].name': service.name,
             'services.$[elem].fee': service.fee,
+            'services.$[elem].time': service.time,
           };
-          
-          // Use arrayFilters to identify the service by its _id
           updateFields.arrayFilters = [{ 'elem._id': service._id }];
         } else {
-          // Add new service if _id is not provided
           updateFields.$addToSet = {
-            services: { $each: [service] }, // Adds only unique services
+            services: { $each: [{ 
+              name: service.name,
+              fee: service.fee,
+              time: service.time,
+            }] },
           };
         }
       });
+    }
+
+    // Handle paymentMethods update if provided
+    if (paymentMethods !== undefined) {
+      updateFields.paymentMethods = paymentMethods;
     }
 
     // Perform the update using the docId
     const updatedDoctor = await doctorModel.findByIdAndUpdate(
       docId,
       updateFields,
-      { new: true, arrayFilters: updateFields.arrayFilters || [] } // Include arrayFilters if used
+      { new: true, arrayFilters: updateFields.arrayFilters || [] }
     );
 
     // Check if the doctor was found and updated
@@ -334,6 +339,7 @@ const updateDoctorProfile = async (req, res) => {
     res.status(500).json({ success: false, message: error.message });
   }
 };
+
 
 
 const deleteService = async (req, res) => {

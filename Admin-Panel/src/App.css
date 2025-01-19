@@ -1,25 +1,511 @@
-.chart-container {
-    width: 100%;  /* Set width to 100% of the parent */
-    height: 400px; /* Fixed height */
-    margin: 0 auto; /* Center the chart */
-    position: relative; /* Ensure proper positioning */
-    overflow: hidden; /* Prevent overflow */
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+
+*,*::after,*::before{
+    padding: 0;
+    margin: 0;
+    box-sizing: border-box;
+    font-family: "Poppins", sans-serif;
+}
+
+a{
+    text-decoration: none;
+    color: #000;
+}
+
+.container{
+    background: #f7f5f5;
+    overflow: auto;
+    height: 100vh;
+}
+
+.row{
+    margin: 0 auto;
+}
+
+.wrapper{
+    position: relative;
+}
+
+.preloader__container{
+    width: 100vw;
+    height: 100vh;
+    background: #2c3dde;
+}
+
+.logo{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    color: #fff;
+    font-size: 22px;
+}
+
+.tradeproLogo{
+    text-align: center;
+    margin-bottom: 1rem;
+    color: #6363a1;
+}
+
+.top{
+    display: flex;
+    justify-content: space-around;
+    padding-top:20px;
+    height: 12rem;
+    background: #2f4497;
+    color: #fff;
+    width: 100vw;
+    gap: 10px;
+    /* transform: translateX(-15%); */
 }
 
 
-.chart-container h2 {
-    text-align: center; /* Center the title */
-    margin-bottom: 10px; /* Add some space below the title */
+.box{
+    width: 20rem;
+    height: 12rem;
+    background: #fff;
+    margin: 0 auto;
+    transform: translateY(-50%);
+    border-radius: 10px;
 }
 
-.chart{
+.bal{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 2px 10px;
+    border-bottom: 1px solid gray;
+}
+
+.total-bal-text{
+    margin-bottom: 2rem;
+}
+
+.total-bal-text h2{
+    font-size: 1.2rem;
+}
+
+.total-bal-text p{
+    font-size: 2rem;
+}
+
+.icon-box{
+    width: 3rem;
+    height: 3rem;
+    margin-top: 1rem;
+    border-radius: 5px;
+    margin: 0.5rem auto;
+}
+
+.trans-btn{
+    text-align: center;
+}
+
+.small-box-container{
     display: grid;
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns: repeat(2, 10rem);
+    grid-row-gap: 1rem;
+    grid-column-gap: 1rem;
+    place-content: center;
+    transform: translateY(-31%);
 }
 
-@media (max-width:500px){
-    .chart{
-        display: grid;
-        grid-template-columns: repeat(1,1fr);
-    }
+.small-box{
+    width: 9rem;
+    height: 6rem;
+    background: #fff;
+    border-radius: 10px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
 }
+
+h3{
+    margin-bottom: 0.5rem;
+    color: #aaa2a2;
+    font-size: 1rem;
+}
+
+.small-box p{
+    font-size: 26px;
+}
+
+nav{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.nav-list-container{
+    display: flex;
+    list-style: none;
+    position: fixed;
+    background: #fff;
+    bottom: 0;
+    margin: 0 auto;
+    gap: 2rem;
+    padding: 0.6rem 2rem;
+    /* transform: translateX(138%); */
+}
+
+.nav-list-container li{
+    font-size: 0.6rem;
+}
+
+.cta-btns{
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+    margin-top:0.4rem;
+}
+
+
+
+.transactions__container{
+    transform: translateY(-10%);
+}
+
+.round__tik{
+    width: 4rem;
+    height: 4rem;
+    border-radius: 50%;
+    background: rgb(97, 236, 97);
+    margin: 2rem 0;
+}
+
+.success__tik{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.status{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.6rem;
+    border-bottom: 1px solid #dbd4d4;
+}
+
+.status:last-child{
+    border-bottom: none;
+}
+
+.status p{
+    margin-bottom: 1rem;
+}
+
+/* cards */
+
+.top-nav{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 3rem;
+    background: #fff;
+    padding: 0.8rem 0.7rem;
+}
+
+.cards__container{
+    display: flex;
+    align-items: center;
+    max-width: 372px;
+    overflow: hidden;
+    overflow-x: auto;
+    margin: 0 auto;
+}
+
+.card{
+    padding: 1rem;
+    margin: 0.8rem;
+    border-radius: 1rem;
+    position: relative;
+}
+
+.card-details-container{
+    position: relative;
+}
+
+.edit__box{
+    background: #fff;
+    border-radius: 1rem;
+    width: 6rem;
+    padding: 1rem;
+    height: 5rem;
+    position: absolute;
+    top: 33%;
+    left: 59%;
+}
+
+.show{
+    display: block;
+}
+
+.edit{
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom:0.2rem;
+}
+
+
+.card-details-container{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 15rem;
+}
+
+.card-name, .card-number, .card-issuer, .card-details, .card-number-wrap, .card-issuer-wrap{
+    margin-bottom: 0.3rem;
+    display: inline;
+    color: #ece7e78f;
+}
+
+.cards__heading{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 0.8rem;
+    width: 20rem;
+    margin: 0 auto;
+}
+
+
+.transaction__history-container{
+    padding: 1rem;
+    background: #fff;
+    border-radius: 0.6rem;
+    max-width: 22rem;
+    margin: 0.8rem auto
+}
+
+
+.transaction__text-box{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.transaction__text-box div p{
+    margin-top: 0.4rem;
+}
+
+
+.theme-text, .profile-text{
+    margin-top: 1rem;
+    color: #818888;
+}
+
+.theme__text-wrap{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem;
+    background: #fff;
+    border-radius: 0.7rem;
+    margin: 0.8rem 0;
+}
+
+.profile__edit{
+    padding: 1rem 1rem 0 1rem;
+    background: #fff;
+    border-radius: 1rem;
+    margin-top: 1rem;
+}
+
+.profile__text-wrap, .div{
+    display: flex;
+    justify-content: space-between;
+    /* align-items: center; */
+}
+
+.profile__text-wrap{
+    margin-bottom: 1.2rem;
+    border-bottom: 1px solid #ccc4c4;
+}
+
+.profile__text-wrap:last-child{
+    border-bottom: none;
+    margin-bottom: 0.4rem;
+}
+
+
+.faq__section{
+    padding: 2rem 1rem;
+  }
+
+  .heading__secondary{
+    font-size: 1.4rem;
+    margin-bottom: 1rem;
+  }
+  
+  .faq__header--text{
+    max-width: 45rem;
+  }
+  
+  .faq__img{
+    padding:0 6rem 0 0;
+    width:50%;
+  }
+
+  .flex{
+    display:flex;
+    align-items: center;
+  }
+  
+  /* .questions{
+    width:50%;
+  } */
+  
+  .question__header{
+    justify-content:space-between;
+    margin-bottom: 1rem;
+  }
+  
+  .question__container:not(:last-child){
+    padding-bottom: 1.5rem;
+    border-bottom: 0.1rem solid #D9DBE9;
+    margin-bottom: 3rem;
+  }
+
+  .hide{
+    display:none;
+  }
+
+  .form__container{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    height: 55vh;
+    justify-content: center;
+  }
+
+  .form-label{
+    margin-bottom: 1rem;
+  }
+
+  .change__input{
+    border-radius: 0.4rem;
+    margin-bottom: 1rem;
+    padding: 0.6rem;
+    width: 70%;
+    outline-color: green;
+    border: none;
+    box-shadow: 0px 3px 1px -3px;
+  }
+
+  .form-btn{
+    width: 70%;
+    border: none;
+    padding: 0.8rem;
+    background: green;
+    color: #fff;
+    border-radius: 0.5rem;
+  }
+
+  .oauth__container p{
+    text-align: center;
+  }
+
+  .create__acc-text{
+    margin: 2rem 0;
+    text-align: center;
+  }
+
+  .social__media-container{
+    display: flex;
+    justify-content: space-around;
+    width: 56%;
+    margin: 0 auto;
+  }
+
+.social__box{
+    background:#fff;
+    width: 3rem;
+    height: 3rem;
+    border-radius: 0.4rem;
+    margin: 1rem 0;
+}
+
+.popup__container{
+    width: 20rem;
+    height: 35rem;
+    background: #fff;
+    margin: 0 auto;
+    transform: translateY(0.5rem);
+}
+
+.popup__overlay{
+    background: rgb(12 12 12 / 0.1);
+    width: 100vw;
+    height: 100vh;
+    position: fixed;
+    display: none;
+    position: absolute;
+    top: 100%;
+}
+
+.close{
+    color: #fff;
+    float: right;
+    margin: 1rem;
+}
+
+.popup__overlay-show{
+    top: 0;
+    /* transform: translateY(-68rem); */
+    transition: 0.7s;
+    background: rgb(12 12 12 / 0.1);
+    width: 100vw;
+    height: 100vh;
+    position: fixed;
+    display: block;
+}
+
+.popup__header{
+    padding: 1rem;
+    border-bottom: 1px solid #b0a8a8;
+    text-align: center;
+}
+
+.amount__input{
+    border: none;
+    border-bottom: 1px solid gray;
+    padding: 0.4rem;
+    width: 90%;
+    margin-bottom: 1rem;
+    outline-color: transparent;
+}
+
+.exchange__form{
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.exchange__box{
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+select{
+    padding: 0.4rem;
+    width: 9rem;
+    border: none;
+    outline-color: transparent;
+    border-bottom: 1px solid #ccbcbc;
+}
+
+/* responsiveness */
+
+/* @media only screen and (min-width:700px){
+    .top{
+        transform: translateX(-186px);
+    }
+} */

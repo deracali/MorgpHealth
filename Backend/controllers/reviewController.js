@@ -2,6 +2,7 @@ import fs from 'fs';
 import cloudinary from 'cloudinary'; 
 import bcrypt from 'bcrypt';
 import ReviewdocModel from "../models/ReviewSchema.js";
+import hospital from "../models/hospitalsModel.js"
 
 const { v2: cloudinaryV2 } = cloudinary; // Ensure you're using the correct v2 instance
 
@@ -33,7 +34,9 @@ const ReviewController = async (req, res) => {
       image: imageBody,
       medicalLicense: licenseBody,
       diplomaCertificates: diplomaBody,
-      proofOfID: proofIDBody
+      proofOfID: proofIDBody,
+      paymentMethods, // Added paymentMethods
+      hospitalId // Added hospitalId
     } = req.body;
 
     // Destructure files from req.files if available
@@ -78,6 +81,12 @@ const ReviewController = async (req, res) => {
     const diplomaCertificatesUrl = await uploadToCloudinary(diplomaCertificates && diplomaCertificates[0] ? diplomaCertificates[0] : diplomaBody);
     const proofOfIDUrl = await uploadToCloudinary(proofOfID && proofOfID[0] ? proofOfID[0] : proofIDBody);
 
+    // Ensure hospitalId is valid and exists in the database
+    const hospital = await HospitalModel.findById(hospitalId);
+    if (!hospital) {
+      return res.status(400).json({ success: false, message: 'Invalid hospital ID' });
+    }
+
     // Create doctor data object
     const doctorData = {
       name: name || null,
@@ -105,19 +114,33 @@ const ReviewController = async (req, res) => {
       diplomaCertificates: diplomaCertificatesUrl,
       proofOfID: proofOfIDUrl,
       balance: balance || 0,
-      services: services || [] // Saving services as part of doctor data
+      services: services || [], // Saving services as part of doctor data
+      paymentMethods: paymentMethods || [], // Added paymentMethods
+      hospital: hospitalId // Associating doctor with hospital
     };
 
     // Save new doctor to the database
     const newDoctor = new ReviewdocModel(doctorData);
     await newDoctor.save();
 
-    res.json({ success: true, message: 'Doctor Added Successfully' });
+    // Add the doctor to the hospital's staff
+    hospital.staff.push({
+      name: newDoctor.name,
+      role: 'Doctor', // You can change the role if needed
+      email: newDoctor.email,
+      contactInfo: newDoctor.phone // Add other contact info as needed
+    });
+
+    // Save the updated hospital document
+    await hospital.save();
+
+    res.json({ success: true, message: 'Doctor Added and Assigned to Hospital Successfully' });
   } catch (error) {
     console.error(error);
     res.json({ success: false, message: error.message });
   }
 };
+
 
 
   

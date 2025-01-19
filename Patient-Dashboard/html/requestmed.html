@@ -754,7 +754,7 @@
           if (appointment) {
             const title = 'lab report request';
             const content = `I need updated lab result for appointment with ${appointment.docData.name}`;
-            const buttonId = 'requestDiagnosisBtn';
+            const buttonId = `${appointment._id}`;
     
             const noticeSuccess = await sendNotice(title, content, buttonId);
             if (noticeSuccess) {

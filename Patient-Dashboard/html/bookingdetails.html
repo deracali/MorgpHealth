@@ -453,199 +453,200 @@
 
    
 
-    <script>
-      document.addEventListener("DOMContentLoaded", () => {
-          const apiBase = "https://morgphealth.onrender.com/api";
-          const doctorId = new URLSearchParams(window.location.search).get("doctorId");
-          const dateContainer = document.getElementById("date-container");
-          const timeContainer = document.getElementById("time-container");
-          const servicesContainer = document.getElementById("services-container");
-          const bookButton = document.getElementById("book-button");
-          const totalFeeElement = document.getElementById("total-fee");
-  
-          let selectedDate = null;
-          let selectedTime = null;
-          let selectedService = null;
-          let selectedServiceFee = 0;
-          let availableSlots = [];
-          let doctor = null;
-  
-          // Get userId from localStorage
-          const userId = localStorage.getItem("userId");
-  
-          if (!userId) {
-              alert("You must be logged in to book an appointment.");
-              window.location.href = "/login"; // Redirect to login if not logged in
-              return;
-          }
-  
-          // Fetch user data
-          const getUserData = () => {
-              return fetch(`${apiBase}/user/get-profileId/${userId}`)
-                  .then((res) => res.json())
-                  .then((data) => data.user)
-                  .catch((err) => console.error("Failed to fetch user data", err));
-          };
-  
-            // Generate time slots dynamically
-            const generateSlots = () => {
-              const daysOfWeek = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
-              const today = new Date();
-  
-              for (let i = 0; i < 7; i++) {
-                  let currentDate = new Date(today);
-                  currentDate.setDate(today.getDate() + i);
-  
-                  let endTime = new Date(currentDate);
-                  endTime.setHours(21, 0, 0, 0); // Slots end at 9 PM
-  
-                  if (i === 0) {
-                      // If it's today, adjust the start time
-                      currentDate.setHours(Math.max(currentDate.getHours() + 1, 10), 0, 0);
-                  } else {
-                      // For other days, start at 10 AM
-                      currentDate.setHours(10, 0, 0, 0);
-                  }
-  
-                  let dailySlots = [];
-                  while (currentDate < endTime) {
-                      let formattedTime = currentDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-                      dailySlots.push({
-                          date: currentDate.toDateString(),
-                          time: formattedTime,
-                          datetime: new Date(currentDate),
-                          day: daysOfWeek[currentDate.getDay()],
-                      });
-                      currentDate.setMinutes(currentDate.getMinutes() + 30);
-                  }
-  
-                  if (dailySlots.length > 0) {
-                      availableSlots.push({ date: dailySlots[0].date, slots: dailySlots });
-                  }
-              }
-  
-              displayDates();
-          };
-  
-          // Display available dates
-          const displayDates = () => {
-              dateContainer.innerHTML = ""; // Clear existing dates
-              dateContainer.style.display = "flex";  // Make date container a flexbox
-              dateContainer.style.flexWrap = "wrap"; // Allow wrapping of date elements
-  
-              availableSlots.forEach((slot) => {
-                  const dateDiv = document.createElement("div");
-                  dateDiv.className = "date border p-2 rounded mr-2 mb-2 text-center cursor-pointer";
-                  dateDiv.textContent = slot.date;
-  
-                  // Add bg-primary when a date is selected
-                  dateDiv.addEventListener("click", () => {
-                      document.querySelectorAll(".date").forEach((el) => el.classList.remove("bg-primary", "text-white"));
-                      dateDiv.classList.add("bg-primary", "text-white");
-                      selectedDate = slot.date;
-                      displayTimes(slot.slots); // Display times for the selected date
-                  });
-  
-                  dateContainer.appendChild(dateDiv);
-              });
-          };
-  
-          // Display available times for a selected date
-          const displayTimes = (slots) => {
-              timeContainer.innerHTML = ""; // Clear existing times
-              timeContainer.style.display = "flex";  // Make time container a flexbox
-              timeContainer.style.flexWrap = "wrap"; // Allow wrapping of time elements
-  
-              slots.forEach((slot) => {
-                  const timeDiv = document.createElement("div");
-                  timeDiv.className = "time border p-2 rounded mr-2 mb-2 text-center cursor-pointer";
-                  timeDiv.textContent = slot.time;
-  
-                  // Add bg-success when a time is selected
-                  timeDiv.addEventListener("click", () => {
-                      document.querySelectorAll(".time").forEach((el) => el.classList.remove("bg-success", "text-white"));
-                      timeDiv.classList.add("bg-primary", "text-white");
-                      selectedTime = slot;
-                  });
-  
-                  timeContainer.appendChild(timeDiv);
-              });
-          };
-  
-  
-          // Display services and handle fee update
-          const displayServices = (services) => {
-              servicesContainer.innerHTML = ""; // Clear existing services
-  
-              services.forEach((service) => {
-                  const serviceDiv = document.createElement("div");
-                  serviceDiv.className = "service border p-2 rounded mb-2 cursor-pointer";
-                  serviceDiv.textContent = `${service.name} - $${service.fee}`;
-  
-                  serviceDiv.addEventListener("click", () => {
-                      document.querySelectorAll(".service").forEach((el) => el.classList.remove("bg-info", "text-white"));
-                      serviceDiv.classList.add("bg-info", "text-white");
-                      selectedService = service.name; // Set the selected service name
-                      selectedServiceFee = service.fee; // Set the selected service fee
-                      totalFeeElement.textContent = `Total Fee: $${selectedServiceFee}`; // Update the total fee
-                  });
-  
-                  servicesContainer.appendChild(serviceDiv);
-              });
-          };
-  
-          // Fetch doctor info
-          fetch(`${apiBase}/doctor/profile/${doctorId}`)
-              .then((res) => res.json())
-              .then((data) => {
-                  doctor = data.profileData;
-                  document.getElementById("doctor-image").src = doctor.image;
-                  document.getElementById("doctor-name").textContent = doctor.name;
-                  document.getElementById("doctor-details").textContent = `${doctor.degree} - ${doctor.speciality}`;
-                  // document.getElementById("doctor-fees").textContent = `Doctor Fee: $${doctor.fees}`;
-                  document.getElementById("doctor-about").textContent = doctor.about;
-  
-                  generateSlots(); // Generate slots after fetching doctor info
-                  displayServices(doctor.services); // Display services
-              })
-              .catch((err) => console.error("Failed to fetch doctor info", err));
-  
-          // Book appointment
-          bookButton.addEventListener("click", () => {
-    if (!selectedDate || !selectedTime) {
-        alert("Please select both a date and a time!");
+   <script>
+    document.addEventListener("DOMContentLoaded", () => {
+    const apiBase = "https://morgphealth.onrender.com/api";
+    const doctorId = new URLSearchParams(window.location.search).get("doctorId");
+    const dateContainer = document.getElementById("date-container");
+    const timeContainer = document.getElementById("time-container");
+    const servicesContainer = document.getElementById("services-container");
+    const bookButton = document.getElementById("book-button");
+    const totalFeeElement = document.getElementById("total-fee");
+
+    let selectedDate = null;
+    let selectedTime = null;
+    let selectedService = null;
+    let selectedServiceFee = 0;
+    let selectedServiceTime = 0;  // Add the service time (duration)
+    let availableSlots = [];
+    let doctor = null;
+
+    // Get userId from localStorage
+    const userId = localStorage.getItem("userId");
+
+    if (!userId) {
+        alert("You must be logged in to book an appointment.");
+        window.location.href = "/login"; // Redirect to login if not logged in
         return;
     }
 
-    if (!selectedService) {
-        alert("Please select a service!");
-        return;
-    }
+    // Fetch user data
+    const getUserData = () => {
+        return fetch(`${apiBase}/user/get-profileId/${userId}`)
+            .then((res) => res.json())
+            .then((data) => data.user)
+            .catch((err) => console.error("Failed to fetch user data", err));
+    };
 
-    const selectedCommunication = document.getElementById("communication-method").value;
+    // Generate time slots dynamically
+    const generateSlots = () => {
+        const daysOfWeek = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+        const today = new Date();
 
-    getUserData().then((userData) => {
-        fetch(`${apiBase}/user/book-appointment`, {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-                userId, // Add userId from localStorage
-                docId: doctorId, // Add doctorId from URL
-                slotDate: selectedDate,
-                slotTime: selectedTime.time,
-                concern: selectedService, // Use the selected service as the concern
-                type: selectedCommunication, // Include communication type
-                userData: userData, // User data fetched from the API
-                docData: {
-                    id: doctorId,
-                    name: doctor.name,
-                    specialty: doctor.speciality,
-                },
-                amount: selectedServiceFee, // Use the selected service fee
-            }),
+        for (let i = 0; i < 7; i++) {
+            let currentDate = new Date(today);
+            currentDate.setDate(today.getDate() + i);
+
+            let endTime = new Date(currentDate);
+            endTime.setHours(21, 0, 0, 0); // Slots end at 9 PM
+
+            if (i === 0) {
+                // If it's today, adjust the start time
+                currentDate.setHours(Math.max(currentDate.getHours() + 1, 10), 0, 0);
+            } else {
+                // For other days, start at 10 AM
+                currentDate.setHours(10, 0, 0, 0);
+            }
+
+            let dailySlots = [];
+            while (currentDate < endTime) {
+                let formattedTime = currentDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+                dailySlots.push({
+                    date: currentDate.toDateString(),
+                    time: formattedTime,
+                    datetime: new Date(currentDate),
+                    day: daysOfWeek[currentDate.getDay()],
+                });
+                currentDate.setMinutes(currentDate.getMinutes() + 30);
+            }
+
+            if (dailySlots.length > 0) {
+                availableSlots.push({ date: dailySlots[0].date, slots: dailySlots });
+            }
+        }
+
+        displayDates();
+    };
+
+    // Display available dates
+    const displayDates = () => {
+        dateContainer.innerHTML = ""; // Clear existing dates
+        dateContainer.style.display = "flex";  // Make date container a flexbox
+        dateContainer.style.flexWrap = "wrap"; // Allow wrapping of date elements
+
+        availableSlots.forEach((slot) => {
+            const dateDiv = document.createElement("div");
+            dateDiv.className = "date border p-2 rounded mr-2 mb-2 text-center cursor-pointer";
+            dateDiv.textContent = slot.date;
+
+            // Add bg-primary when a date is selected
+            dateDiv.addEventListener("click", () => {
+                document.querySelectorAll(".date").forEach((el) => el.classList.remove("bg-primary", "text-white"));
+                dateDiv.classList.add("bg-primary", "text-white");
+                selectedDate = slot.date;
+                displayTimes(slot.slots); // Display times for the selected date
+            });
+
+            dateContainer.appendChild(dateDiv);
+        });
+    };
+
+    // Display available times for a selected date
+    const displayTimes = (slots) => {
+        timeContainer.innerHTML = ""; // Clear existing times
+        timeContainer.style.display = "flex";  // Make time container a flexbox
+        timeContainer.style.flexWrap = "wrap"; // Allow wrapping of time elements
+
+        slots.forEach((slot) => {
+            const timeDiv = document.createElement("div");
+            timeDiv.className = "time border p-2 rounded mr-2 mb-2 text-center cursor-pointer";
+            timeDiv.textContent = slot.time;
+
+            // Add bg-success when a time is selected
+            timeDiv.addEventListener("click", () => {
+                document.querySelectorAll(".time").forEach((el) => el.classList.remove("bg-success", "text-white"));
+                timeDiv.classList.add("bg-primary", "text-white");
+                selectedTime = slot;
+            });
+
+            timeContainer.appendChild(timeDiv);
+        });
+    };
+
+    // Display services and handle fee update
+    const displayServices = (services) => {
+        servicesContainer.innerHTML = ""; // Clear existing services
+
+        services.forEach((service) => {
+            const serviceDiv = document.createElement("div");
+            serviceDiv.className = "service border p-2 rounded mb-2 cursor-pointer";
+            serviceDiv.textContent = `${service.name} - $${service.fee} - Duration ${service.time}`; // Display service duration
+          
+            serviceDiv.addEventListener("click", () => {
+                document.querySelectorAll(".service").forEach((el) => el.classList.remove("bg-info", "text-white"));
+                serviceDiv.classList.add("bg-info", "text-white");
+                selectedService = service.name; // Set the selected service name
+                selectedServiceFee = service.fee; // Set the selected service fee
+                selectedServiceTime = service.time; // Set the selected service duration (time)
+                totalFeeElement.textContent = `Total Fee: $${selectedServiceFee}`; // Update the total fee
+            });
+
+            servicesContainer.appendChild(serviceDiv);
+        });
+    };
+
+    // Fetch doctor info
+    fetch(`${apiBase}/doctor/profile/${doctorId}`)
+        .then((res) => res.json())
+        .then((data) => {
+            doctor = data.profileData;
+            document.getElementById("doctor-image").src = doctor.image;
+            document.getElementById("doctor-name").textContent = doctor.name;
+            document.getElementById("doctor-details").textContent = `${doctor.degree} - ${doctor.speciality}`;
+            document.getElementById("doctor-about").textContent = doctor.about;
+
+            generateSlots(); // Generate slots after fetching doctor info
+            displayServices(doctor.services); // Display services
         })
+        .catch((err) => console.error("Failed to fetch doctor info", err));
+
+    // Book appointment
+    bookButton.addEventListener("click", () => {
+        if (!selectedDate || !selectedTime) {
+            alert("Please select both a date and a time!");
+            return;
+        }
+
+        if (!selectedService) {
+            alert("Please select a service!");
+            return;
+        }
+
+        const selectedCommunication = document.getElementById("communication-method").value;
+
+        getUserData().then((userData) => {
+            fetch(`${apiBase}/user/book-appointment`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    userId, // Add userId from localStorage
+                    docId: doctorId, // Add doctorId from URL
+                    slotDate: selectedDate,
+                    slotTime: selectedTime.time,
+                    concern: selectedService, // Use the selected service as the concern
+                    duration: selectedServiceTime, // Include the duration of the selected service
+                    type: selectedCommunication, // Include communication type
+                    userData: userData, // User data fetched from the API
+                    docData: {
+                        id: doctorId,
+                        name: doctor.name,
+                        specialty: doctor.speciality,
+                    },
+                    amount: selectedServiceFee, // Use the selected service fee
+                }),
+            })
             .then((res) => res.json())
             .then((data) => {
                 if (data.success) {
@@ -656,11 +657,12 @@
                 }
             })
             .catch((err) => console.error("Error booking appointment", err));
+        });
     });
+
 });
 
-      });
-  </script>
+   </script>
   
   
 
@@ -789,37 +791,39 @@
   <script>
     const backendUrl = "https://morgphealth.onrender.com/";
     let chatId = null;
-    
+  
     // Get the doctorId from URL query parameters
     const urlParams = new URLSearchParams(window.location.search);
     let docId = urlParams.get('doctorId'); // Initially try to get doctorId from URL
-    
+  
     // Fetch userId from localStorage
     const userId = localStorage.getItem("userId"); // Ensure the userId is stored in localStorage
     if (!userId) {
       alert('User is not authenticated!');
     }
-    
+  
     // Attempt to get the doctorId from the ongoing chat (if any)
     const getDoctorIdFromChat = () => {
       const chatData = JSON.parse(localStorage.getItem('currentChat'));
       return chatData ? chatData.doctorId : null;
     };
-    
+  
     // If docId is not present in the URL, try fetching from ongoing chat
     if (!docId) {
       docId = getDoctorIdFromChat();
     }
-    
+  
     const startChatBtn = document.getElementById("startChatBtn");
     const chatPopup = document.getElementById("chatPopup");
     const messageContainer = document.getElementById("messageContainer");
     const messageInput = document.getElementById("messageInput");
     const sendMessageBtn = document.getElementById("sendMessageBtn");
     const closeChatBtn = document.getElementById("closeChatBtn");
-    
+  
     const socket = io(backendUrl);
-    
+  
+    let scrollToBottomAfterOpening = false; // Flag to scroll to the bottom after chat is opened
+  
     // Start chat with the doctor
     startChatBtn.addEventListener("click", async () => {
       if (docId) {
@@ -828,7 +832,7 @@
             `${backendUrl}api/chat/start`,
             { userId, doctorId: docId }
           );
-    
+  
           if (data.chatId) {
             chatId = data.chatId;
             chatPopup.style.display = "flex";
@@ -844,29 +848,29 @@
         alert('No ongoing chat found. Please select a doctor to start a new chat.');
       }
     });
-    
+  
     // Fetch chat history for the ongoing chat
     const fetchChatHistory = async (chatId) => {
       if (!chatId) return;
-
+  
       try {
         const { data } = await axios.get(`${backendUrl}api/chat/${chatId}/history`);
-
+  
         if (data.messages) {
           // Clear the message container before appending new messages
           messageContainer.innerHTML = "";
-
+  
           // Reverse the messages to display the newest message at the bottom
           const reversedMessages = data.messages.reverse();
-
+  
           // Append messages from the oldest to the most recent (newest at the bottom)
           reversedMessages.forEach(msg => {
             const messageElem = document.createElement("div");
             messageElem.classList.add("message", msg.senderModel === "User" ? "user-message" : "doctor-message");
-            messageElem.innerHTML = msg.content;
+            messageElem.innerHTML = msg.content || 'No content available';  // Check for undefined
             messageContainer.appendChild(messageElem); // Append at the bottom
           });
-          
+  
           // Scroll to the bottom after loading the history
           scrollToBottom();
         }
@@ -875,28 +879,28 @@
         console.error("Error fetching chat history:", error);
       }
     };
-
+  
     // Send message
     let isSending = false;
-    
+  
     sendMessageBtn.addEventListener("click", async () => {
       if (isSending) return;
       isSending = true;
-      
+  
       const messageContent = messageInput.value.trim();
       if (!messageContent) {
         isSending = false;
         return;
       }
-    
+  
       if (!chatId) {
         alert('Chat ID is missing. Please start a chat first.');
         isSending = false;
         return;
       }
-    
+  
       const senderModel = "User"; // Explicitly set to "User"
-    
+  
       try {
         const response = await fetch(`${backendUrl}api/chat/${chatId}/message`, {
           method: 'POST',
@@ -910,29 +914,29 @@
             content: messageContent,
           }),
         });
-    
+  
         if (!response.ok) {
           const errorData = await response.json();
           throw new Error(errorData.error || 'Failed to save message');
         }
-    
+  
         const savedMessage = await response.json();
-    
+  
         socket.emit("sendMessage", {
           chat: chatId,
           senderId: userId,
           senderModel,
           content: messageContent,
         });
-    
+  
         console.log('Message emitted via socket:', savedMessage);
-    
+  
         // Clear the message input field after sending the message
         messageInput.value = "";
-       
-        // Fetch the updated chat history to reflect the latest message
-        fetchChatHistory(chatId);
-    
+  
+        // Ensure that the new message will be shown at the bottom
+        appendNewMessage(savedMessage);
+  
       } catch (error) {
         alert(`Error: ${error.message}`);
         console.error('Error saving or sending message:', error);
@@ -940,35 +944,58 @@
         isSending = false;
       }
     });
-    
+  
     socket.on('receiveMessage', (message) => {
       console.log('Received message:', message);
-
-      // Ensure that we append the new message at the bottom after the history has been loaded
-      setTimeout(() => {
-        // Create a new message element
-        const messageElem = document.createElement("div");
-        messageElem.classList.add("message", message.senderModel === "User" ? "user-message" : "doctor-message");
-        messageElem.innerHTML = message.content;
-
-        // Append the new message at the bottom of the container
-        messageContainer.appendChild(messageElem); // New message appears at the bottom
-
-        // Scroll to the bottom when a new message is received
-        scrollToBottom();
-      }, 100); // Small delay to ensure that the chat history is rendered first
+  
+      // Ensure that the new message will be shown at the bottom
+      appendNewMessage(message);
     });
-
+  
+    const appendNewMessage = (message) => {
+      if (!message.content) {
+        console.error("Error: Message content is undefined.");
+        return; // Prevent undefined messages from showing up
+      }
+  
+      // Create a new message element
+      const messageElem = document.createElement("div");
+      messageElem.classList.add("message", message.senderModel === "User" ? "user-message" : "doctor-message");
+      messageElem.innerHTML = message.content || 'No content available';  // Ensure no undefined message content is shown
+  
+      // Append the new message at the bottom of the container
+      messageContainer.appendChild(messageElem);
+  
+      // Scroll to the bottom when a new message is received
+      scrollToBottom();
+    };
+  
     // Function to scroll the chat container to the bottom
     const scrollToBottom = () => {
       messageContainer.scrollTop = messageContainer.scrollHeight;
     };
-    
+  
     // Close chat
     closeChatBtn.addEventListener("click", () => {
       chatPopup.style.display = "none";
     });
-</script>
+  
+    // Reopen the chat and ensure it scrolls to the bottom or previously cached position
+    startChatBtn.addEventListener("click", () => {
+      chatPopup.style.display = "flex";
+  
+      // Check if the flag for scrolling is true and scroll to bottom
+      if (scrollToBottomAfterOpening) {
+        scrollToBottom();
+        scrollToBottomAfterOpening = false;
+      } else {
+        fetchChatHistory(chatId);  // Ensure chat history is fetched when reopened
+      }
+    });
+  </script>
+  
+  
+  
 
     
     <!-- build:js assets/vendor/js/core.js -->

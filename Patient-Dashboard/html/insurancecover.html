@@ -8,179 +8,595 @@
     <title>Insurance Details</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/0.4.1/html2canvas.min.js"></script>
 </head>
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        margin: 0;
+        padding: 0;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 100vh;
+        background: linear-gradient(to bottom, #f2f6fb, #e3edfc);
+    }
 
-<body>
-    <div class="container mt-5" id="formContainer">
-        <center>
-            <h2>Insurance Details</h2>
-            <p id="policyno"></p>
-        </center>
-        <form>
-            <div class="row mb-3">
-                <div class="col-md-6">
-                    <label for="name">Name</label>
-                    <input type="text" class="form-control" id="name" readonly>
-                </div>
-                <div class="col-md-6">
-                    <label for="email">Email</label>
-                    <input type="email" class="form-control" id="email" readonly>
-                </div>
-            </div>
-            <div class="row mb-3">
-                <div class="col-md-6">
-                    <label for="location">Location</label>
-                    <input type="text" class="form-control" id="location" readonly>
-                </div>
-                <div class="col-md-6">
-                    <label for="type">Type</label>
-                    <input type="text" class="form-control" id="type" readonly>
-                </div>
-            </div>
-            <div class="row mb-3">
-                <div class="col-md-6">
-                    <label for="cover">Cover</label>
-                    <input type="text" class="form-control" id="cover" readonly>
-                </div>
-                <div class="col-md-6">
-                    <label for="policyTerm">Policy Term</label>
-                    <input type="text" class="form-control" id="policyTerm" readonly>
-                </div>
-            </div>
-            <div class="row mb-3">
-                <div class="col-md-6">
-                    <label for="price">Price</label>
-                    <input type="text" class="form-control" id="price" readonly>
-                </div>
-                <div class="col-md-6">
-                    <label for="insured">Insured</label>
-                    <input type="text" class="form-control" id="insured" readonly>
-                </div>
-            </div>
-            <div class="row mb-3">
-                <div class="col-md-6" id="selfContainer">
-                    <label for="self">Self</label>
-                    <input type="text" class="form-control" id="self" readonly>
-                </div>
-                <div class="col-md-6" id="spouseContainer">
-                    <label for="spouse">Spouse</label>
-                    <input type="text" class="form-control" id="spouse" readonly>
-                </div>
-            </div>
-            <div class="row mb-3">
-                <div class="col-md-6" id="motherAgeContainer">
-                    <label for="motherAge">Mother's Age</label>
-                    <input type="text" class="form-control" id="motherAge" readonly>
-                </div>
-                <div class="col-md-6" id="childContainer">
-                    <label for="child">Child</label>
-                    <input type="text" class="form-control" id="child" readonly>
-                </div>
-            </div>
-    
-            <!-- Add-on titles and frequencies -->
-            <div id="addOnsContainer">
-                <!-- These will be conditionally rendered -->
-            </div>
-    
-            <button type="button" id="downloadBtn" class="btn btn-primary">Download</button>
-        </form>
-    </div>
-    
+    .container {
+        max-width: 800px;
+        width: 90%;
+        background: #ffffff;
+        border-radius: 10px;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        overflow: hidden;
+        display: flex;
+        flex-wrap: wrap;
+    }
 
- 
-<script>
-    document.addEventListener("DOMContentLoaded", function () {
-        const urlParams = new URLSearchParams(window.location.search);
-        const insuranceId = urlParams.get('insuranceId');
-        const userId = localStorage.getItem("userId");
+    .left-section {
+        flex: 1;
+        padding: 20px;
+        background: linear-gradient(to bottom, #e3edfc, #ffffff);
+        text-align: center;
+    }
 
-        if (!insuranceId) {
-            alert("No insurance ID provided in the query string!");
-            return;
+    .left-section img {
+        max-width: 100%;
+        height: auto;
+    }
+
+    .left-section h1 {
+        font-size: 2rem;
+        color: #333333;
+        margin: 20px 0 10px;
+    }
+
+    .left-section p {
+        font-size: 1rem;
+        color: #555555;
+    }
+
+    .right-section {
+        flex: 1;
+        padding: 20px;
+    }
+
+    .logo {
+        text-align: right;
+    }
+
+    .logo img {
+        max-height: 50px;
+    }
+
+    .address {
+        font-size: 0.9rem;
+        color: #777777;
+        margin-top: 10px;
+        text-align: right;
+    }
+
+    .policy-details {
+        margin-top: 20px;
+    }
+
+    .policy-details h2 {
+        font-size: 1.5rem;
+        margin-bottom: 10px;
+        color: #333333;
+    }
+
+    .policy-details p {
+        font-size: 1rem;
+        color: #555555;
+        line-height: 1.5;
+    }
+
+    .policy-details .policy-number {
+        font-weight: bold;
+        font-size: 1.2rem;
+        margin: 10px 0;
+    }
+
+    .dates {
+        margin-top: 20px;
+    }
+
+    .dates p {
+        font-size: 1rem;
+        color: #333333;
+    }
+
+    @media (max-width: 768px) {
+        .container {
+            flex-direction: column;
         }
 
-        fetch(`https://morgphealth.onrender.com/api/insurance/insurance/${userId}`)
-            .then(response => response.json())
-            .then(data => {
-                if (data.success && data.insuranceData) {
-                    const insuranceData = data.insuranceData;
+        .left-section, .right-section {
+            flex: 1 1 100%;
+        }
+    }
+      
+    .details-container {
+        width: 100%;
+        max-width: 800px;
+        background: #ffffff;
+        border-radius: 10px;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        overflow: hidden;
+        border: 2px solid #003366;
+    }
 
-                    // Check if the insurance ID matches
-                    if (insuranceData._id === insuranceId) {
-                        // Populate form with insurance data
-                        document.getElementById('name').value = insuranceData.name || '';
-                        document.getElementById('email').value = insuranceData.email || '';
-                        document.getElementById('location').value = insuranceData.location || '';
-                        document.getElementById('type').value = insuranceData.type || '';
-                        document.getElementById('cover').value = insuranceData.cover || '';
-                        document.getElementById('policyTerm').value = insuranceData.policyTerm || '';
-                        document.getElementById('price').value = `$${insuranceData.price}` || '';
-                        document.getElementById('insured').value = insuranceData.insured ? 'Yes' : 'No';
+    .details-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 15px 20px;
+        border-bottom: 2px solid #003366;
+    }
 
-                        // Conditionally render fields
-                        if (insuranceData.self === 'no') {
-                            document.getElementById('selfContainer').style.display = 'none';
-                        } else {
-                            document.getElementById('self').value = insuranceData.self || 'No';
-                        }
-                        if (insuranceData.spouse === 'no') {
-                            document.getElementById('spouseContainer').style.display = 'none';
-                        } else {
-                            document.getElementById('spouse').value = insuranceData.spouse || 'No';
-                        }
-                        if (insuranceData.motherAge === 'no') {
-                            document.getElementById('motherAgeContainer').style.display = 'none';
-                        } else {
-                            document.getElementById('motherAge').value = insuranceData.motherAge || 'N/A';
-                        }
-                        if (insuranceData.child === 'no') {
-                            document.getElementById('childContainer').style.display = 'none';
-                        } else {
-                            document.getElementById('child').value = insuranceData.child || 'No';
-                        }
+    .details-row:nth-child(odd) {
+        background: #e3edfc;
+    }
 
-                        // Conditionally render Add-ons
-                        const addOnsContainer = document.getElementById('addOnsContainer');
-                        for (let i = 1; i <= 5; i++) {
-                            const title = insuranceData[`title${i}`];
-                            const frequency = insuranceData[`frequency${i}`];
-                            if (title && frequency) {
-                                const addOnDiv = document.createElement('div');
-                                addOnDiv.classList.add('row', 'mb-3');
-                                addOnDiv.innerHTML = `
-                                    <div class="col-md-6">
-                                        <label for="title${i}">Add-on ${i} Title</label>
-                                        <input type="text" class="form-control" id="title${i}" value="${title}" readonly>
-                                    </div>
-                                    <div class="col-md-6">
-                                        <label for="frequency${i}">Frequency ${i}</label>
-                                        <input type="text" class="form-control" id="frequency${i}" value="${frequency}" readonly>
-                                    </div>
-                                `;
-                                addOnsContainer.appendChild(addOnDiv);
+    .details-label {
+        flex: 1;
+        color: #003366;
+        font-weight: bold;
+        font-size: 16px;
+    }
+
+    .details-value {
+        flex: 1;
+        text-align: right;
+        color: #003366;
+        font-weight: normal;
+        font-size: 16px;
+    }
+
+    @media (max-width: 768px) {
+        .details-row {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+
+        .details-value {
+            text-align: left;
+            margin-top: 5px;
+        }
+    }
+   .wrapper {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        padding: 20px;
+    }
+
+    .content {
+        flex: 1;
+        max-width: 600px;
+    }
+
+    .header {
+        display: flex;
+        align-items: center;
+        margin-bottom: 20px;
+    }
+
+    .header img {
+        max-width: 100px;
+        height: auto;
+        margin-right: 15px;
+    }
+
+    .quote {
+        font-size: 1.1rem;
+        text-align: left;
+        margin: 20px 0;
+        color: #333;
+    }
+
+    .signature {
+        text-align: left;
+        margin: 20px 0;
+    }
+
+    .signature img {
+        width: 150px;
+        height: auto;
+    }
+
+    .signature p {
+        margin-top: 10px;
+        font-size: 1rem;
+    }
+
+    .illustration {
+        flex: 1;
+        display: flex;
+        justify-content: center;
+        margin-top: 20px;
+    }
+
+    .illustration img {
+        width: 100%;
+        max-width: 400px;
+        height: auto;
+    }
+
+    .wrapper {
+        flex-direction: column;
+    }
+
+    @media (min-width: 768px) {
+        .wrapper {
+            flex-direction: row;
+            justify-content: space-between;
+            align-items: center;
+            padding: 40px;
+        }
+
+        .content {
+            max-width: 500px;
+        }
+
+        .quote {
+            text-align: left;
+            font-size: 1.3rem;
+        }
+
+        .illustration {
+            margin-top: 0;
+        }
+
+        .illustration img {
+            max-width: 500px;
+        }
+    }
+     .summary-container {
+        max-width: 800px;
+        margin: 0 auto;
+        background-color: #ffffff;
+        padding: 20px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        border-radius: 10px;
+    }
+    .title {
+        text-align: center;
+        font-size: 24px;
+        font-weight: bold;
+        margin-bottom: 20px;
+    }
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-bottom: 20px;
+    }
+    th, td {
+        padding: 15px;
+        text-align: left;
+        border-bottom: 1px solid #ddd;
+        border-radius: 5px;
+    }
+    th {
+        background-color: #0074D9;
+        color: white;
+    }
+    td {
+        background-color: #f1f5ff;
+    }
+    td:nth-child(3) {
+        text-align: right;
+    }
+    .contact {
+        text-align: center;
+        font-size: 14px;
+        margin-top: 20px;
+    }
+    .contact a {
+        color: #0074D9;
+        text-decoration: none;
+    }
+    .contact a:hover {
+        text-decoration: underline;
+    }
+    .note {
+        font-size: 12px;
+        color: #555;
+        text-align: center;
+        margin-top: 20px;
+    }
+    @media (max-width: 600px) {
+        th, td {
+            font-size: 14px;
+            padding: 10px;
+        }
+        .title {
+            font-size: 20px;
+        }
+        .contact {
+            font-size: 12px;
+        }
+        .note {
+            font-size: 10px;
+        }
+    }
+</style>
+<body>
+      <div class="container">
+        <!-- Left Section -->
+        <div class="left-section">
+            <h1>Health Insurance</h1>
+            <img src="data:image/jpeg;base64,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" alt="Family Illustration">
+         
+        </div>
+
+        <!-- Right Section -->
+        <div class="right-section">
+            <div class="logo">
+                <img src="../assets/morgp-logo.png" alt="MORGP Health Logo">
+                <div class="address">
+                    42 Hazelbury Park, Castaheany, Clonee, Co. Dublin, D15 FD76, Ireland
+                </div>
+            </div>
+            <div class="policy-details">
+                <h2>Policy Number</h2>
+                <div class="policy-number">MGP200 74</div>
+                <p>
+                    Health insurance is an insurance policy that covers the costs of private healthcare. 
+                    It can also be called private medical insurance. And it can cover you from diagnosis to treatment.
+                </p>
+                <p>
+                    This will then cover all or some of the cost of any treatment that you need, as long as your treatment is covered by your policy.
+                </p>
+            </div>
+            <div class="dates">
+                <p><strong>Date of Issue:</strong></p>
+                <p><strong>End Date:</strong></p>
+            </div>
+        </div>
+    
+   <div class="details-container">
+        <h2>Policy Holder</h2>
+        <div class="details-row">
+            <div class="details-label">First Name</div>
+            <div class="details-value">Lawson</div>
+        </div>
+        <div class="details-row">
+            <div class="details-label">Last Name</div>
+            <div class="details-value">Odere</div>
+        </div>
+        <div class="details-row">
+            <div class="details-label">Gender</div>
+            <div class="details-value">Male</div>
+        </div>
+        <div class="details-row">
+            <div class="details-label">DOB (date of birth)</div>
+            <div class="details-value">13-10-1962</div>
+        </div>
+        <div class="details-row">
+            <div class="details-label">Passport No.</div>
+            <div class="details-value">567894308</div>
+        </div>
+        <div class="details-row">
+            <div class="details-label">Mobile No</div>
+            <div class="details-value">+995511132260</div>
+        </div>
+        <div class="details-row">
+            <div class="details-label">Address</div>
+            <div class="details-value">32 Bob Walsh</div>
+        </div>
+        <div class="details-row">
+            <div class="details-label">Cover Type</div>
+            <div class="details-value">Premium plan 12 months</div>
+        </div>
+        <div class="details-row">
+            <div class="details-label">Nationality</div>
+            <div class="details-value">United Kingdom</div>
+        </div>
+        <div class="details-row">
+            <div class="details-label">Total Cost</div>
+            <div class="details-value">$110.00</div>
+        </div>
+    </div>
+       <div class="wrapper">
+        <div class="content">
+            <div class="header">
+                <img src="../assets/morgp-logo.png" alt="MORGPHealth Logo">
+            </div>
+            <p class="quote">
+                "MORGPHealth insurance is ONE of the largest independence life insurance companies in the world with a significant presence in 20 countries globally."
+            </p>
+            <div class="signature">
+                <img src="https://morgphealth.com/signature.png" alt="Signature">
+                <p>Bryan Trump<br>Chief Executive</p>
+            </div>
+        </div>
+        <div class="illustration">
+            <img src="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wCEAAkGBxAQDxAQDw8PEBAVGRUXFRAPFRAVFRcWGBUWFxYXFxUYHSggGRomGxYWIjEhJSkrLi4uFx8zODMsNygtLisBCgoKDg0OGxAQGy8lICUvLS0tLS0vKy0rLS0tLS0tLS0tLS0wLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLf/AABEIALEBHAMBEQACEQEDEQH/xAAcAAEAAQUBAQAAAAAAAAAAAAAABgEDBAUHAgj/xABTEAABAwIDAQgMCgcFBwUAAAABAAIDBBEFEiExBhMiQVFhcZEHFBUyUlNUgZKT0dIWFyMzQmWUobGyYnJzosHh8DRVwuLjNTZjdIKz0yQlQ4Px/8QAGgEBAAIDAQAAAAAAAAAAAAAAAAQFAQIDBv/EADgRAAIBAgIHBAgGAwEBAAAAAAABAgMRBBITFCExUVKRBUFxoRUiMmFigbHBMzSSotHhU4LwciP/2gAMAwEAAhEDEQA/AO4oAgCAIAgCAIAgCAIAgCAIAgCAIAgCAIAgCAIAgCAIAgCAIAgCAIAgCAIAgCAIAgCAIAgCAIAgCAIAgCAIAgCAIAgCAIAgCAIAgCAIAgCAIAgCAIAgCAIAgCAIAgCAIAgCAIAgCAIAgCAICmbW3GgKoAgCAIAgCA12JY5SUzmtqamCFzgS1sr2tJANiQCdRdbKEpbkYbSMaPdbhznNa2vpC5xDWgSx3JJsABfaSs6OfAZkbpaGQgCAIAgCAIAgCAIAgCAIAgKICqAIAgCAIAgCAIAgCAIAgMCZ5z3HR/XUu0V6pxk/WMyJ+YXXJqzOqdyLbvt1jsPZG2JjXTSZrZ75Wtba5IG03IsOlTcFhNO3mexETGYrQpW3sgPxmYh4VP6H+ZWnoyh7+pXeka3BD4zMQ8Kn9D/Mnoyh7+o9I1uCMbEuyFiE0Zj35kV7cOEFjxY30cCsrs2hHaNfrPYaf4TYh/eFV61/tWdSocEY12txLXd6t3zfe3qjfMuXPvjs2W98t+S4BWdTo2tYa5Wve4qcerZG5JK6oe27TldI4i7XBzT0hwB8yLB0VuQeMrPvLvwmxD+8Kr1rljUqHAa7W4mZhW7TEIHl/bb5bgjLUOL27QbgE7dNvOVh4ChLu6GderI2vxmYh4VP6H+ZY9GUPf1HpGtwQ+MzEPCp/Q/zJ6Moe/qPSNbgjc7luyPPJUxw1TYnRyOawPjBaWucbN4yCLkDz3UfE9mwjTcqb3HfD4+UpqM1vOoqlLYsVM2UWG38FvCNzSUrFyIcEdC1e82W49rBkIAgCAIAgCAIAgCAIAgCAIAgCAIAgCAwaphBv512g9hxmi9R7DyLSpvN4bjl/ZjfeeltxMk/M1XXZKtGXyKntN3lE6NgkDO1abgN+aj4h4AVPVlLPLb3stacVlWzuM3tdngM9ELTNLib5VwNRur3OtrqR9MHiAuLDvjWBxGVwdsuNtrbV0pVpU5ZjSpSjONmQX4m/rF3qf8AUUr0hLgRtRgU+Jv6xd6n/UWfSEuA1GmV+Jv6xd6n/UT0hLgNRplPib+sXep/1E9IS4DUaZvtxvY9GH1DpzVGoBYWZHRhoF3NOa+Y+D9641sXKorHWlhoU3dE07XZ4DPRCjZpcTvlXAdrs8BnohM0uIyrgce3VtAx8AAAb9SaDohV/hXfBPwkUlf82vkdimlDRfqC8/GN2XcnZGCwFzhfj29C7v1UcVtZsXEAXOgUc7FqKbMTbYONbONkYUrsvLU2CAIAgCAIAgCAIAgCAIAgCAIAgCA8vdYXKJXMN2Md1WDpbr9i6aNmmdHuKQcWzk5P5LVp95lM5T2W/nqb9R/5gr7sv2ZFP2j7SOoYH/Zab9lH+QKjq/iS8WXFP2V4GauZuEAQGGMRYb6OsASTa2lgePpCzYxcq6vZlzC5byi3gb5y8iWFzIilDhcXtcjXTYSD94WDJ7QBAEBxrdb/ALwD9tSfhCvQ4T8k/CRR4j82vkdSmkzG/ENgVPGOVFrJ3Zcp3BgzO2nYFrK8nZGYu21niSRzz+ACyoqKMNtmdBHlFuPj6VwlK7O0VZFxYMhAEAQBAEAQBAEAQBAEAQBAEAQBAEBjvpgdhtzLdTNHArFT5dQTfm2dSxKdwo2OXdmJtpqX9STZ+s1XfZPsy+RU9p74nSsE/stN+yj/ACBU1X8SXiy2p+yvAzlzNyA4vi9U19RvUrzvVfYRty8KGPDmVL4RfwiH+dykRjHZfh9znJvuPOE4tKZsK32rkeZqelzRsLQ7fHRSOdI9hbaSN9tS03YY26WcSEoq0rLcE9qMGPHKl8EpbO5z2tw1hIc0FsstfJFMwuAOR5ZkaeMCxst8kbq64/Qwm2ZMuPzsjw0mSUnM91QWtDgWtqo6fLI4C2UNfIcxy33q+l7LXJG8vLpcOW49nGKtlZVR77I5pbXyQizSGmERsDALa2Ja4ftCmSLin4Gbs8T4wRDSmKvdJG+pySSTTCFgHaJkMfbIabt3yzrgHhEs0toUd913fcxm3WOhstYWNxy7b+dRjqVcQNToguc2xzc1JUYpJViRjYw+BzRqS/I2PNs70cEi+v8AFXNCvkw+jtt2+ZU1qOevnvs2Eya4HZqoVrbyZe+49AEnTUrXYjYzqany6nb+C4Tnc6xjYyFobhAEAQBAEAQBAEAQBAEAQBAEBQmwuUBG9zu7GKvmLKanqjCGl3bT48kRII4IJN7m99nEus6WRbWr8DSMs25ElXI3CAw8RxSnpg11TPDAHHK0zPYwE8gLjqVtGMpbkYbS3mBhmO01cJHUdQJd7OV4aHix1sbOAuDY2I0NiumRw2TRzzKe2LOe9lsnfqW5vwJPzNVz2XbLKxU9o3vE6dgzgKSnJIAEUZJOgAyDaVSVVeo7cWXEHaC8C73Rg8fD6bPamiqcr6GNLDiindCn8dD6bPamiqcr6DSw4od0Kfx0Pps9qaKpysaWHFHuWqiZbNJG2+ozOaL8+u1aqEpbkzLnFb2eO6FP46H02e1baKpyvoY0sOKHdCn8dD6bPamiqcr6DSw4ox6uuYQBDJG431DCx2mvEulOk7+sjSpVVvVZpzunb40j/oPsUzUXykTXFxMGq3RNOwPef0jYf15l3hgmuCOM8WvE1E+KTPcDmy22Bug8/L51Ljh4RVrXI0q8273M6mx8j5xl/wBJmh6iuE8Hys6wxXMjYxboYxskc3pa6/WAo8sHLgd44uPE2GGVwncC1xLb2N7jivx9Kj1qWjW1bSRRq6R7GSACygE0qgCAIAgCAIAgCAIAgCAIAgCA8TSZWuceIE9QWYq7sYk7K5q8BdHYhjcgGwCwaBfQABbVKDpybbvcxGvpIpcDbrQ2CAj27alpX016qNr2i7W3a0uu4WOQnYdL35l1o06s5pU3Zmk6tOnFuorohvYxrcmJYpEY8rHBkjHN1tGw5Yg7lcWPab8rXKViqbUYrvI9CopNvuLPZhkDpqW1+8k2/rNU/smLUZfIg9pSTcSfj/ZY/wCWH/aVVH8x/t9yxn+A/D7HPo2guAJsCQCeS52r0cm0mygik2kdEl3PUu8lm9tbYfOaZxp32b+gvOxxlbPmzPwL2WEo5LW+ZzjiXo0yhsTzE5mtbBmkpmcAaTwukJ0GwgiwXn6UW3Kyb29zsXdVpKO1bu9XMHtqPx+H/ZZPeXbJLll+pfwcsy5o/pf8jtqPx+H/AGWT3kyS5ZfqX8DMuaP6WXYJmuJDZKV55IIXRnzkk3HMsZWt6a8XczdPvXyViHFXS3FS95RZAQBAEBKtxmz/AOw/kaqntDf8iywP3JmqgtQgCAIAgCAIAgCAIAgCAogKoAgLVSBkffZY/gto+0jWW5kdoZ3QknKCNbkmwA4yTxbNqnVoqa3kKk3F7jNG6ehI/tlKHHi36Lr2qJGhVtdxZKlWpp2zIvfCKh8tpfXRe1NDU5X0M6WHEju7etgmhidDNHLZ7m2ie12paDxHmHXzqf2fGUZyUl3EHHuMoxafebbcZQQx0wljjaJJQN9eNriy7Rc8wGzp5VFxjlpmmScIlolYhHZjYBNS2FuBJ+Zqs+yXeMvkV/aa2xJ63/ZY/wCWH/aVXH8x/t9yxn+A/D7EOwTCH1Ty0HKxvfPIvbkAHGSrvFYmNBcW9xT4fDus7dxM34HeLejU1OS1rFzPvOW5HNdUixNp58quW7w145czsQjGcLfTSZHm4Iu140Dh0cR5leYbERrRuvmU9eg6UrMmdbK9rIcslSzgDSCJsg2DaS02KpYJOUrpb+92LabaUbN7u5XMTtmXx2IfZme4umSPLH9X9nPNLjLoO2ZfHYh9mZ7iZI8sf1f2M8uMun9FWyvOjpKt45JoWsaOfMGjVZSS3JLwdxdve381YhczbOcOQkdRV3F3imVElZs8LYwSjAtzUVRTsldJK1zs2jcltHEcY5lVYnHTpVHBJFjh8HCpTUm2R2shDJZGAkhrnNBO2wcRr1KxpScoKT70QKkcsml3Fkm2q6GpLNwzeA08rnu+7L/BU2Pe1lrglsRMVVlkEAQBAEAQBAEAQBAEAQBAWZ5Mpbyca2jG5rJ2Ly1NjFxNzhBKWhpcGuIDiWjQcZANupb0rZ1c0qXyOxqRTyARlzQ1zzYNDr65S7bpxAqXpYO5F0crK5odw26Rs9dV0QF2xh7w52pLhO4SW/R4bB5jyrGKp2Skv+2G2HkneLN3u7xs4fQyVMccb5AWNYHjg3c61zbUgC5suFGGkmotnaq1CLlY5ZBh2M4s2CaOSNkZEhjIeIm6P+UuGAu751teIDpNi506Ddr930IWSVZK9u86b2PsPqqWmfT1b2SPY8/KNe998wD7cJosAHD71CxU4zkpxb2olYeMopxa3ET7M3z1L+pJ+ZqsuyPZl8iv7U3xJ7BE5+GsY0Xc6naANBcmIADVVeZRr3fH7ljJOVGy4fY1uAsqqWNzO0nPJcXFwkhHEABt5lKxUqNaebPb5Mi4ZVaMbZPNGz7o1XkD/XQe1R9DS/yeTJGmq/431Rqd0MFVVMYBROYWkm5khOhGo28tupSsJOjQk253v7mRsTGrWSSha3vRssQp5LQgR1LiGAHeJmxgHTQguFzzqLTlG8rtb+9X+x3qRlZbG9nc7GH2rN4jEPtbPfXXPDmj+l/wcskuWX6v7L9Hh73us9tfELXzOqQ4X00s1xP/AOLWdVRWzK/9f6N4UnJ7VJfMypcJDWlwlqHEAnK+V7mnpadq5xrtu1l0OjoJK6b6kDxWPLPIOe/Xr/FX1B3popaytNki3Pbn4J6dskmfMS69nWGjiBoq7FYyrTquMdxPw2Ep1KalLeSfD6NkEYijvlF7Zjc6kk69JVZUqSqSzS3lhTpxpxyxNbPuWpnvc92+XcS42dxk3Kkxx9aKUV3e44SwVKTbd+pzrE7NllY3vWve0dDXED8Fdwm5QTfekU8o5ZNe9k+3HU+WFn6oPnccypsbK8i2wkbRJEoJNCAIAgCAIAgCAIAgCAo7YbbUBbgmDhz8i2lGxrGVy3XDQHnW1PeYqbitHJcWO0fglSNncQd1Y8Yt8xMOMscB0kWH3lYp+2hU9lljH6gQwGY2AjIdr52/4ltRTlLKu81quyvwOZ9jHApaXEaeV5LhU0UkheNWhzp4yG5hoTkDT18ilYmqpxaXczlh6ThtfeiXdlSidPh29sDiXTQDggk8KQNvbmzKNh5KM7+P0O1WOaNjC7GVFJTtlpZRZ1O+oaNRqx7oix9gdA7I8hd8TJSipLvt1V/5ONCLjLK+77kyp9Jphy5HdYLf8Ciy9lHePtM5r2ZvnqX9ST8zVc9kezL5FV2pvidBoZ97oIpLXyQMda9r2jBtdVMo5qzjxf3LPNlpZuCMPCt0TppmROhDM7S4EPzaAGxtl47Fd62DVODkpXs7biPRxbqTUWrX2l9+KTgkCKmsCdtQAerLouao07b3+n+zd1p33Lqee60/iqX7SPcWdDT4v9P9jTVOC6njHN0BpnRt3oPzNzHh2tzd6brfDYPTJu9rGuIxWiaVt5ro92TnODW0wJJAA3zjOg+ipD7Myq7n5HBdoNuyiefhsfJh6w+6s+i/i8jHpH4Ssm7NwJaaYAi4IMh6CO9RdmX2qfkH2g1scTU48zMIpgCA5ouDxaZh9xPUpeFdrwI2IV7S4mvirJWDKyWVreRr3AdQKkSpQk7tI4KpNKyZPty05dRxue5ziS/VxJJ4bhtKoMZFRrNJF1hJN0k2yCYvis+/zNbNM1oe8AB7xoHHTboFbUqVN04+qtyKypUmpva95rqWEyytZckvdqTqddXHquV1m8sbnOKzSsdXwqLLHyX/AAGgVBXleReUY2iZq4nUIAgCAIAgCAIAgCAIAgNdKCx+mnGPYu8fWicXsZffIHxnlHEtEssja+aJpcbxB1NTTTs75jDa+y+wfeQpdGkqtRQfEjVajpwckcojxqreLvqqh1zf5yS23kvbavT08LRy+wuiPOVMRVze0+rMKXHatwIdVVDmn6LpJCOolctFTTuorojrpJtWcn1ZWmme6znOJc1xc1x2tcTmLmniJcSbjjN13p0abW2K6I5VK1ROyk+rLkFZUVNTCx88ri57WNc9znFuZwGhcdOLqUapClBNqK2X7kdoTqSaWZ7fezr1NgNPEAIxK2wDbtmmaSG3IHBcNLucbbOEeVeeliJy326L+C9VCK49WXu5UV73nvsv2xUXsL2F8/OetY00vd0X8GdDH39X/JzzspUzY5aYNLzdj/nJJJPpDYXk2Vr2bNyjK/0S+hXY+Ki1Y6bRSNbh8TntzMEDC5uhuBGLix0VHJN1mlvv9y4ulSu91jBwfEqV8zGxUm9PcCWvLIm6W26G9ipFejVjBuU7pe9kahWpSmlGNmXJGR5j/wC1udqeFkptddvfLVOVvxfqbNRv+F9DyWRf3S70KX3lm8v8v1/gxaP+L6Gp3b23yDgkDIeDoLa7ONTOzb5ZeJFx/tR8DRRFuUkDKWg8epzcH7tOtTZqWZJ7n9iGmrXXcVpy18hBaBmO0nQa5tOTZboKVFKMNj3GYNORbfKHuzOBubXsRroL9BP8VvGDirI1ck3dm3o39sQPiJ4Y1BOy5Li23MLWUOpF0aiktxKpvSwcXvIzI94JadCLgjkI2qYpXV0RctjwHnlPWVq0nvNk2jyVkwSfcdhpc7fSNvBb0fSd/DrULF1UlYl4Wld3OhtbYADYFSMt0rFUMhAEAQBAEAQBAEAQBAEBZqYsw5xsW0JWZrKN0YDXEG40IUhpM4rYandVTmWiqWMFyWEgD9E5rfcpGFko1Yt8ThiYuVKSRyCkPAHnXq6fsnmZ+0YJFlHsSLmbRHgnpXeluI9XeVwuYRVcD3aNZKxx6A8E/cotaDlGUV3pkmnJXi/A7s14IBBBB1BGUgjpXlbNbz0iaZ6uP6ypZi6Oadlo/LUv6j+Twgrjsv2ZFX2hvidMwqJr6KBjhdroYwRrqDGAdipKknGq2uP3LiMVKCT4FaXBqeJ4fHHZ4FgczzYcliedbTxFSayyez5GsMPTg7xW08OwGmJJMbrnU/KS+8ixNRK1/JGHhqb7vNlPg/TeLd6yb3lnWqvHyX8DVqfDzZdrMIgmymWPNlFhwniw8xWtPEVKd8rtczOhTnbMtxj/AAao/E/vye8umu1+b6Gmp0eX6j4NUfif35PeTXa/N9BqdHl+o+DVH4n9+T3k16vzfQanR5fqeotz1K0hzIsrhsIdJp1lYljK0lZv6GVhaSd0iLbp8CcXF7Bwx3zR9McRHOp+GxCtZ7iDiKDvdESKsCEbHCMLdO65uIx3zuXmHP8AguNWqoL3nWnTc37jpeE0YjYLADQAAcTRxKjrVM7LijTyozXOA2kBcUrnW5RsgOgIWWmhdHtYMhAEAQFEBVAEBRAVQBAUIQEb3WboocMjbLM55DzlYyMAucQLnQm1gOPnCkUoaXYkcKktHtuRDcZiOK17+25KqNlMXn5DemElo+i11gQ2xtmudQutSVOEtElt4mIQnKGkb2cCbDD4zr8r5ppx/jWjm/8ArGMqMJ25ahJJNO0k7SXSa/vLusbXWxSZweEot3cUU+ClD5Mzrk95Ndr87GqUeVD4KUPkzOuT3k12vzsapR5UPgpQ+TM65PeTXa/OxqlHlRG93O5+nghjmgYYyHhjmtc+xBDiNCdCCPvPMrDs3EzqVck3e5Cx9CNOnmhssQJzyJAMzrG2lyrhpKdirUm4XueK4ajbsO0krFRJPYKcm1tOzYlQyz4fRMiqZKYAQmQwuyvfHvRBY121vCLTceCvGVaipznK19/1PX0YZ1GJZw+idDG2NjsWe0Xs7PE+9yTcOfqRqpEJKUU5ZL/MjVU1NqOa3yMm0n1t10639X4PM5+t8fkaaiwN9PNG6CfExCRJnp99zuzHKWmzzZp74m17rhTq55yjLLs6EmrDLTjKObb1NzaT6266dd/V+DzI1pfH5C0n1t106er8HmLS+PyFpPrbrp09X4PMWl8fkLSfW3XTp6vweYtL4/IWk+tuunT1fg8xaXx+Rn4dTZ2PD+2r3FjU73cafRy8XLdcKk8sk42+V/udqcMyd7/MjuI01G6pfHI9gmYWhzc2QuzhpZcHvr5m7OPRTadSpo8y3ESdOGfK95JabDxEy5ABGjWjY3+ahTrZ3ZEyNJRV2ZVI/R3Nc/iuU1tOkHsOYYgKh0lXXMqa8TNqmxMiaJN5MYkY0fJ24TC11y7ZcHpPdTtONOyta/vMKmnTdS7vc6pTw5deNRpSubRjYvLU3CAIAgCAICiAqgCAIDHr4nvhlZFJvUjmuDJbZsjiCGuy3F7HW1+JZVk9phnJqPcDVMrGPrKwVTISCM5lkJJFwDvh4OtibX2edWkasXHYrXK+cJZtrvY6ThNPcEEnSwFrKHXeWV0SaKvGzLda6oiaXb3AQDYfKyA6nT/41mnlnK20TvBXNTJj8we1m8RXdfXfn8V/+FzKWsInFyzbvd/ZFeJtJKwGPzb4Y94iuBe+/P5v+Fzpqiy5s3l/Y1n1sti93Xn8RD65/wD4lpq8eL6f2b6Z8B3Xn8RD65//AIk1ePF9P7GmfA026SOprWMj+RiY05iA57i51iBrlFgATpZS8I4Yeefa2RcUpVo5VsRGzuNmz5jNF0Wf7FO1+Oa9iHqTy2uabdJhb6ZzA9zXZgSMt+I867RxCrbbWscZUNFsvc6m27qRm0HeWAEEggtjaQRbnH3nlVAoLPt4/cvHJqN1wKYfE6aKMiJ8zsoud/fFs0ubd9crNS1OTV7K/C5pTvUina78bHnFqd0UEjzTvj0NnmrkdYnQEN+lrxLNKanNJSv/AKoVYOMG8tv9iKVEriy2d1m96CTYEcnIrTRQV2krsrtJN2TbsiZU9E97GvFI8hwBB7clF7i+xVEqqTaz/tRZxptpPJ+4udzpPI3/AG2RY00ef9qNtFLk/cO50nkb/tsiaaPP+1GNE+T9w7nSeRyfbJE00ef9qGilyfuHc2TyOT7bImmjz/tQ0T5P3G1wancwPzQuiuRo6Z01/OdijV5KTVnf5WJFGLindW+dzlm63/eAftqT8IVc4T8k/CRV4j82vkdga4PBHm/mqFpxLm6kYk5yM0Op/j/X4LpFZ5bTnL1YmgkeRVMYCQMjrgE2Jz7SFMVNaNzt3r6ERzlnUb7LEhw0uObNfSzdb7Rf+Sg1YxTuu8m05Nqz7jOXM6BAEAQBAUQBAVQBAEBq8SxbenhgZn01sdQSdNOP+akUqGeN27EerWyStY1Yq2vL3A7SXG/EOfoCkxpyikmcHOMm2i5gldG+GKphmYWSDMWOcBdpOhAOxwHEVxrO7cWt247Uo2s0zNxqrjMJtJGdW/Sby9K0w0XnWw2xDWQiFRMztiLht2O4xyFXEE9HIqpP/wCiDJmdsu4be95RzI09EvEL8Qzd/Z4bPSauNmdrjthnhs9JqWYuO2Y/GM9JqxZgdsx+MZ6TUswQnsgSNdJBlcDwXbCDxhT8HuZDxW9E6ZWR9qts9htF3ocL5mRDOLcoOh5FURks74p/ctJQeVcGZe4CqE1LFKAWtcw6HaOGQueNknI3wkHGJscUwemIknlj3x7WuN5HPcOC0nvSbfcuFKtOCUYvYdqlGE3mkjjuH7rIH1NOO13ljpImlsjmkWLmtcTYa7SbK6nUlo2nv2lTGlF1Fl3HeQALDQDYAvPl2Hk2NgCeIHTXp4kMM1oikIzPmDCb2GthbocB+NuUrreO5I42k9rZcpq0ta8TGxZa5Gt7mw2cfm2EHS9gdO7WXvMxqWTzdxR2MwjYXHmDT/Gy2WGqGHiIGMMWvrvrG/omKRxHMSHWJW+rvh5o00/v8iC47g8k+IiqbYgSQOLyQGuawMzZWd80jLbU68ys6E1Cg6b4Mr6sHKtn8Ce0+Ixi4zG50GjlWToz4FjCrEz5qZrhbj5dLrhGbi7o7OCasyH1FQBiEcVjcwyPzcXBkYLW/wCoKxi3orMgyitJmRNmDQWVY95YLcVWDIQFUAQBAEAQFEBVAEBGd0mM4fSuL56tsE1u9Yc8motrELnZzKTS0kllSuiPUjBPNezINLuqpqukqooHuilc10bXSsIFjp3zbhtxfouFZww9Se1LcV861Onve8gWBW4bHNFxbbbnuFa4F74srcYt0kbbe2+C3qCn2RBuxvY8EdQSyF2WKxoDdANvIFzq7jpTe0vb20DvRpzBb2VjS7udd3P4NBFSwtEMRJa1znFrCXOcAXEkjlXj69ac6jlfvPVUaUYQSSNh2jD4mL0Y/YuOeXE6ZVwHaMPiYvRj9iZ5cRlXA5z2VYWMlpsjGtux98oA+kORXHZjbjK5WdoJJxN1iVNSU8VFnlfG+obwGECQPlkjDDa7HGPWQd6W7eS4VbHbOT4MsZbIxSM7sR1LHYc2NjrmIuY8WOjs7nWvx8FzTpyrni/aRthtzJVjYJpakDaYpLdOQqLHeiSz503MYfmq8Nc4jLLOwdGSVlx57jrVzVn6svcVdKHrRfE+kKmNziMulgbO02846lTxaW8sZJssxRSPuXSEC5AAFth29YWzcVuRqlJ72Y7ixhLTHK61rc9tnJfbxX/gttr23NXZbLMw8XoXyU0rnSSQucWEGI2Ng4CxuNlrC36IOhuF2oTSqJWuc6sW6bb2EX7jv8tq/Sb7FZaSPKiBkfEsUVA6epfSw1tS6Vjc78zwGgXaLXDTwuENLJUqxpwU5RVmZhTc5OMZbS3h8AnMjWV1XmjcWPYXNuCCRyag2Nit5SypNxW01Su2s24y+5Dxb/1tXqQNHt5ehaOorP1UZyO/tE8bTu/noqdzRaKLIDV49RNrd+dPbeQ+mdwJdJXvzZe91+YdqNNOcKak7eZGttOlsFgAqx7ycj0hkIAgCAIAgCAIAgMTFKZ0seRjshLoySC9pyCRpeAWm4JYHAc5CynYwzQ0XY9wqI3FGx52kzOkludpJzkgldXiKj7zTRQ32NB2Q9zjw+KemgvEGCN0cDe8yucWkMaNhzHYNLK37JxkIJ06jt3lV2nhZzanBXOb7n6CZzXytgnc17jZzI5HNIBINiBbbceZWOFrUouTlJJv3kHE0asrKMXsNr3PqPJqn1M3uqXrVDnXVEXVa3K+g7n1Hk1T6mb3U1qhzrqhqtblfQs1WF1BbpTVN/2M3urSpiaLWya6o3p4asnti+hdGHVBGtNU+pm91b61R511Rpqta/svodOwLGWmmiErKiORrWte10E+1oAuDl1Btfzry1ejao8rTXij0lGd4K6afgZ/daHll9TP7q46OX/NHTMO60PLL6mf3U0cv+aGZHP+yhIJXU8jBIWAPa5zo5GgElpAu4Dbr1K27N9XNFlbj03Zkcx3dRJUSYY50UY7UcMgBdwrGI8L1Q2cpWXglBuz9oLGOaTa9kv7iN2U2HwSRxwxPD5HPJeX3vla22h2cFavARres3buNljnS2KJIXdlKpIINNT2Oh1k9qwuyYczHpSXL5nOsLr3Qmis0E08zntvfU3hNjzfJ/eVtoM11ffsGstbbbtvU6N8alT5NT9cntWnoiHMx6Uly+Y+NSp8mp+uT2p6IhzMelJcvmPjUqfJqfrk9qeiIczHpSXL5mThu76eslbTvhhY197uaX3GUF3GeZYl2dGis6kzaOOdX1HGxvFoZLu5/GA2odTy08cDGsLm1Ze35ThN0N2ix4Woue986i4mh6udO93u4EmhW25Wre8wG4q6oe97qVtOxjnta5rrmXhDh2yiw4Oh1vmKkQoaNe1e9vkcKlXO91reYbJme3kuPxC6SVos5J3kifKkLk4Ji+GHtmrZY3fikDPWCoI/OFaQn6q/8shuNm/FHe1VkwIAgCAIAgCAogKoAgCAIChFwgMLCMMbSxiGNzjG3RjCIwGjjAyNG03OvKsyk27sGcsAIAgCAIAgCAtzwskaWSNa9h0LXgOaRzg6FZTad0YaTVmaOv3G0MoblpoIS03DooKW/QQ+NwI8y7azV75PqznoKfdFdClDuMoYi+9PBI1xuGyQUtmnjylsYNuklNaq90n1YdCm98V0MmTcvQFpAoqRpINnCCC45xdpHWmtVud9WY1elyroa2n3BULHMcY2PDSTlfBRWc47S7LCD5gQE1mpxfV/yZ0MOC6G0+DGH+QUfqYfdTWa3O+rGgpcq6D4MYf5BR+ph91NZrc76saClyroPgxh/kFH6mH3U1mtzvqxoKXKug+DdENY6WnifxSRRRNeOhwHJp50WJq98m/FmHh6fckh3Bj8OT9z2LfW58EaatHieTgEfjJetnsTW58ENVjxZ5O5uLw5etvsWdcnwRrqkOLKs3ORAg55DYg7W8XmWHi5tW2GVhIJ3NwopKNK7czCS55c4ymRkxlyU+bfWNLGP+btcA7bcQW+d7jFjcsFgASSeU2159FoZPSAIAgCAIAgKIAgKoAgCAIAgCAIAgCAIAgCAIAgCAIAgCAIAgCAIAgCAIAgCAIAgCAIAgCAIAgCAIAgCAIAgCAIAgCAIAgCAIAgCAIAgCAIAgCAIAgCAIAgCAIAgCAIAgCAFAEAQBAEAQBAEAQBAEAQBAEAQBAEAQBAEAQBAEAQBAEAQBAEAQBAEAQBAEAQH//Z" alt="Illustration">
+        </div>
+    </div>
+      
+       <div class="summary-container">
+        <div class="title">SUMMARY OF COVER</div>
+        <table>
+            <tr>
+                <th>Cover</th>
+                <th>Limit (up to)</th>
+                <th>Excess</th>
+            </tr>
+            <tr>
+                <td>Emergency Medical & Associated Expenses (including being diagnosed with COVID 19)</td>
+                <td>$12,000</td>
+                <td>$1500</td>
+            </tr>
+            <tr>
+                <td>Accommodation costs related to COVID-19 quarantine: if diagnosed with COVID-19</td>
+                <td>$50 per day (max 14 days)</td>
+                <td>$1500</td>
+            </tr>
+            <tr>
+                <td>Ambulance & hospital admissions</td>
+                <td>Unlimited (max up to 5 miles)</td>
+                <td>Nil</td>
+            </tr>
+            <tr>
+                <td>24 hrs telephone consultation</td>
+                <td>Unlimited</td>
+                <td>Nil</td>
+            </tr>
+            <tr>
+                <td>Emergency family travel</td>
+                <td>$1500</td>
+                <td>$250</td>
+            </tr>
+            <tr>
+                <td>Repatriation</td>
+                <td>$1500</td>
+                <td>$350</td>
+            </tr>
+            <tr>
+                <td>Dental care</td>
+                <td>$100</td>
+                <td>$20</td>
+            </tr>
+            <tr>
+                <td>Emergency Dental care</td>
+                <td>$100</td>
+                <td>$20</td>
+            </tr>
+            <tr>
+                <td>Legal Expenses</td>
+                <td>$100</td>
+                <td>Nil</td>
+            </tr>
+            <tr>
+                <td>Transportation and accommodation expenses in case you are hospitalized over 48 hours</td>
+                <td>$20 per person day (max $100)</td>
+                <td>$50</td>
+            </tr>
+            <tr>
+                <td>Medical Travel Assistance Service</td>
+                <td>Available</td>
+                <td>Nil</td>
+            </tr>
+        </table>
+        <div class="note">
+            THIS POLICY, ALONG WITH THE CORRESPONDING INSURANCE AGREEMENT FORM REPRESENT THE MORGHEALTH INSURANCE CONTRACT. ALL CHANGES AND ADDITION TO THE PRESENT POLICY WILL BE VALID ONLY IF THEY ARE MADE IN WRITING AND ARE SIGNED BY AUTHORIZED REPRESENTATIVES OF THE PARTIES.
+        </div>
+        <div class="contact">
+            <p>Contact us</p>
+            <p>+1 780 628 2778 | <a href="mailto:insurance@morgphealth.com">insurance@morgphealth.com</a> | <a href="http://www.morgphealth.com" target="_blank">www.morgphealth.com</a></p>
+        </div>
+    </div>
+    </div>
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.4.0/jspdf.umd.min.js"></script>
+    
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const urlParams = new URLSearchParams(window.location.search);
+            const insuranceId = urlParams.get('insuranceId');
+            const userId = localStorage.getItem("userId");
+    
+            if (!insuranceId) {
+                alert("No insurance ID provided in the query string!");
+                return;
+            }
+    
+            fetch(`https://morgphealth.onrender.com/api/insurance/insurance/${userId}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success && data.insuranceData) {
+                        const insuranceData = data.insuranceData;
+    
+                        // Check if the insurance ID matches
+                        if (insuranceData._id === insuranceId) {
+                            // Populate form with insurance data
+                            document.getElementById('name').value = insuranceData.name || '';
+                            document.getElementById('email').value = insuranceData.email || '';
+                            document.getElementById('location').value = insuranceData.location || '';
+                            document.getElementById('type').value = insuranceData.type || '';
+                            document.getElementById('cover').value = insuranceData.cover || '';
+                            document.getElementById('policyTerm').value = insuranceData.policyTerm || '';
+                            document.getElementById('price').value = `$${insuranceData.price}` || '';
+                            document.getElementById('insured').value = insuranceData.insured ? 'Yes' : 'No';
+    
+                            // Conditionally render fields
+                            if (insuranceData.self === 'no') {
+                                document.getElementById('selfContainer').style.display = 'none';
+                            } else {
+                                document.getElementById('self').value = insuranceData.self || 'No';
                             }
+                            if (insuranceData.spouse === 'no') {
+                                document.getElementById('spouseContainer').style.display = 'none';
+                            } else {
+                                document.getElementById('spouse').value = insuranceData.spouse || 'No';
+                            }
+                            if (insuranceData.motherAge === 'no') {
+                                document.getElementById('motherAgeContainer').style.display = 'none';
+                            } else {
+                                document.getElementById('motherAge').value = insuranceData.motherAge || 'N/A';
+                            }
+                            if (insuranceData.child === 'no') {
+                                document.getElementById('childContainer').style.display = 'none';
+                            } else {
+                                document.getElementById('child').value = insuranceData.child || 'No';
+                            }
+    
+                            // Conditionally render Add-ons
+                            const addOnsContainer = document.getElementById('addOnsContainer');
+                            for (let i = 1; i <= 5; i++) {
+                                const title = insuranceData[`title${i}`];
+                                const frequency = insuranceData[`frequency${i}`];
+                                if (title && frequency) {
+                                    const addOnDiv = document.createElement('div');
+                                    addOnDiv.classList.add('row', 'mb-3');
+                                    addOnDiv.innerHTML = `
+                                        <div class="col-md-6">
+                                            <label for="title${i}">Add-on ${i} Title</label>
+                                            <input type="text" class="form-control" id="title${i}" value="${title}" readonly>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <label for="frequency${i}">Frequency ${i}</label>
+                                            <input type="text" class="form-control" id="frequency${i}" value="${frequency}" readonly>
+                                        </div>
+                                    `;
+                                    addOnsContainer.appendChild(addOnDiv);
+                                }
+                            }
+    
+                            const policyNo = insuranceData._id ? insuranceData._id.slice(0, 6) : '';
+                            document.getElementById('policyno').textContent = `Policy No: ${policyNo}`;
+                        } else {
+                            alert("Insurance ID does not match any record.");
                         }
-
-                        const policyNo = insuranceData._id ? insuranceData._id.slice(0, 6) : '';
-                        document.getElementById('policyno').textContent = `Policy No: ${policyNo}`;
-                    } else {
-                        alert("Insurance ID does not match any record.");
                     }
-                }
-            })
-            .catch(error => console.error('Error fetching insurance data:', error));
-
-        // Download page as image using html2canvas
-        document.getElementById('downloadBtn').addEventListener('click', function () {
-            html2canvas(document.getElementById('formContainer')).then(function (canvas) {
-                const link = document.createElement('a');
-                link.href = canvas.toDataURL('image/png');
-                link.download = 'insurance_details.png';
-                link.click();
+                })
+                .catch(error => console.error('Error fetching insurance data:', error));
+    
+            // Download page as PDF using html2canvas and jsPDF
+            document.getElementById('downloadBtn').addEventListener('click', function () {
+                html2canvas(document.getElementById('formContainer')).then(canvas => {
+                    const imgData = canvas.toDataURL('image/png'); // Convert to an image
+                    const { jsPDF } = window.jspdf; // Destructure jsPDF from window object
+                    const pdf = new jsPDF(); // Create a new PDF instance
+                    
+                    const imgProps = pdf.getImageProperties(imgData);
+                    const pdfWidth = pdf.internal.pageSize.getWidth();
+                    const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
+    
+                    pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight); // Add the image to the PDF
+                    pdf.save('insurance_details.pdf'); // Download the PDF
+                }).catch(error => {
+                    console.error('Error capturing the page:', error);
+                    alert('Failed to generate PDF. Please try again.');
+                });
             });
         });
-    });
-</script>
+    </script>
+    
+
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 

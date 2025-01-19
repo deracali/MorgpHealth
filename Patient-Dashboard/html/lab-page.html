@@ -173,7 +173,8 @@
   <script src="https://js.stripe.com/v3/"></script>
   <!-- Bootstrap 5 JS -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.4.0/jspdf.umd.min.js"></script>
+  
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
   <script>
     // Include loadStripe helper function
@@ -268,34 +269,52 @@ console.log(address)
         const actionButtonContainer = document.getElementById("actionButtonContainer");
 
 // console.log(timer)
-        if (timer) {
-          // console.log("Timer is true");
-          confidentialElement.textContent = "Confidential";
-          actionButtonContainer.innerHTML = `
-        <button id="downloadButton" class="btn btn-primary">Download</button>
-      `;
+if (timer) {
+    // Console statement to track timer status (optional)
+    // console.log("Timer is true");
 
-          document.getElementById("downloadButton").addEventListener("click", () => {
-            html2canvas(document.body, {
-              scrollX: 0,
-              scrollY: 0,
-              windowWidth: document.body.scrollWidth,
-              windowHeight: document.body.scrollHeight,
-              useCORS: true,
-              backgroundColor: null,
-            }).then((canvas) => {
-              const link = document.createElement("a");
-              link.download = `Lab_${appointmentId}.png`;
-              link.href = canvas.toDataURL("image/png");
-              link.click();
-            });
-          });
-        } else {
-          // console.log("Timer is false");
-          confidentialElement.textContent = "Expired";
-          actionButtonContainer.innerHTML = `
+    confidentialElement.textContent = "Confidential";
+    actionButtonContainer.innerHTML = `
+        <button id="downloadButton" class="btn btn-primary">Download</button>
+    `;
+
+    document.getElementById("downloadButton").addEventListener("click", () => {
+        html2canvas(document.body, {
+            scrollX: 0,
+            scrollY: 0,
+            windowWidth: document.body.scrollWidth,
+            windowHeight: document.body.scrollHeight,
+            useCORS: true,
+            backgroundColor: null,
+        })
+        .then((canvas) => {
+            const { jsPDF } = window.jspdf; // Import jsPDF
+            const pdf = new jsPDF(); // Create a new jsPDF instance
+
+            const imgData = canvas.toDataURL("image/png"); // Convert canvas to image
+            const imgProps = pdf.getImageProperties(imgData); // Get image properties
+            const pdfWidth = pdf.internal.pageSize.getWidth(); // PDF width
+            const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width; // Calculate proportional height
+
+            pdf.addImage(imgData, "PNG", 0, 0, pdfWidth, pdfHeight); // Add image to PDF
+
+            const fileName = `Lab_${appointmentId}.pdf`; // File name for the PDF
+            pdf.save(fileName); // Trigger PDF download
+        })
+        .catch((error) => {
+            console.error("Error generating PDF:", error);
+            alert("Failed to generate PDF. Please try again.");
+        });
+    });
+} else {
+    // Console statement to track timer status (optional)
+    // console.log("Timer is false");
+
+    confidentialElement.textContent = "Expired";
+    actionButtonContainer.innerHTML = `
         <button id="payButton" class="btn btn-success">Pay Now</button>
-      `;
+    `;
+
 
 
 

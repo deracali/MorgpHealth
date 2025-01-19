@@ -206,7 +206,7 @@ const bookAppointment = async (req, res) => {
     try {
         console.log("Request Body:", req.body); // Log incoming request payload
 
-        const { userId, docId, slotDate, slotTime, concern, description, type, amount } = req.body;
+        const { userId, docId, slotDate, slotTime, concern, description, type, amount,duration } = req.body;
 
         // Fetch doctor data, excluding password field
         console.log("Fetching doctor data for ID:", docId); // Log doctor ID
@@ -266,6 +266,7 @@ const bookAppointment = async (req, res) => {
             concern,
             description,
             type,
+            duration,
             data: Date.now(), // Use Date.now() for timestamp
         };
 

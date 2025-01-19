@@ -3,14 +3,16 @@ import Hospital from '../models/hospitalsModel.js';
 // Create a new hospital
 const createHospital = async (req, res) => {
   try {
-    const { name, address, phone, email, services } = req.body;
+    const { name, address, phone, email, services, staff } = req.body;
 
+    // Create a new hospital with staff
     const newHospital = await Hospital.create({
       name,
       address,
       phone,
       email,
       services,
+      staff, // Include the staff array in the hospital creation
     });
 
     res.status(201).json({
@@ -24,6 +26,7 @@ const createHospital = async (req, res) => {
     });
   }
 };
+
 
 // Get all hospitals
 const getAllHospitals = async (req, res) => {

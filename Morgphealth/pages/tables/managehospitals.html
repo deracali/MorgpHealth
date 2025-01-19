@@ -292,7 +292,7 @@
         <div class="content-wrapper">
           <div class="page-header">
             <h3 class="page-title">
-              Basic Tables
+              Hospitals
             </h3>
             <nav aria-label="breadcrumb">
               <ol class="breadcrumb">
@@ -304,37 +304,38 @@
           <div class="row">
       
             <div class="col-lg-12 grid-margin stretch-card">
-                <div class="card">
-                  <div class="card-body">
-                    <h4 class="card-title">Hospital Management</h4>
-                    <p class="card-description">
-                      Add class <code>.table-striped</code>
-                    </p>
+              <div class="card">
+                <div class="card-body">
+                  <h4 class="card-title">Hospital Management</h4>
+                  <p class="card-description">
+                    Add class <code>.table-striped</code>
+                  </p>
               
-                    <!-- Overlay and Popup Container -->
-                    <div id="popup-overlay" class="popup-overlay"></div>
-                    <div id="popup-container"></div>
+                  <!-- Overlay and Popup Container -->
+                  <div id="popup-overlay" class="popup-overlay"></div>
+                  <div id="popup-container"></div>
               
-                    <div class="table-responsive">
-                      <table class="table table-striped" id="reassign-table">
-                        <thead>
-                            <tr>
-                              <th>Hospital Name</th>
-                              <th>Location</th>
-                              <th>Contact</th>
-                              <th>Email</th>
-                              <th>Created At</th>
-                              <th>Action</th>
-                            </tr>
-                          </thead>
-                          
-                        <tbody>
-                          <!-- Rows will be dynamically added here -->
-                        </tbody>
-                      </table>
-                    </div>
+                  <div class="table-responsive">
+                    <table class="table table-striped" id="reassign-table">
+                      <thead>
+                        <tr>
+                          <th>Hospital Name</th>
+                          <th>Location</th>
+                          <th>Contact</th>
+                          <th>Email</th>
+                          <th>Staff</th> <!-- Added a Staff column -->
+                          <th>Created At</th>
+                          <th>Action</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <!-- Rows will be dynamically added here -->
+                      </tbody>
+                    </table>
                   </div>
                 </div>
+              </div>
+              
               </div>
               
            
@@ -608,60 +609,68 @@
 
 
 <script>
-    // Fetch hospitals and render them in the table
-    const fetchHospitals = async () => {
-      try {
-        const response = await fetch('https://morgphealth.onrender.com/api/hospitals');
-        const data = await response.json();
-        const tableBody = document.querySelector('#reassign-table tbody');
-        tableBody.innerHTML = ''; // Clear existing rows
-  console.log(data)
-        // Populate the table with hospital data
-        data.data.forEach(hospital => {
-          const row = document.createElement('tr');
-          row.innerHTML = `
-            <td>${hospital.name}</td>
-            <td>${hospital.address}</td>
-            <td>${hospital.phone}</td>
-            <td>${hospital.email}</td>
-            <td>${new Date(hospital.createdAt).toLocaleDateString()}</td>
-            <td><button class="delete-btn btn-primary p-2" data-id="${hospital._id}">Delete</button></td>
-          `;
-          tableBody.appendChild(row);
-        });
-  
-        // Add event listener to the delete buttons
-        document.querySelectorAll('.delete-btn').forEach(button => {
-          button.addEventListener('click', handleDelete);
-        });
-      } catch (error) {
-        console.error('Error fetching hospitals:', error);
+  // Fetch hospitals and render them in the table
+const fetchHospitals = async () => {
+  try {
+    const response = await fetch('https://morgphealth.onrender.com/api/hospitals');
+    const data = await response.json();
+    const tableBody = document.querySelector('#reassign-table tbody');
+    tableBody.innerHTML = ''; // Clear existing rows
+    console.log(data);
+
+    // Populate the table with hospital data
+    data.data.forEach(hospital => {
+      // Staff details are assumed to be an array
+      const staffNames = hospital.staff && hospital.staff.length > 0 
+        ? hospital.staff.map(staff => `${staff.name} (${staff.role})`).join(', ') 
+        : 'No staff listed';
+
+      const row = document.createElement('tr');
+      row.innerHTML = `
+        <td>${hospital.name}</td>
+        <td>${hospital.address}</td>
+        <td>${hospital.phone}</td>
+        <td>${hospital.email}</td>
+        <td>${staffNames}</td> <!-- Display staff names and roles -->
+        <td>${new Date(hospital.createdAt).toLocaleDateString()}</td>
+        <td><button class="delete-btn btn-primary p-2" data-id="${hospital._id}">Delete</button></td>
+      `;
+      tableBody.appendChild(row);
+    });
+
+    // Add event listener to the delete buttons
+    document.querySelectorAll('.delete-btn').forEach(button => {
+      button.addEventListener('click', handleDelete);
+    });
+  } catch (error) {
+    console.error('Error fetching hospitals:', error);
+  }
+};
+
+// Handle deletion of a hospital
+const handleDelete = async (event) => {
+  const hospitalId = event.target.getAttribute('data-id');
+  if (confirm('Are you sure you want to delete this hospital?')) {
+    try {
+      const response = await fetch(`https://morgphealth.onrender.com/api/hospitals/delete/${hospitalId}`, {
+        method: 'DELETE',
+      });
+      if (response.ok) {
+        alert('Hospital deleted successfully');
+        fetchHospitals(); // Refresh the table
+      } else {
+        alert('Error deleting hospital');
       }
-    };
-  
-    // Handle deletion of a hospital
-    const handleDelete = async (event) => {
-      const hospitalId = event.target.getAttribute('data-id');
-      if (confirm('Are you sure you want to delete this hospital?')) {
-        try {
-          const response = await fetch(`https://morgphealth.onrender.com/api/hospitals/delete/${hospitalId}`, {
-            method: 'DELETE',
-          });
-          if (response.ok) {
-            alert('Hospital deleted successfully');
-            fetchHospitals(); // Refresh the table
-          } else {
-            alert('Error deleting hospital');
-          }
-        } catch (error) {
-          console.error('Error deleting hospital:', error);
-        }
-      }
-    };
-  
-    // Call fetchHospitals when the page loads
-    document.addEventListener('DOMContentLoaded', fetchHospitals);
-  </script>
+    } catch (error) {
+      console.error('Error deleting hospital:', error);
+    }
+  }
+};
+
+// Call fetchHospitals when the page loads
+document.addEventListener('DOMContentLoaded', fetchHospitals);
+
+</script>
   
 
 

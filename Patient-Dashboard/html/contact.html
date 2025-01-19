@@ -5,49 +5,94 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Contact Us</title>
   <style>
+  
+    @import url('https://fonts.googleapis.com/css?family=Montserrat:400,800');
+  
+    * {
+      box-sizing:border-box;
+      margin:0;
+    }
+  
     body {
-      font-family: Arial, sans-serif;
-      margin: 0;
-      padding: 0;
-      background-color: #f4f4f4;
-      color: #333;
+      /* background: linear-gradient(90deg, #BE8CEF 0%, rgba(61, 46, 232, 0.83) 100%); */
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      flex-direction: column;
+      font-family: 'Montserrat', sans-serif;
+      font-size:10px;
+      height: 100vh;
+      margin: -20px 0 50px;
     }
+  
     .container {
-      max-width: 800px;
-      margin: 50px auto;
-      background: #fff;
-      padding: 20px;
-      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-      border-radius: 8px;
-    }
+  background-color: #ffffff; /* Replace $white with actual color */
+  border-radius: 5px;
+  box-shadow: 0 14px 28px rgba(0,0,0,0.25), 
+              0 10px 10px rgba(0,0,0,0.22);
+  position: relative;
+  overflow: hidden;
+  width: 768px;
+  max-width: 100%;
+  min-height: 480px;
+  min-width: 370px;
+}
+
     h1 {
-      text-align: center;
-      margin-bottom: 20px;
+      font-size:2.5rem;
+      text-align: left;
+      margin-left: 30px;
+      padding-top: 10px;
+      margin-bottom:1rem;
     }
+  
     .contact-details {
-      line-height: 1.8;
-      font-size: 18px;
+      padding: 20px;
     }
-    .contact-details i {
-      color: #007bff;
-      margin-right: 10px;
-    }
+  
     .contact-item {
       margin-bottom: 15px;
+      font-size: 1rem;
+      display: flex;
+      align-items: center;
     }
+  
+    .contact-item i {
+      margin-right: 10px;
+    }
+  
+    .call-button {
+      border-radius: 20px;
+      border: 1px solid #00b4cf;
+      background-color: #00b4cf;
+      color: #FFFFFF;
+      font-size: 12px;
+      font-weight: bold;
+      padding: 12px 45px;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      transition: transform 80ms ease-in;
+      cursor:pointer;
+    }
+  
+    .call-button:hover {
+      opacity:0.7;
+    }
+  
     .footer {
       text-align: center;
       margin-top: 20px;
-      font-size: 14px;
-      color: #666;
     }
-    a {
-      color: #007bff;
-      text-decoration: none;
-      transition: color 0.3s;
+  
+    .footer p {
+      font-size: 0.9rem;
+      color: #555;
     }
-    a:hover {
-      color: #0056b3;
+  
+    @media only screen and (max-width: 600px) {
+      .container {
+        width: 100%;
+      }
     }
   </style>
 </head>
@@ -57,10 +102,10 @@
     <h1>Contact Us</h1>
     <div class="contact-details">
       <div class="contact-item">
-        <i class="fas fa-map-marker-alt"></i><strong>Address:</strong> 42 Hazelbury Park, Castaheany, Clonee, Co. Dublin, D15 FD76, Ireland
+        <i class="fas fa-map-marker-alt"></i><strong>Address: </strong> 42 Hazelbury Park, Castaheany, Clonee, Co. Dublin, D15 FD76, Ireland
       </div>
       <div class="contact-item">
-        <i class="fas fa-phone-alt"></i><strong>Phone:</strong> <a href="tel:+17806282778">+1-780-628-2778</a>
+        <i class="fas fa-phone-alt"></i><strong>Phone:</strong> <span id="phoneNumber"></span>
       </div>
       <div class="contact-item">
         <i class="fas fa-envelope"></i><strong>Email:</strong> <a href="mailto:support@morgphealth.com">support@morgphealth.com</a>
@@ -68,13 +113,69 @@
       <div class="contact-item">
         <i class="fas fa-clock"></i><strong>Working Hours:</strong> Monday - Friday, 9 AM - 5 PM
       </div>
+      <div class="contact-item">
+        <button class="call-button" id="callButton">Call Now</button>
+      </div>
     </div>
     <div class="footer">
       <p>&copy; 2024 Your Company Name. All rights reserved.</p>
     </div>
   </div>
+  
 
   <!-- Font Awesome Icons (for icons) -->
   <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+
+  <script>
+    // IP Geolocation API Token
+    const apiToken = 'b4509418a752b2';
+
+    // Define phone numbers for all the regions
+    const phoneNumbers = {
+      "EG": "+20-2-2345-6775", // Egypt
+      "KE": "+254-7185432695", // Kenya
+      "ZA": "+27-875510857", // South Africa
+      "GH": "+233-27-6657036", // Ghana
+      "HU": "+36-12654369", // Hungary
+      "IE": "+353-8921109819", // Ireland
+      "GB": "+44-7764989286", // United Kingdom
+      "ES": "+34-919931818", // Spain
+      "AT": "+40-1-9289349", // Austria
+      "BR": "+55-956874342", // Brazil
+      "AE": "+971-559878903", // UAE
+      "QA": "+974-674398790", // Qatar
+      "SA": "+966-124567894", // Saudi Arabia
+      "OM": "+968-523768904", // Oman
+      "CN": "+86-6501279872", // China
+      "RU": "+7-8126789447", // Russia
+      "CY": "+357-22059257", // Cyprus
+      "IN": "+91-8306498774", // India
+      "PA": "+507-8348172", // Panama
+      "VE": "+58-52187542", // Venezuela
+      "JM": "+1-8763698743", // Jamaica
+      "GD": "+1-4737643968", // Grenada
+      "HR": "+36-12654369", // Croatia
+      "TR": "+90-5466781234", // Turkey
+    };
+
+    // Fetch user's IP and location details
+    fetch('https://ipinfo.io/json?token=' + apiToken)
+      .then(response => response.json())
+      .then(data => {
+        const country = data.country; // Get the country code from geolocation data
+        const phoneNumber = phoneNumbers[country] || '+1-780-628-2778'; // Default to +1-780-628-2778 if no match
+
+        // Display the phone number on the page
+        const phoneNumberElement = document.getElementById('phoneNumber');
+        phoneNumberElement.textContent = `Our phone number: ${phoneNumber}`;
+
+        // Update the call button with the correct number
+        const callButton = document.getElementById('callButton');
+        callButton.addEventListener('click', function() {
+          window.location.href = `tel:${phoneNumber}`; // Initiate call
+        });
+      })
+      .catch(error => console.error('Error fetching geolocation data:', error));
+  </script>
 </body>
 </html>

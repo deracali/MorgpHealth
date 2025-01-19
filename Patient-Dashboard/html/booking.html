@@ -458,13 +458,22 @@ document.addEventListener('DOMContentLoaded', () => {
                 </div>
                 <h5 class="card-title">${doctor.name}</h5>
                 <p class="card-text text-muted">${doctor.speciality}</p>
-                <button class="btn btn-primary btn-block" onclick="bookAppointment('${doctor._id}')">Book Appointment</button>
+                <button class="btn btn-primary btn-block" data-doctor-id="${doctor._id}">Book Appointment</button>
               </div>
             </div>
           </div>
         `
       )
       .join('');
+
+    // Add event listeners to the "Book Appointment" buttons
+    const bookButtons = doctorGrid.querySelectorAll('button');
+    bookButtons.forEach((button) => {
+      button.addEventListener('click', (event) => {
+        const doctorId = event.target.getAttribute('data-doctor-id');
+        bookAppointment(doctorId);
+      });
+    });
   }
 
   function bookAppointment(doctorId) {
@@ -474,7 +483,6 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 </script>
-
 
 <script>
   // Get the 'insured' value from localStorage

@@ -626,8 +626,12 @@
   </script>
   <!-- container-scroller -->
   <script>
+    // Add a single submit event listener with 'once' to prevent duplicates
     document.getElementById('blogForm').addEventListener('submit', async function (e) {
-      e.preventDefault();
+      e.preventDefault(); // Stop the form's default action
+  
+      const submitButton = document.querySelector('#blogForm button[type="submit"]');
+      submitButton.disabled = true; // Disable the button to prevent repeated submissions
   
       const formData = new FormData();
       formData.append('author', document.getElementById('author').value);
@@ -646,62 +650,62 @@
           displaySuccessPopup();
           console.log(result);
         } else {
-          displayFailedPopup()
+          displayFailedPopup();
         }
       } catch (error) {
         console.error('Error:', error);
-        displayFailedPopup()
+        displayFailedPopup();
+      } finally {
+        submitButton.disabled = false; // Re-enable the button for new submissions
       }
-    });
-
-
-
-    // Function to display the custom success popup with overlay
-function displaySuccessPopup() {
-  const successPopup = `
-    <div class="wrapper text-center">
-      <h4 class="card-title">Successfull</h4>
-      <p class="card-description">Blog Uploaded!</p>
-      <button class="btn btn-outline-primary" onclick="closePopup()">Close</button>
-    </div>
-  `;
+    }, { once: true }); // Ensures this listener is attached only once
   
-  // Insert the success popup into the DOM
-  const popupContainer = document.getElementById('popup-container');
-  const overlay = document.getElementById('popup-overlay');
+    // Function to display the custom success popup
+    function displaySuccessPopup() {
+      const successPopup = `
+        <div class="wrapper text-center">
+          <h4 class="card-title">Successful</h4>
+          <p class="card-description">Blog Uploaded!</p>
+          <button class="btn btn-outline-primary" onclick="closePopup()">Close</button>
+        </div>
+      `;
   
-  popupContainer.innerHTML = successPopup;
-  popupContainer.style.display = 'block';  // Show popup
-  overlay.style.display = 'block';  // Show overlay
-}
-// Function to display the custom success popup with overlay
-function displayFailedPopup() {
-  const successPopup = `
-    <div class="wrapper text-center">
-      <h4 class="card-title">Failed</h4>
-      <p class="card-description">Upload Failed !</p>
-      <button class="btn btn-outline-red" onclick="closePopup()">Close</button>
-    </div>
-  `;
+      const popupContainer = document.getElementById('popup-container');
+      const overlay = document.getElementById('popup-overlay');
   
-  // Insert the success popup into the DOM
-  const popupContainer = document.getElementById('popup-container');
-  const overlay = document.getElementById('popup-overlay');
+      popupContainer.innerHTML = successPopup;
+      popupContainer.style.display = 'block'; // Show popup
+      overlay.style.display = 'block'; // Show overlay
+    }
   
-  popupContainer.innerHTML = successPopup;
-  popupContainer.style.display = 'block';  // Show popup
-  overlay.style.display = 'block';  // Show overlay
-}
-
-// Function to close the popup and hide the overlay
-function closePopup() {
-  const popupContainer = document.getElementById('popup-container');
-  const overlay = document.getElementById('popup-overlay');
+    // Function to display the failed popup
+    function displayFailedPopup() {
+      const failedPopup = `
+        <div class="wrapper text-center">
+          <h4 class="card-title">Failed</h4>
+          <p class="card-description">Upload Failed!</p>
+          <button class="btn btn-outline-red" onclick="closePopup()">Close</button>
+        </div>
+      `;
   
-  popupContainer.style.display = 'none';  // Hide popup
-  overlay.style.display = 'none';  // Hide overlay
-}
+      const popupContainer = document.getElementById('popup-container');
+      const overlay = document.getElementById('popup-overlay');
+  
+      popupContainer.innerHTML = failedPopup;
+      popupContainer.style.display = 'block'; // Show popup
+      overlay.style.display = 'block'; // Show overlay
+    }
+  
+    // Function to close the popup and hide the overlay
+    function closePopup() {
+      const popupContainer = document.getElementById('popup-container');
+      const overlay = document.getElementById('popup-overlay');
+  
+      popupContainer.style.display = 'none'; // Hide popup
+      overlay.style.display = 'none'; // Hide overlay
+    }
   </script>
+  
 
 
 
@@ -764,11 +768,11 @@ function closePopup() {
         throw new Error("Failed to delete blog");
       }
 
-      displaySuccessPopup(); // Show success popup
+      displayDeleteSuccessPopup(); // Show success popup
       fetchBlogs(0, currentOffset + limit); // Refresh the blog list
     } catch (error) {
       console.error("Error deleting blog:", error);
-      displayFailedPopup(); // Show failure popup
+      displayDeleteFailedPopup(); // Show failure popup
     }
   }
 
@@ -786,7 +790,7 @@ function closePopup() {
   });
 
   // Function to display the custom success popup with overlay
-  function displaySuccessPopup() {
+  function displayDeleteSuccessPopup() {
     const successPopup = `
       <div class="wrapper text-center">
         <h4 class="card-title">Deleted</h4>
@@ -804,7 +808,7 @@ function closePopup() {
   }
 
   // Function to display the custom failure popup with overlay
-  function displayFailedPopup() {
+  function displayDeleteFailedPopup() {
     const failedPopup = `
       <div class="wrapper text-center">
         <h4 class="card-title">Failed</h4>

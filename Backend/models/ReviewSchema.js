@@ -6,11 +6,12 @@ const ReviewdoctorSchema = new mongoose.Schema({
     password: { type: String, required: true }, // Required
     services: [
         {
-          name: { type: String, required: true }, // Name of the service (e.g., "Headache", "Malaria")
-          fee: { type: Number, required: true }, // Fee for the service
+            name: { type: String, required: true }, // Name of the service (e.g., "Headache", "Malaria")
+            fee: { type: Number, required: true }, // Fee for the service
+            time: { type: String, required: true }, // Time for the appointment
         },
-      ],
-    image: { 
+    ],
+    image: {
         type: String,
         default: 'https://example.com/placeholder-image.jpg' // Placeholder image
     }, // Optional field
@@ -25,7 +26,7 @@ const ReviewdoctorSchema = new mongoose.Schema({
     phone: { type: Number }, // Optional field
     balance: { type: Number, default: 0 }, // Optional field
     address: { type: Object }, // Optional field
-    docaddress: {type: String},
+    docaddress: { type: String },
     slots_booked: { type: Object }, // Optional field
     region: { type: String }, // Optional field
     age: { type: Number }, // Optional field
@@ -34,9 +35,24 @@ const ReviewdoctorSchema = new mongoose.Schema({
     medicalCouncilName: { type: String }, // Optional field
     medicalCouncilCountry: { type: String }, // Optional field
     graduationYear: { type: Number }, // Optional field
-    medicalLicense: { type: String,   default: 'https://example.com/placeholder-image.jpg' }, // Optional field
-    diplomaCertificates: { type: String,   default: 'https://example.com/placeholder-image.jpg' },
-    proofOfID: { type: String,   default: 'https://example.com/placeholder-image.jpg' }, 
+    medicalLicense: { type: String, default: 'https://example.com/placeholder-image.jpg' }, // Optional field
+    diplomaCertificates: { type: String, default: 'https://example.com/placeholder-image.jpg' },
+    proofOfID: { type: String, default: 'https://example.com/placeholder-image.jpg' },
+    paymentMethods: [
+        {
+            method: { type: String, required: true }, // Name of the payment method (e.g., "PayPal", "Bank Transfer")
+            details: {
+                paypalEmail: { type: String }, // Optional for PayPal
+                accountHolder: { type: String }, // Optional for bank accounts
+                bankAccount: { type: String }, // Optional for bank accounts
+                iban: { type: String } // Optional for international bank accounts
+            }
+        }
+    ],
+    hospital: { 
+        type: mongoose.Schema.Types.ObjectId, 
+        ref: 'Hospital' // Reference to the hospital the doctor is associated with
+    }
 }, { timestamps: true });
 
 const ReviewdocModel = mongoose.model('Reviewdoctor', ReviewdoctorSchema);

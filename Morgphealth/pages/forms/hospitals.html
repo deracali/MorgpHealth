@@ -323,98 +323,142 @@
           </div>
           <div class="row grid-margin">
             <div class="col-12">
-                <div class="card">
-                    <div class="card-body">
-                      <h4 class="card-title">Add Hospital</h4>
-                      <form id="hospitalForm">
-                        <!-- Hospital Name -->
-                        <div class="form-group row">
-                          <div class="col-lg-3">
-                            <label for="name" class="col-form-label">Hospital Name</label>
-                          </div>
-                          <div class="col-lg-8">
-                            <input 
-                              type="text" 
-                              id="name" 
-                              name="name" 
-                              class="form-control" 
-                              placeholder="Enter hospital name" 
-                              required />
-                          </div>
-                        </div>
-                  
-                        <!-- Address -->
-                        <div class="form-group row">
-                          <div class="col-lg-3">
-                            <label for="address" class="col-form-label">Address</label>
-                          </div>
-                          <div class="col-lg-8">
-                            <input 
-                              type="text" 
-                              id="address" 
-                              name="address" 
-                              class="form-control" 
-                              placeholder="Enter hospital address" 
-                              required />
-                          </div>
-                        </div>
-                  
-                        <!-- Phone -->
-                        <div class="form-group row">
-                          <div class="col-lg-3">
-                            <label for="phone" class="col-form-label">Phone</label>
-                          </div>
-                          <div class="col-lg-8">
-                            <input 
-                              type="text" 
-                              id="phone" 
-                              name="phone" 
-                              class="form-control" 
-                              placeholder="Enter hospital phone number" 
-                              required />
-                          </div>
-                        </div>
-                  
-                        <!-- Email -->
-                        <div class="form-group row">
-                          <div class="col-lg-3">
-                            <label for="email" class="col-form-label">Email</label>
-                          </div>
-                          <div class="col-lg-8">
-                            <input 
-                              type="email" 
-                              id="email" 
-                              name="email" 
-                              class="form-control" 
-                              placeholder="Enter hospital email" 
-                              required />
-                          </div>
-                        </div>
-                  
-                        <!-- Services -->
-                        <!-- <div class="form-group row">
-                          <div class="col-lg-3">
-                            <label for="services" class="col-form-label">Services</label>
-                          </div>
-                          <div class="col-lg-8">
-                            <input 
-                              type="text" 
-                              id="services" 
-                              name="services" 
-                              class="form-control" 
-                              placeholder="Enter services offered (comma separated)" />
-                          </div>
-                        </div> -->
-                  
-                        <!-- Submit Button -->
-                        <div class="form-group row">
-                          <div class="col-lg-12 text-center">
-                            <button type="submit" class="btn btn-primary">Add Hospital</button>
-                          </div>
-                        </div>
-                      </form>
+              <div class="card">
+                <div class="card-body">
+                  <h4 class="card-title">Add Hospital</h4>
+                  <form id="hospitalForm">
+                    <!-- Hospital Name -->
+                    <div class="form-group row">
+                      <div class="col-lg-3">
+                        <label for="name" class="col-form-label">Hospital Name</label>
+                      </div>
+                      <div class="col-lg-8">
+                        <input 
+                          type="text" 
+                          id="name" 
+                          name="name" 
+                          class="form-control" 
+                          placeholder="Enter hospital name" 
+                          required />
+                      </div>
                     </div>
-                  </div>
+              
+                    <!-- Address -->
+                    <div class="form-group row">
+                      <div class="col-lg-3">
+                        <label for="address" class="col-form-label">Address</label>
+                      </div>
+                      <div class="col-lg-8">
+                        <input 
+                          type="text" 
+                          id="address" 
+                          name="address" 
+                          class="form-control" 
+                          placeholder="Enter hospital address" 
+                          required />
+                      </div>
+                    </div>
+              
+                    <!-- Phone -->
+                    <div class="form-group row">
+                      <div class="col-lg-3">
+                        <label for="phone" class="col-form-label">Phone</label>
+                      </div>
+                      <div class="col-lg-8">
+                        <input 
+                          type="text" 
+                          id="phone" 
+                          name="phone" 
+                          class="form-control" 
+                          placeholder="Enter hospital phone number" 
+                          required />
+                      </div>
+                    </div>
+              
+                    <!-- Email -->
+                    <div class="form-group row">
+                      <div class="col-lg-3">
+                        <label for="email" class="col-form-label">Email</label>
+                      </div>
+                      <div class="col-lg-8">
+                        <input 
+                          type="email" 
+                          id="email" 
+                          name="email" 
+                          class="form-control" 
+                          placeholder="Enter hospital email" 
+                          required />
+                      </div>
+                    </div>
+              
+                    <!-- Staff Members -->
+                    <div id="staffSection">
+                      <div class="form-group row">
+                        <div class="col-lg-3">
+                          <label for="staffName" class="col-form-label">Staff Name</label>
+                        </div>
+                        <div class="col-lg-8">
+                          <input 
+                            type="text" 
+                            id="staffName" 
+                            name="staffName" 
+                            class="form-control" 
+                            placeholder="Enter staff name" />
+                        </div>
+                      </div>
+              
+                      <div class="form-group row">
+                        <div class="col-lg-3">
+                          <label for="staffRole" class="col-form-label">Role</label>
+                        </div>
+                        <div class="col-lg-8">
+                          <input 
+                            type="text" 
+                            id="staffRole" 
+                            name="staffRole" 
+                            class="form-control" 
+                            placeholder="Enter staff role" />
+                        </div>
+                      </div>
+              
+                      <div class="form-group row">
+                        <div class="col-lg-3">
+                          <label for="staffEmail" class="col-form-label">Staff Email</label>
+                        </div>
+                        <div class="col-lg-8">
+                          <input 
+                            type="email" 
+                            id="staffEmail" 
+                            name="staffEmail" 
+                            class="form-control" 
+                            placeholder="Enter staff email" />
+                        </div>
+                      </div>
+              
+                      <div class="form-group row">
+                        <div class="col-lg-3">
+                          <label for="staffPhone" class="col-form-label">Staff Phone</label>
+                        </div>
+                        <div class="col-lg-8">
+                          <input 
+                            type="text" 
+                            id="staffPhone" 
+                            name="staffPhone" 
+                            class="form-control" 
+                            placeholder="Enter staff phone number" />
+                        </div>
+                      </div>
+                    </div>
+              
+                    <!-- Submit Button -->
+                    <div class="form-group row">
+                      <div class="col-lg-12 text-center">
+                        <button type="submit" class="btn btn-primary">Add Hospital</button>
+                      </div>
+                    </div>
+                  </form>
+                </div>
+              </div>
                   
             </div>
           </div>
@@ -597,44 +641,49 @@
   </script>
   
 
- <script>
+  <script>
     document.getElementById('hospitalForm').addEventListener('submit', function(event) {
-  event.preventDefault();
-
-  const formData = {
-    name: document.getElementById('name').value,
-    address: document.getElementById('address').value,
-    phone: document.getElementById('phone').value,
-    email: document.getElementById('email').value,
-    // services: document.getElementById('services').value.split(',').map(service => service.trim()),
-  };
-
-  fetch('https://morgphealth.onrender.com/api/hospitals/create', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify(formData), // Ensure this is the correct payload
-  })
-  .then(response => response.json())
-  .then(data => {
-    if (data) {
-      alert('Hospital added successfully!');
-      // Reset form
-      window.location.href = 'index-2.html';
-      document.getElementById('hospitalForm').reset();
-    } else {
-      alert('Error adding hospital: ' + data.message);
-    }
-  })
-  .catch(error => {
-    console.error('Error:', error);
-    alert('An error occurred while adding the hospital.');
-  });
-});
-
- </script>
-
+      event.preventDefault();
+  
+      const formData = {
+        name: document.getElementById('name').value,
+        address: document.getElementById('address').value,
+        phone: document.getElementById('phone').value,
+        email: document.getElementById('email').value,
+        staff: [
+          {
+            name: document.getElementById('staffName').value,
+            role: document.getElementById('staffRole').value,
+            email: document.getElementById('staffEmail').value,
+            phone: document.getElementById('staffPhone').value
+          }
+        ]
+      };
+  
+      fetch('https://morgphealth.onrender.com/api/hospitals/create', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData), // Include staff data in the request
+      })
+      .then(response => response.json())
+      .then(data => {
+        if (data) {
+          alert('Hospital added successfully!');
+          // Reset form
+          window.location.href = 'index-2.html';
+          document.getElementById('hospitalForm').reset();
+        } else {
+          alert('Error adding hospital: ' + data.message);
+        }
+      })
+      .catch(error => {
+        console.error('Error:', error);
+        alert('An error occurred while adding the hospital.');
+      });
+    });
+  </script>
 
 
 

@@ -12,8 +12,8 @@ const SelectPlan = () => {
   const monthlyPlans = [
     {
       id: '1',
-      type: 'Premium cover',
-      price: '$1,800/yr',
+      type: '6 month',
+      price: '$68/mn',
       details: { cover: '1 Crore', hospitalLocator: '65 view', policyTerm: '1 year' },
       title1: "Comprehensive Health Checkups",
       frequency1: "Annually",
@@ -28,8 +28,8 @@ const SelectPlan = () => {
     },
     {
       id: '2',
-      type: 'Platinum cover',
-      price: '$1,500/yr',
+      type: '12 month',
+      price: '$110/yr',
       details: { cover: '50 Lakhs', hospitalLocator: '65 view', policyTerm: '1 year' },
       title1: "Dental Care",
       frequency1: "Twice a year",
@@ -44,8 +44,8 @@ const SelectPlan = () => {
     },
     {
       id: '3',
-      type: 'Gold cover',
-      price: '$1,200/yr',
+      type: '1 month',
+      price: '$15.99/mn',
       details: { cover: '25 Lakhs', hospitalLocator: '50 view', policyTerm: '1 year' },
       title1: "Dental Care",
       frequency1: "Twice a year",
@@ -57,7 +57,28 @@ const SelectPlan = () => {
       frequency4: "Per hospitalization",
       title5: "Accidental Injury Cover",
       frequency5: "Once per policy term",
-    }
+    },
+    {
+      id: '4',
+      type: '3 month',
+      price: '$46/mn',
+      details: { 
+          cover: '25 Lakhs', 
+          hospitalLocator: '50 view', 
+          policyTerm: '1 year' 
+      },
+      title1: "Wellness Check-up",
+      frequency1: "Quarterly",
+      title2: "Pharmacy Benefits",
+      frequency2: "Monthly",
+      title3: "Mental Health Support",
+      frequency3: "Twice per year",
+      title4: "Health Monitoring Devices",
+      frequency4: "Annual one-time subsidy",
+      title5: "Fitness Club Membership",
+      frequency5: "Reimbursement per policy term",
+  }
+  
   ];
   
 

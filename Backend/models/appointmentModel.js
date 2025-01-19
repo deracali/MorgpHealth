@@ -10,6 +10,7 @@ const appointmentSchema = new mongoose.Schema({
   amount: { type: Number, required: true },
   concern: { type: String },
   type: { type: String },
+  duration:{type:String},
   description: { type: String },
   date: { type: Number },
   cancelled: { type: Boolean, required: false },

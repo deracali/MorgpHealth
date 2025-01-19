@@ -16,11 +16,29 @@
   <!-- plugin css for this page -->
   <!-- End plugin css for this page -->
   <!-- inject:css -->
+
   <link rel="stylesheet" href="css/style.css">
   <!-- endinject -->
   <link rel="shortcut icon" href="./images/morgp-logo.png" />
 </head>
-
+<style>
+  .barcode-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-top: 20px;
+        }
+        .barcode {
+            display: flex;
+        }
+        .bar {
+            background-color: black;
+            height: 100px;
+        }
+        .space {
+            background-color: white;
+        }
+</style>
 <body>
   <div class="container-scroller">
     <div class="container-fluid page-body-wrapper full-page-wrapper">
@@ -65,12 +83,20 @@
                     </div>
                   </button>
                 </div>
+                <div class="barcode-container">
+                  <!-- This will be replaced with a barcode image -->
+                  <svg id="barcode"></svg>
+                  <p class="barcode-text"></p>
+              </div>
+              
+              
               </form>
             </div>
           </div>
           <div class="col-lg-6 login-half-bg d-flex flex-row">
             <p class="text-white font-weight-medium text-center flex-grow align-self-end">Copyright &copy; 2024 morgphealth  All rights reserved.</p>
           </div>
+          
         </div>
       </div>
       <!-- content-wrapper ends -->
@@ -141,8 +167,31 @@
       }
     });
   </script>
+  <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.0/dist/JsBarcode.all.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/qrcode@1.4.4/build/qrcode.min.js"></script>
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    // The URL you want the QR code to direct to when scanned
+    const redirectURL = "https://example.com";  // Replace with your desired URL
+
+    // Generate the QR code that contains the redirect URL
+    QRCode.toCanvas(document.getElementById('barcode'), redirectURL, (error) => {
+      if (error) console.error(error);
+      console.log('QR Code generated!');
+    });
+
+    // Optional: You can also use JsBarcode to create a barcode that will contain the URL
+    JsBarcode("#barcode", redirectURL, {
+      format: "CODE128",  // Barcode format
+      displayValue: true, // Display the barcode value (the URL)
+      fontSize: 20,       // Font size for displaying the value
+    });
+
+  });
+</script>
+
   
-  
+
   
   <!-- plugins:js -->
   <script src="../../vendors/js/vendor.bundle.base.js"></script>

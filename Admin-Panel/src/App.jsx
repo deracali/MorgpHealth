@@ -1,68 +1,62 @@
-import {Routes,Route} from "react-router-dom"
+import { useEffect, useState } from 'react'
+import {BrowserRouter,Routes,Route} from "react-router-dom"
 import './App.css'
-import Login from './pages/Login'
-import 'react-toastify/dist/ReactToastify.css';
-import { useContext } from "react";
-import { toast, ToastContainer } from 'react-toastify';
-import SideBar from "./component/SideBar";
-import Dashboard from "./pages/Admin/Dashboard";
-import AllAppointment from "./pages/Admin/AllAppointment";
-import AddDoctor from "./pages/Admin/AddDoctor";
-import DoctorList from "./pages/Admin/DoctorList";
-import NavBar from "./component/NavBar";
-import { AdminContext } from "./context/AdminContext";
-import { DoctorContext } from "./context/DoctorContext";
-import DoctorAppointment from "./pages/Doctor/DoctorAppointment";
-import DoctorDashboard from "./pages/Doctor/DoctorDashboard";
-import DoctorProf from "./pages/Admin/DoctorProfile";
-import DoctorWallet from "./pages/Doctor/DoctorWallet";
-import Withdrawal from "./pages/Doctor/Withdrawal";
-import Session from "./pages/Doctor/Session";
-import DoctorsProfile from "./pages/Doctor/DoctorProfile";
-import DoctorReview from "./pages/Admin/DoctorReview";
-import DoctorDetail from "./pages/Admin/DoctorDetail";
-import VideoCall from "./pages/VideoCall";
-import Insurance from "./pages/Admin/Insurance";
-
+import Home from './pages/Home/Home'
+import Cards from './pages/Cards/Cards'
+import Footer from './components/Footer/Footer'
+import Settings from './pages/Settings/Settings'
+import Faqs from './pages/Faq/Faq'
+import ChangeUsername from './pages/Forms/ChangeUsername/ChangeUsername'
+import UpdateEmail from './pages/Forms/UpdateEmail/UpdateEmail'
+import ChangePassword from './pages/Forms/ChangePassword/ChangePassword'
+import History from './pages/History/History'
+import PaymentSlip from './pages/PaymentSlip/PaymentSlip'
+import Preloader from './components/Preloader/Preloader'
+import Login from './pages/Login/Login'
+import Signup from './pages/Signup/Signup'
+import AddCard from './pages/Forms/AddCard/AddCard'
+import PaymentSuccess from './pages/PaymentSlip/PaymentSuccess'
 
 function App() {
 
-  const {aToken} = useContext(AdminContext)
-  const {dToken} = useContext(DoctorContext)
+  const [isLoading, setIsLoading] = useState(true);
 
-  return aToken ||  dToken ? (
-    <div className="bg-[#FCFCFC]">
-       <ToastContainer />
-       <NavBar/>
-       <div className="flex items-start">
-        <SideBar/>
-        <Routes>
-          <Route path='/' element={<Dashboard/>}/>
-          <Route path='/all-appointment' element={<AllAppointment/>}/>
-          <Route path='/add-doctor' element={<AddDoctor/>}/>
-          <Route path='/doctor-list' element={<DoctorList/>}/>
-          <Route path='/doctor-review' element={<DoctorReview/>}/>
-          <Route path='/doctor-details/:id' element={<DoctorDetail/>}/>
-          <Route path='/doctor-profile/:id' element={<DoctorProf/>}/>
-          <Route path='/insurance' element={<Insurance/>}/>
-          
-          
-          
-          <Route path="/video-call/:appointmentId" element={<VideoCall />} />       
-          <Route path='/doctor-dashboard/:id' element={<DoctorDashboard/>}/>       
-          <Route path='/doctor-appointment/:id' element={<DoctorAppointment/>}/>       
-          <Route path='/session/:appointmentId' element={<Session/>}/>       
-          <Route path='/doctors-profile/:id' element={<DoctorsProfile/>}/>       
-          <Route path='/doctor-wallet/:id' element={<DoctorWallet/>}/>       
-          <Route path='/withdrawal/:docId' element={<Withdrawal/>}/>       
-        </Routes>
-       </div>
-    </div> 
-  )  : (
+  
+  useEffect(() => {
+    const DataFetch = () => {
+      setTimeout(() => {
+        setIsLoading(false);
+      }, 4000);
+    };
+
+    DataFetch();
+  }, []);
+
+  return isLoading ? (
+    <Preloader/> 
+  ) : 
+    (
     <>
-    <Login/>
-    <ToastContainer/>
-    </>
+  <BrowserRouter>
+        <Routes>
+         <Route path="/" exact element={<Home/> } />       
+         <Route path="/signin" exact element={<Login/> } />       
+         <Route path="/signup" exact element={<Signup/> } />       
+         <Route path="/faq" exact element={<Faqs/> } />
+         <Route path="/cards/:id" exact element={<Cards/> } />
+         <Route path="/settings" exact element={<Settings/> } />
+         <Route path="/change@username/:id" exact element={<ChangeUsername/> } />
+         <Route path="/add@card/:id" exact element={<AddCard/> } />
+         <Route path="/change@email/:id" exact element={<UpdateEmail/> } />
+         <Route path="/change@password" exact element={<ChangePassword/> } />
+         <Route path="/history" exact element={<History/> } />
+         <Route path="/receipt/:id" exact element={<PaymentSlip/> } />
+         <Route path="/paymentslip" exact element={<PaymentSuccess/> } />
+         <Route path="/loader" exact element={<Preloader/> } />
+        </Routes>
+         <Footer/>
+        </BrowserRouter>   
+         </>
   )
 }
 
