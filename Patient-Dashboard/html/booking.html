@@ -300,31 +300,27 @@
 
               <!-- Basic Bootstrap Table -->
               <div class="container my-4 text-center">
-                <h1 class="h4 mb-2">Top Doctors to Book</h1>
-                <p class="text-muted small mb-4">Browse through our list of trusted doctors.</p>
-                
+                <h1 class="h4 mb-2">Available Services</h1>
+                <div id="service-box" class="row"></div>
+              
                 <!-- Filter Options -->
-                <div class="mb-3 d-flex justify-content-center">
+                <div id="filter-container" class="mb-3 d-flex justify-content-center">
                   <select id="specialty-filter" class="form-select mr-2" aria-label="Filter by Specialty" style="width: 250px;">
                     <option value="">Filter by Specialty</option>
-                    <!-- Specialties options will be dynamically generated -->
                   </select>
-                
                   <select id="service-filter" class="form-select ml-2" aria-label="Filter by Service" style="width: 250px;">
                     <option value="">Filter by Service</option>
-                    <!-- Services options will be dynamically generated -->
                   </select>
                 </div>
-                
-                
+              
                 <!-- Doctor Grid -->
                 <div id="doctor-grid" class="row"></div>
-                
+              
                 <!-- Login Prompt -->
                 <p id="login-prompt" class="text-danger mt-3 d-none small">Login To See Doctors</p>
-                
-                <!-- More Button -->
-                <button id="more-button" class="btn btn-outline-primary btn-sm mt-3">More</button>
+              
+                <!-- Load More Button -->
+                <button id="more-button" class="btn btn-outline-primary btn-sm mt-3">Load More</button>
               </div>
               
               
@@ -367,122 +363,214 @@
     <!-- / Layout wrapper -->
 
    
-<script>
-  const apiEndpoint = 'https://morgphealth.onrender.com/api/doctor/list'; 
-const userData = localStorage.getItem('userId'); 
-
-document.addEventListener('DOMContentLoaded', () => {
-  const doctorGrid = document.getElementById('doctor-grid');
-  const loginPrompt = document.getElementById('login-prompt');
-  const moreButton = document.getElementById('more-button');
-  const specialtyFilter = document.getElementById('specialty-filter');
-  const serviceFilter = document.getElementById('service-filter');
-
-  let allDoctors = [];  // Store the complete list of doctors
-
-  if (!userData) {
-    loginPrompt.classList.remove('d-none');
-    return;
-  }
-
-  // Fetch doctors from the API
-  fetch(apiEndpoint)
-    .then((response) => response.json())
-    .then((data) => {
-      if (data.success) {
-        allDoctors = data.doctors; // Save all doctors to filter locally
-        populateFilters(allDoctors); // Populate filter dropdowns
-        renderDoctors(allDoctors);  // Initially render all doctors
-      } else {
-        console.error(data.message);
-      }
-    })
-    .catch((error) => {
-      console.error('Error fetching doctors:', error);
-    });
-
-  function populateFilters(doctors) {
-    // Populate specialty filter options
-    const specialties = [...new Set(doctors.map((doctor) => doctor.speciality))]; // Get unique specialties
-    specialties.forEach((specialty) => {
-      specialtyFilter.innerHTML += `<option value="${specialty}">${specialty}</option>`;
-    });
-
-    // Populate service filter options
-    const services = [...new Set(doctors.flatMap((doctor) => doctor.services.map(service => service.name)))]; // Get unique services
-    services.forEach((service) => {
-      serviceFilter.innerHTML += `<option value="${service}">${service}</option>`;
-    });
-  }
-
-  // Listen to filter changes
-  specialtyFilter.addEventListener('change', filterDoctors);
-  serviceFilter.addEventListener('change', filterDoctors);
-
-  // Filter doctors based on selected filters
-  function filterDoctors() {
-    const specialty = specialtyFilter.value;
-    const service = serviceFilter.value;
-
-    let filteredDoctors = allDoctors;
-
-    if (specialty) {
-      filteredDoctors = filteredDoctors.filter((doctor) => doctor.speciality === specialty);
-    }
-
-    if (service) {
-      filteredDoctors = filteredDoctors.filter((doctor) =>
-        doctor.services.some((svc) => svc.name === service)
-      );
-    }
-
-    renderDoctors(filteredDoctors);
-  }
-
-  // Render doctors to the page
-  function renderDoctors(doctors) {
-    const topDoctors = doctors.slice(0, 10); // Show only the first 10 doctors
-
-    doctorGrid.innerHTML = topDoctors
-      .map(
-        (doctor) => `
-          <div class="col-md-4 col-sm-6 mb-4">
-            <div class="card border-primary">
-              <img class="card-img-top" src="${doctor.image}" alt="${doctor.name}">
-              <div class="card-body">
-                <div class="d-flex align-items-center mb-2">
-                  <span class="available-indicator ${doctor.available ? 'available' : 'not-available'}"></span>
-                  <span class="ml-2 text-${doctor.available ? 'success' : 'muted'}">
-                    ${doctor.available ? 'Available' : 'Not Available'}
-                  </span>
+    <script>
+      const apiEndpoint = 'https://morgphealth.onrender.com/api/doctor/list';
+      const userData = localStorage.getItem('userId');
+    
+      document.addEventListener('DOMContentLoaded', () => {
+        const doctorGrid = document.getElementById('doctor-grid');
+        const loginPrompt = document.getElementById('login-prompt');
+        const serviceBox = document.getElementById('service-box');
+        const moreButton = document.getElementById('more-button');
+        const filterContainer = document.getElementById('filter-container'); // Filter container
+        const specialtyFilter = document.getElementById('specialty-filter');
+        const serviceFilter = document.getElementById('service-filter');
+    
+        let allDoctors = []; // Store the complete list of doctors
+        let allServices = []; // Store unique services
+        let visibleDoctors = []; // Doctors currently displayed
+        const doctorsPerPage = 10; // Number of doctors to show per "load"
+    
+        // Initially hide filters, doctor grid, and "Load More" button
+        filterContainer.style.display = 'none';
+        doctorGrid.style.display = 'none';
+        moreButton.style.display = 'none';
+    
+        if (!userData) {
+          loginPrompt.classList.remove('d-none');
+          return;
+        }
+    
+        // Fetch doctors from the API
+        fetch(apiEndpoint)
+          .then((response) => response.json())
+          .then((data) => {
+            if (data.success) {
+              allDoctors = data.doctors; // Save all doctors to filter locally
+              allServices = [...new Set(allDoctors.flatMap((doctor) => doctor.services.map((s) => s.name)))];
+              populateServices(allServices); // Populate the service box
+            } else {
+              console.error(data.message);
+            }
+          })
+          .catch((error) => {
+            console.error('Error fetching doctors:', error);
+          });
+    
+        // Populate the service box dynamically
+        function populateServices(services) {
+          serviceBox.innerHTML = services
+            .map(
+              (service) =>
+                `<div class="col-3 mb-3">
+                  <button class="btn btn-outline-primary w-100 service-btn" data-service="${service}">
+                    ${service}
+                  </button>
+                </div>`
+            )
+            .join('');
+    
+          // Add click listeners to service buttons
+          const serviceButtons = document.querySelectorAll('.service-btn');
+          serviceButtons.forEach((button) => {
+            button.addEventListener('click', (e) => {
+              const selectedService = e.target.getAttribute('data-service');
+              filterDoctorsByService(selectedService);
+            });
+          });
+        }
+    
+        // Filter and display doctors based on selected service
+        function filterDoctorsByService(service) {
+          visibleDoctors = allDoctors.filter((doctor) =>
+            doctor.services.some((svc) => svc.name === service)
+          );
+    
+          if (visibleDoctors.length > 0) {
+            doctorGrid.style.display = 'block'; // Show the doctor grid
+            filterContainer.style.display = 'flex'; // Show the filters
+            moreButton.style.display = visibleDoctors.length > doctorsPerPage ? 'block' : 'none'; // Show "Load More" if needed
+            populateFilters(visibleDoctors); // Populate specialty and other filters based on available doctors
+            renderDoctors(visibleDoctors.slice(0, doctorsPerPage)); // Render the first page of doctors
+          } else {
+            doctorGrid.innerHTML = `<p class="text-muted">No doctors available for the selected service.</p>`;
+            filterContainer.style.display = 'none';
+            moreButton.style.display = 'none';
+          }
+        }
+    
+        // Populate filters dynamically based on available doctors
+        function populateFilters(doctors) {
+          // Populate specialty filter options
+          const specialties = [...new Set(doctors.map((doctor) => doctor.speciality))];
+          specialtyFilter.innerHTML = `<option value="">Filter by Specialty</option>`;
+          specialties.forEach((specialty) => {
+            specialtyFilter.innerHTML += `<option value="${specialty}">${specialty}</option>`;
+          });
+    
+          // Populate service filter options
+          const services = [...new Set(doctors.flatMap((doctor) => doctor.services.map((s) => s.name)))];
+          serviceFilter.innerHTML = `<option value="">Filter by Service</option>`;
+          services.forEach((service) => {
+            serviceFilter.innerHTML += `<option value="${service}">${service}</option>`;
+          });
+    
+          // Add filter event listeners
+          specialtyFilter.addEventListener('change', filterDoctors);
+          serviceFilter.addEventListener('change', filterDoctors);
+        }
+    
+        // Filter doctors based on selected filters
+        function filterDoctors() {
+          const specialty = specialtyFilter.value;
+          const service = serviceFilter.value;
+    
+          let filteredDoctors = visibleDoctors;
+    
+          if (specialty) {
+            filteredDoctors = filteredDoctors.filter((doctor) => doctor.speciality === specialty);
+          }
+    
+          if (service) {
+            filteredDoctors = filteredDoctors.filter((doctor) =>
+              doctor.services.some((svc) => svc.name === service)
+            );
+          }
+    
+          renderDoctors(filteredDoctors.slice(0, doctorsPerPage));
+        }
+    
+        // Render doctors to the page
+        function renderDoctors(doctors) {
+          doctorGrid.innerHTML = doctors
+            .map(
+              (doctor) => `
+                <div class="col-md-4 col-sm-6 mb-4">
+                  <div class="card border-primary">
+                    <img class="card-img-top" src="${doctor.image}" alt="${doctor.name}">
+                    <div class="card-body">
+                      <div class="d-flex align-items-center mb-2">
+                        <span class="available-indicator ${doctor.available ? 'available' : 'not-available'}"></span>
+                        <span class="ml-2 text-${doctor.available ? 'success' : 'muted'}">
+                          ${doctor.available ? 'Available' : 'Not Available'}
+                        </span>
+                      </div>
+                      <h5 class="card-title">${doctor.name}</h5>
+                      <p class="card-text text-muted">${doctor.speciality}</p>
+                      <button class="btn btn-primary btn-block" data-doctor-id="${doctor._id}">Book Appointment</button>
+                    </div>
+                  </div>
                 </div>
-                <h5 class="card-title">${doctor.name}</h5>
-                <p class="card-text text-muted">${doctor.speciality}</p>
-                <button class="btn btn-primary btn-block" data-doctor-id="${doctor._id}">Book Appointment</button>
-              </div>
-            </div>
-          </div>
-        `
-      )
-      .join('');
-
-    // Add event listeners to the "Book Appointment" buttons
-    const bookButtons = doctorGrid.querySelectorAll('button');
-    bookButtons.forEach((button) => {
-      button.addEventListener('click', (event) => {
-        const doctorId = event.target.getAttribute('data-doctor-id');
-        bookAppointment(doctorId);
+              `
+            )
+            .join('');
+    
+          // Add event listeners to the "Book Appointment" buttons
+          const bookButtons = doctorGrid.querySelectorAll('button');
+          bookButtons.forEach((button) => {
+            button.addEventListener('click', (event) => {
+              const doctorId = event.target.getAttribute('data-doctor-id');
+              bookAppointment(doctorId);
+            });
+          });
+        }
+    
+        // Load More functionality
+        let currentPage = 1;
+    
+        moreButton.addEventListener('click', () => {
+          const startIndex = currentPage * doctorsPerPage;
+          const nextDoctors = visibleDoctors.slice(startIndex, startIndex + doctorsPerPage);
+    
+          // Append the next set of doctors to the grid
+          doctorGrid.innerHTML += nextDoctors
+            .map(
+              (doctor) => `
+                <div class="col-md-4 col-sm-6 mb-4">
+                  <div class="card border-primary">
+                    <img class="card-img-top" src="${doctor.image}" alt="${doctor.name}">
+                    <div class="card-body">
+                      <div class="d-flex align-items-center mb-2">
+                        <span class="available-indicator ${doctor.available ? 'available' : 'not-available'}"></span>
+                        <span class="ml-2 text-${doctor.available ? 'success' : 'muted'}">
+                          ${doctor.available ? 'Available' : 'Not Available'}
+                        </span>
+                      </div>
+                      <h5 class="card-title">${doctor.name}</h5>
+                      <p class="card-text text-muted">${doctor.speciality}</p>
+                      <button class="btn btn-primary btn-block" data-doctor-id="${doctor._id}">Book Appointment</button>
+                    </div>
+                  </div>
+                </div>
+              `
+            )
+            .join('');
+    
+          currentPage++;
+    
+          // Hide "Load More" if there are no more doctors to load
+          if (startIndex + doctorsPerPage >= visibleDoctors.length) {
+            moreButton.style.display = 'none';
+          }
+        });
+    
+        function bookAppointment(doctorId) {
+          window.location.href = `bookingdetails.html?doctorId=${doctorId}`;
+          window.scrollTo(0, 0);
+        }
       });
-    });
-  }
-
-  function bookAppointment(doctorId) {
-    window.location.href = `bookingdetails.html?doctorId=${doctorId}`;
-    window.scrollTo(0, 0);
-  }
-});
-
-</script>
+    </script>
+    
 
 <script>
   // Get the 'insured' value from localStorage

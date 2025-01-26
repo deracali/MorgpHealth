@@ -8,119 +8,140 @@
   
     @import url('https://fonts.googleapis.com/css?family=Montserrat:400,800');
   
-    * {
-      box-sizing:border-box;
-      margin:0;
-    }
-  
-    body {
-      /* background: linear-gradient(90deg, #BE8CEF 0%, rgba(61, 46, 232, 0.83) 100%); */
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      flex-direction: column;
-      font-family: 'Montserrat', sans-serif;
-      font-size:10px;
-      height: 100vh;
-      margin: -20px 0 50px;
-    }
-  
-    .container {
-  background-color: #ffffff; /* Replace $white with actual color */
-  border-radius: 5px;
-  box-shadow: 0 14px 28px rgba(0,0,0,0.25), 
-              0 10px 10px rgba(0,0,0,0.22);
-  position: relative;
-  overflow: hidden;
-  width: 768px;
-  max-width: 100%;
-  min-height: 480px;
-  min-width: 370px;
+    .text-center {
+  text-align: center;
 }
 
-    h1 {
-      font-size:2.5rem;
-      text-align: left;
-      margin-left: 30px;
-      padding-top: 10px;
-      margin-bottom:1rem;
-    }
-  
-    .contact-details {
-      padding: 20px;
-    }
-  
-    .contact-item {
-      margin-bottom: 15px;
-      font-size: 1rem;
-      display: flex;
-      align-items: center;
-    }
-  
-    .contact-item i {
-      margin-right: 10px;
-    }
-  
-    .call-button {
-      border-radius: 20px;
-      border: 1px solid #00b4cf;
-      background-color: #00b4cf;
-      color: #FFFFFF;
-      font-size: 12px;
-      font-weight: bold;
-      padding: 12px 45px;
-      letter-spacing: 1px;
-      text-transform: uppercase;
-      transition: transform 80ms ease-in;
-      cursor:pointer;
-    }
-  
-    .call-button:hover {
-      opacity:0.7;
-    }
-  
-    .footer {
-      text-align: center;
-      margin-top: 20px;
-    }
-  
-    .footer p {
-      font-size: 0.9rem;
-      color: #555;
-    }
-  
-    @media only screen and (max-width: 600px) {
-      .container {
-        width: 100%;
-      }
-    }
+.text-2xl {
+  font-size: 1.5rem;
+}
+
+.pt-10 {
+  padding-top: 2.5rem;
+}
+
+.text-gray-500 {
+  color: #6B7280;
+}
+
+.text-gray-700 {
+  color: #374151;
+}
+
+.font-semibold {
+  font-weight: 600;
+}
+
+.my-10 {
+  margin-top: 2.5rem;
+  margin-bottom: 2.5rem;
+}
+
+.flex {
+  display: flex;
+}
+
+.flex-col {
+  flex-direction: column;
+}
+
+.md\:flex-row {
+  flex-direction: row;
+}
+
+.gap-10 {
+  gap: 2.5rem;
+}
+
+.mb-28 {
+  margin-bottom: 7rem;
+}
+
+.text-sm {
+  font-size: 0.875rem;
+}
+
+.contact-image {
+  width: 100%;
+  max-width: 360px;
+}
+
+.contact-info {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-start;
+  gap: 1.5rem;
+}
+
+.font-semibold {
+  font-weight: 600;
+}
+
+.text-lg {
+  font-size: 1.125rem;
+}
+
+.explore-jobs-btn {
+  border: 1px solid black;
+  padding: 1rem 2rem;
+  font-size: 0.875rem;
+  transition: all 0.5s;
+}
+
+.explore-jobs-btn:hover {
+  background-color: black;
+  color: white;
+}
+
+.text-gray-600 {
+  color: #4B5563;
+}
+
+.text-gray-500 {
+  color: #6B7280;
+}
+.call-btn {
+  border: 1px solid black;
+  padding: 0.8rem 2rem;
+  font-size: 1rem;
+  background-color: transparent;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.call-btn:hover {
+  background-color: black;
+  color: white;
+}
+
+#phoneNumber {
+  font-weight: bold;
+  color: #374151;
+}
   </style>
 </head>
 <body>
 
-  <div class="container">
-    <h1>Contact Us</h1>
-    <div class="contact-details">
-      <div class="contact-item">
-        <i class="fas fa-map-marker-alt"></i><strong>Address: </strong> 42 Hazelbury Park, Castaheany, Clonee, Co. Dublin, D15 FD76, Ireland
-      </div>
-      <div class="contact-item">
-        <i class="fas fa-phone-alt"></i><strong>Phone:</strong> <span id="phoneNumber"></span>
-      </div>
-      <div class="contact-item">
-        <i class="fas fa-envelope"></i><strong>Email:</strong> <a href="mailto:support@morgphealth.com">support@morgphealth.com</a>
-      </div>
-      <div class="contact-item">
-        <i class="fas fa-clock"></i><strong>Working Hours:</strong> Monday - Friday, 9 AM - 5 PM
-      </div>
-      <div class="contact-item">
-        <button class="call-button" id="callButton">Call Now</button>
-      </div>
+  <div>
+    <div class="text-center text-2xl pt-10 text-gray-500">
+      <p>CONTACT <span class="text-gray-700 font-semibold">US</span></p>
     </div>
-    <div class="footer">
-      <p>&copy; 2024 Your Company Name. All rights reserved.</p>
+  
+    <div style="justify-content: center;" class="my-10 flex flex-col justify-center md:flex-row gap-10 mb-28 text-sm">
+      <img class="contact-image" src="../assets/contact_image.png" alt="Contact Image" />
+  
+      <div class="contact-info">
+        <p class="font-semibold text-lg text-gray-600">Our OFFICE</p>
+        <p class="text-gray-500">42 Hazelbury Park, <br />Castaheany, Clonee, Co. Dublin, D15 FD76, Ireland</p>
+        <p class="text-gray-500">Tell <span id="phoneNumber">Loading...</span> <br /> Email: <a href="mailto:insurance@morgphealth.com">insurance@morgphealth.com</a></p>
+        <p class="font-semibold text-lg text-gray-600">Customer Support at MorgepHealth</p>
+        <p class="text-gray-500">Need help? Contact our customer support team for assistance with any inquiries or issues.</p>
+        <button id="callButton" class="call-btn">Call</button>
+    </div>
     </div>
   </div>
+  
   
 
   <!-- Font Awesome Icons (for icons) -->
@@ -129,7 +150,7 @@
   <script>
     // IP Geolocation API Token
     const apiToken = 'b4509418a752b2';
-
+  
     // Define phone numbers for all the regions
     const phoneNumbers = {
       "EG": "+20-2-2345-6775", // Egypt
@@ -157,18 +178,18 @@
       "HR": "+36-12654369", // Croatia
       "TR": "+90-5466781234", // Turkey
     };
-
+  
     // Fetch user's IP and location details
     fetch('https://ipinfo.io/json?token=' + apiToken)
       .then(response => response.json())
       .then(data => {
         const country = data.country; // Get the country code from geolocation data
         const phoneNumber = phoneNumbers[country] || '+1-780-628-2778'; // Default to +1-780-628-2778 if no match
-
+  
         // Display the phone number on the page
         const phoneNumberElement = document.getElementById('phoneNumber');
-        phoneNumberElement.textContent = `Our phone number: ${phoneNumber}`;
-
+        phoneNumberElement.textContent = phoneNumber;
+  
         // Update the call button with the correct number
         const callButton = document.getElementById('callButton');
         callButton.addEventListener('click', function() {

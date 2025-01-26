@@ -6,13 +6,14 @@ const doctorSchema = new mongoose.Schema({
     email: { type: String, unique: true, required: true }, // Required
     password: { type: String, required: true }, // Required
     pin: { type: String, required: true },
-    services: [
-        {
-            name: { type: String, required: true }, // Name of the service (e.g., "Headache", "Malaria")
-            fee: { type: Number, required: true }, // Fee for the service
-            time: { type: String, required: true }, // Time for the appointment
-        },
-    ],
+   services: [
+    {
+        name: { type: String, required: true }, // Name of the service (e.g., "Headache", "Malaria")
+        fee: { type: Number, required: true }, // Fee for the service
+        time: { type: String, required: true }, // Time for the appointment
+        category: { type: String, required: true }, // Category for the service (e.g., "Family Medicine")
+    },
+],
     image: {
         type: String,
         default: 'https://example.com/placeholder-image.jpg' // Placeholder image

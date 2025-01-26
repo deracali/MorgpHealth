@@ -289,7 +289,7 @@ const updateDoctorProfile = async (req, res) => {
       updateFields.$push = { balanceHistory: balanceHistoryEntry };
     }
 
-    // Handle services update if provided
+    // Handle services update if provided, including category for each service
     if (services !== undefined && Array.isArray(services)) {
       services.forEach(service => {
         if (service._id) {
@@ -297,6 +297,7 @@ const updateDoctorProfile = async (req, res) => {
             'services.$[elem].name': service.name,
             'services.$[elem].fee': service.fee,
             'services.$[elem].time': service.time,
+            'services.$[elem].category': service.category, // Ensure category is included
           };
           updateFields.arrayFilters = [{ 'elem._id': service._id }];
         } else {
@@ -305,6 +306,7 @@ const updateDoctorProfile = async (req, res) => {
               name: service.name,
               fee: service.fee,
               time: service.time,
+              category: service.category, // Ensure category is added for new services
             }] },
           };
         }
@@ -339,6 +341,7 @@ const updateDoctorProfile = async (req, res) => {
     res.status(500).json({ success: false, message: error.message });
   }
 };
+
 
 
 
