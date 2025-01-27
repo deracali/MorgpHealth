@@ -73,6 +73,50 @@
 .btn-rounded {
   border-radius: 8px;
 }
+.card-img-doc{
+  height: 200px;
+    object-fit: contain;
+}
+/* Modal styles */
+.modal {
+  display: none; /* Hidden by default */
+  position: fixed; /* Stay in place */
+  z-index: 1; /* Sit on top */
+  left: 0;
+  top: 0;
+  width: 100%; /* Full width */
+  height: 100%; /* Full height */
+  background-color: rgba(0, 0, 0, 0.4); /* Black w/ opacity */
+}
+
+.modal-content {
+  background-color: #fff;
+    margin: 15% 25%;
+    padding: 20px;
+    border: 1px solid #888;
+    width: 66%;
+}
+
+.close-btn {
+  color: #aaa;
+  float: right;
+  font-size: 28px;
+  font-weight: bold;
+}
+
+.close-btn:hover,
+.close-btn:focus {
+  color: black;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+button {
+  padding: 10px 20px;
+  margin-top: 10px;
+  cursor: pointer;
+}
+
 
 </style>
   <body>
@@ -311,6 +355,9 @@
                   <select id="service-filter" class="form-select ml-2" aria-label="Filter by Service" style="width: 250px;">
                     <option value="">Filter by Service</option>
                   </select>
+                  <select id="category-filter" class="form-control" aria-label="Filter by Service" style="width: 250px;">
+                    <option value="">Filter by Category</option>
+                  </select>
                 </div>
               
                 <!-- Doctor Grid -->
@@ -324,7 +371,16 @@
               </div>
               
               
-              
+             <!-- Modal structure -->
+<div id="contact-modal" class="modal" style="display: none;">
+  <div class="modal-content">
+    <span class="close-btn">&times;</span>
+    <h2>Contact Support to Book Appointment</h2>
+    <p>Please contact support to book your appointment.</p>
+    <button id="contact-support-btn">Contact Support</button>
+  </div>
+</div>
+
               
               
               <!--/ Basic Bootstrap Table -->
@@ -363,7 +419,7 @@
     <!-- / Layout wrapper -->
 
    
-    <script>
+    <!-- <script>
       const apiEndpoint = 'https://morgphealth.onrender.com/api/doctor/list';
       const userData = localStorage.getItem('userId');
     
@@ -538,7 +594,7 @@
               (doctor) => `
                 <div class="col-md-4 col-sm-6 mb-4">
                   <div class="card border-primary">
-                    <img class="card-img-top" src="${doctor.image}" alt="${doctor.name}">
+                    <img class="card-img-doc card-img-top" src="${doctor.image}" alt="${doctor.name}">
                     <div class="card-body">
                       <div class="d-flex align-items-center mb-2">
                         <span class="available-indicator ${doctor.available ? 'available' : 'not-available'}"></span>
@@ -570,36 +626,266 @@
         }
       });
     </script>
+     -->
+
+
     
-
 <script>
-  // Get the 'insured' value from localStorage
-  const insured = localStorage.getItem('insured');
+  const apiEndpoint = 'https://morgphealth.onrender.com/api/doctor/list';
+const userData = localStorage.getItem('userId');
+const insured = localStorage.getItem('insured');
+const modal = document.getElementById('contact-modal');
+  const closeModal = document.querySelector('.close-btn');
+  const contactSupportBtn = document.getElementById('contact-support-btn');
+document.addEventListener('DOMContentLoaded', () => {
+  const doctorGrid = document.getElementById('doctor-grid');
+  const loginPrompt = document.getElementById('login-prompt');
+  const serviceBox = document.getElementById('service-box');
+  const moreButton = document.getElementById('more-button');
+  const filterContainer = document.getElementById('filter-container'); // Filter container
+  const specialtyFilter = document.getElementById('specialty-filter');
+  const serviceFilter = document.getElementById('service-filter');
+  const categoryFilter = document.getElementById('category-filter'); // Category filter
 
-  // Check if insured is 'false' and hide the menu item if so
-  if (insured === 'false') {
-    const insuranceMenu = document.getElementById('insurance-menu');
-    insuranceMenu.style.display = 'none';
+  let allDoctors = []; // Store the complete list of doctors
+  let allServices = []; // Store unique services
+  let allCategories = []; // Store unique categories
+  let visibleDoctors = []; // Doctors currently displayed
+  const doctorsPerPage = 10; // Number of doctors to show per "load"
+
+  // Initially hide filters, doctor grid, and "Load More" button
+  filterContainer.style.display = 'none';
+  doctorGrid.style.display = 'none';
+  moreButton.style.display = 'none';
+
+  if (!userData) {
+    loginPrompt.classList.remove('d-none');
+    return;
   }
-</script>
 
+  // Fetch doctors from the API
+  fetch(apiEndpoint)
+    .then((response) => response.json())
+    .then((data) => {
+      if (data.success) {
+        allDoctors = data.doctors; // Save all doctors to filter locally
+        allServices = [...new Set(allDoctors.flatMap((doctor) => doctor.services.map((s) => s.name)))];
+        allCategories = [...new Set(allDoctors.flatMap((doctor) => doctor.services.map((s) => s.category)))];
+        populateServices(allServices); // Populate the service box
+        populateCategories(allCategories); // Populate the category filter
+        populateFilters(allDoctors); // Populate filters based on fetched doctors
+      } else {
+        console.error(data.message);
+      }
+    })
+    .catch((error) => {
+      console.error('Error fetching doctors:', error);
+    });
 
-<script>
-  // Check if the user is insured in localStorage
-  const Insured = localStorage.getItem('insured');
-  
-  // Get the booking link element
-  const bookLink = document.getElementById('bookLink');
-  
-  // Add a click event listener to the booking link
-  bookLink.addEventListener('click', function(event) {
-    // If the user is not insured, prevent the default action (navigation) and redirect to the contact page
-    if (Insured === 'true') {
-      event.preventDefault(); // Prevent the default click behavior
-      window.location.href = 'https://frontend-morgphealth.netlify.app/contact'; // Redirect to the contact page
+  // Populate the service box dynamically
+  function populateServices(services) {
+    serviceBox.innerHTML = services
+      .map(
+        (service) =>
+          `<div class="col-3 mb-3">
+            <button class="btn btn-outline-primary w-100 service-btn" data-service="${service}">
+              ${service}
+            </button>
+          </div>`
+      )
+      .join('');
+
+    // Add click listeners to service buttons
+    const serviceButtons = document.querySelectorAll('.service-btn');
+    serviceButtons.forEach((button) => {
+      button.addEventListener('click', (e) => {
+        const selectedService = e.target.getAttribute('data-service');
+        filterDoctorsByService(selectedService);
+      });
+    });
+  }
+
+  // Populate the category filter dynamically
+  function populateCategories(categories) {
+    categoryFilter.innerHTML = `<option value="">Filter by Category</option>`;
+    categories.forEach((category) => {
+      categoryFilter.innerHTML += `<option value="${category}">${category}</option>`;
+    });
+
+    // Add change listener for category filter
+    categoryFilter.addEventListener('change', filterDoctors);
+  }
+
+  // Filter and display doctors based on selected service
+  function filterDoctorsByService(service) {
+    visibleDoctors = allDoctors.filter((doctor) =>
+      doctor.services.some((svc) => svc.name === service)
+    );
+
+    if (visibleDoctors.length > 0) {
+      doctorGrid.style.display = 'block'; // Show the doctor grid
+      filterContainer.style.display = 'flex'; // Show the filters
+      moreButton.style.display = visibleDoctors.length > doctorsPerPage ? 'block' : 'none'; // Show "Load More" if needed
+      renderDoctors(visibleDoctors.slice(0, doctorsPerPage)); // Render the first page of doctors
+    } else {
+      doctorGrid.innerHTML = `<p class="text-muted">No doctors available for the selected service.</p>`;
+      filterContainer.style.display = 'none';
+      moreButton.style.display = 'none';
+    }
+  }
+
+  // Populate filters dynamically based on available doctors
+  function populateFilters(doctors) {
+    // Populate specialty filter options
+    const specialties = [...new Set(doctors.map((doctor) => doctor.speciality))];
+    specialtyFilter.innerHTML = `<option value="">Filter by Specialty</option>`;
+    specialties.forEach((specialty) => {
+      specialtyFilter.innerHTML += `<option value="${specialty}">${specialty}</option>`;
+    });
+
+    // Populate service filter options
+    const services = [...new Set(doctors.flatMap((doctor) => doctor.services.map((s) => s.name)))];
+    serviceFilter.innerHTML = `<option value="">Filter by Service</option>`;
+    services.forEach((service) => {
+      serviceFilter.innerHTML += `<option value="${service}">${service}</option>`;
+    });
+
+    // Add filter event listeners
+    specialtyFilter.addEventListener('change', filterDoctors);
+    serviceFilter.addEventListener('change', filterDoctors);
+  }
+
+  // Filter doctors based on selected filters
+  function filterDoctors() {
+    const specialty = specialtyFilter.value;
+    const service = serviceFilter.value;
+    const category = categoryFilter.value;
+
+    let filteredDoctors = visibleDoctors;
+
+    if (specialty) {
+      filteredDoctors = filteredDoctors.filter((doctor) => doctor.speciality === specialty);
+    }
+
+    if (service) {
+      filteredDoctors = filteredDoctors.filter((doctor) =>
+        doctor.services.some((svc) => svc.name === service)
+      );
+    }
+
+    if (category) {
+      filteredDoctors = filteredDoctors.filter((doctor) =>
+        doctor.services.some((svc) => svc.category === category)
+      );
+    }
+
+    renderDoctors(filteredDoctors.slice(0, doctorsPerPage));
+  }
+
+  // Render doctors to the page
+  function renderDoctors(doctors) {
+    doctorGrid.innerHTML = doctors
+      .map(
+        (doctor) => `
+          <div class="col-md-4 col-sm-6 mb-4">
+            <div class="card border-primary">
+              <img class="card-img-doc card-img-top" src="${doctor.image}" alt="${doctor.name}">
+              <div class="card-body">
+                <div class="d-flex align-items-center mb-2">
+                  <span class="available-indicator ${doctor.available ? 'available' : 'not-available'}"></span>
+                  <span class="ml-2 text-${doctor.available ? 'success' : 'muted'}">
+                    ${doctor.available ? 'Available' : 'Not Available'}
+                  </span>
+                </div>
+                <h5 class="card-title">${doctor.name}</h5>
+                <p class="card-text text-muted">${doctor.speciality}</p>
+                <button class="btn btn-primary btn-block" data-doctor-id="${doctor._id}">Book Appointment</button>
+              </div>
+            </div>
+          </div>
+        `
+      )
+      .join('');
+
+    // Add event listeners to the "Book Appointment" buttons
+    const bookButtons = doctorGrid.querySelectorAll('button');
+    bookButtons.forEach((button) => {
+      button.addEventListener('click', (event) => {
+        const doctorId = event.target.getAttribute('data-doctor-id');
+        bookAppointment(doctorId);
+      });
+    });
+  }
+
+  // Load More functionality
+  let currentPage = 1;
+
+  moreButton.addEventListener('click', () => {
+    const startIndex = currentPage * doctorsPerPage;
+    const nextDoctors = visibleDoctors.slice(startIndex, startIndex + doctorsPerPage);
+
+    // Append the next set of doctors to the grid
+    doctorGrid.innerHTML += nextDoctors
+      .map(
+        (doctor) => `
+          <div class="col-md-4 col-sm-6 mb-4">
+            <div class="card border-primary">
+              <img class="card-img-doc card-img-top" src="${doctor.image}" alt="${doctor.name}">
+              <div class="card-body">
+                <div class="d-flex align-items-center mb-2">
+                  <span class="available-indicator ${doctor.available ? 'available' : 'not-available'}"></span>
+                  <span class="ml-2 text-${doctor.available ? 'success' : 'muted'}">
+                    ${doctor.available ? 'Available' : 'Not Available'}
+                  </span>
+                </div>
+                <h5 class="card-title">${doctor.name}</h5>
+                <p class="card-text text-muted">${doctor.speciality}</p>
+                <button class="btn btn-primary btn-block" data-doctor-id="${doctor._id}">Book Appointment</button>
+              </div>
+            </div>
+          </div>
+        `
+      )
+      .join('');
+
+    currentPage++;
+
+    // Hide "Load More" if there are no more doctors to load
+    if (startIndex + doctorsPerPage >= visibleDoctors.length) {
+      moreButton.style.display = 'none';
     }
   });
+
+  function bookAppointment(doctorId) {
+    if (insured === 'true') {
+      // If insured, show the modal
+      modal.style.display = 'block';
+    } else {
+      // If not insured, directly redirect to the booking details
+      window.location.href = `bookingdetails.html?doctorId=${doctorId}`;
+      window.scrollTo(0, 0);
+    }
+  }
+
+  // Close the modal when the close button is clicked
+  closeModal.addEventListener('click', () => {
+    modal.style.display = 'none';
+  });
+
+  // Optionally, add functionality for the "Contact Support" button
+  contactSupportBtn.addEventListener('click', () => {
+    // Redirect to a support page or open a contact form
+    window.location.href = 'contact.html';  // Change this to the actual contact support page
+  });
+
+});
+
 </script>
+
+
+
+
+
 
 
 
@@ -682,6 +968,7 @@
     localStorage.removeItem('timer');
     localStorage.removeItem('userId');
     localStorage.removeItem('authToken');
+    localStorage.removeItem('insured');
 
     // Redirect to login page or perform other actions
     window.location.href = '../index.html'; // Update the URL to your login page

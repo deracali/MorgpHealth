@@ -323,7 +323,7 @@ if (timer) {
             // Retrieve the Stripe public key from the hidden element
             const stripePublicKey = document.getElementById("stripe-key").getAttribute("data-key");
             const stripe = await loadStripe(stripePublicKey);
-            const fee = 1
+            const fee = 2
             try {
               const response = await fetch("https://morgphealth.onrender.com/create-intentss", {
                 method: "POST",

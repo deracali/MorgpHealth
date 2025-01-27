@@ -381,7 +381,6 @@
                     <label for="communication-method">Preferred Method</label>
                     <select id="communication-method" class="form-control">
                         <option value="video-call">Video Call</option>
-                        <option value="whatsapp">WhatsApp</option>
                         <option value="phone">Phone</option>
                     </select>
                 </div>
@@ -580,7 +579,7 @@
         services.forEach((service) => {
             const serviceDiv = document.createElement("div");
             serviceDiv.className = "service border p-2 rounded mb-2 cursor-pointer";
-            serviceDiv.textContent = `${service.name} - $${service.fee} - Duration ${service.time}`; // Display service duration
+            serviceDiv.textContent = `${service.name} - $${service.fee} - Duration ${service.time} - ${service.category}`; // Display service duration
           
             serviceDiv.addEventListener("click", () => {
                 document.querySelectorAll(".service").forEach((el) => el.classList.remove("bg-info", "text-white"));
@@ -588,6 +587,7 @@
                 selectedService = service.name; // Set the selected service name
                 selectedServiceFee = service.fee; // Set the selected service fee
                 selectedServiceTime = service.time; // Set the selected service duration (time)
+                selectedServiceCategory = service.category; // Set the selected service category
                 totalFeeElement.textContent = `Total Fee: $${selectedServiceFee}`; // Update the total fee
             });
 
@@ -678,22 +678,7 @@
   </script>
 
 
-  <script>
-    // Check if the user is insured in localStorage
-    const Insured = localStorage.getItem('insured');
-    
-    // Get the booking link element
-    const bookLink = document.getElementById('bookLink');
-    
-    // Add a click event listener to the booking link
-    bookLink.addEventListener('click', function(event) {
-      // If the user is not insured, prevent the default action (navigation) and redirect to the contact page
-      if (Insured === 'true') {
-        event.preventDefault(); // Prevent the default click behavior
-        window.location.href = 'contact.html'; // Redirect to the contact page
-      }
-    });
-  </script>
+  
 
 
     <script>

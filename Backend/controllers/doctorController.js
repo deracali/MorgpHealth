@@ -343,8 +343,6 @@ const updateDoctorProfile = async (req, res) => {
 };
 
 
-
-
 const deleteService = async (req, res) => {
   try {
     const { docId } = req.params; // Extract doctor ID from URL parameters

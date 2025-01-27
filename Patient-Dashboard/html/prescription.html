@@ -719,22 +719,7 @@
     </script>
     
     
-    <script>
-      // Check if the user is insured in localStorage
-      const Insured = localStorage.getItem('insured');
-      
-      // Get the booking link element
-      const bookLink = document.getElementById('bookLink');
-      
-      // Add a click event listener to the booking link
-      bookLink.addEventListener('click', function(event) {
-        // If the user is not insured, prevent the default action (navigation) and redirect to the contact page
-        if (Insured === 'true') {
-          event.preventDefault(); // Prevent the default click behavior
-          window.location.href = 'https://frontend-morgphealth.netlify.app/contact'; // Redirect to the contact page
-        }
-      });
-    </script>
+    
     
     
     

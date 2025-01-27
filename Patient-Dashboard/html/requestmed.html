@@ -638,7 +638,7 @@
         // Assuming you already have Stripe integration set up
         const stripePublicKey = document.getElementById('stripe-key').getAttribute('data-key');
         const stripe = await loadStripe(stripePublicKey);
-        const fee = 1
+        const fee = 2
         try {
           const response = await fetch('https://morgphealth.onrender.com/create-intentss', {
             method: 'POST',
@@ -771,22 +771,7 @@
     
     
     
-    <script>
-      // Check if the user is insured in localStorage
-      const Insured = localStorage.getItem('insured');
-      
-      // Get the booking link element
-      const bookLink = document.getElementById('bookLink');
-      
-      // Add a click event listener to the booking link
-      bookLink.addEventListener('click', function(event) {
-        // If the user is not insured, prevent the default action (navigation) and redirect to the contact page
-        if (Insured === 'true') {
-          event.preventDefault(); // Prevent the default click behavior
-          window.location.href = 'https://frontend-morgphealth.netlify.app/contact'; // Redirect to the contact page
-        }
-      });
-    </script>
+  
     
     
     <!-- build:js assets/vendor/js/core.js -->

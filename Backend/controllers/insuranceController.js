@@ -137,7 +137,7 @@ export { getAllInsurance };
 const getInsurance = async (req, res) => {
     try {
         const { userId } = req.params;
-        const insuranceData = await insuranceModel.findOne({ userId });
+        const insuranceData = await insuranceModel.find({ userId });
 
         if (!insuranceData) {
             return res.json({ success: false, message: "Insurance not found" });
