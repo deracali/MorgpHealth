@@ -872,63 +872,65 @@
 
 
     <!-- Core JS -->
-     <script>
-      // Fetch user ID from localStorage
-      const userId = localStorage.getItem('userId');
+   <script>
+    // Fetch user ID from localStorage
+const userId = localStorage.getItem('userId');
 
-      // Define the API endpoint
-      const apiEndpoint = `https://morgphealth.onrender.com/api/insurance/insurance/${userId}`;
+// Define the API endpoint
+const apiEndpoint = `https://morgphealth.onrender.com/api/insurance/insurance/${userId}`;
 
-      // Function to fetch insurance data and populate the table
-      async function fetchInsuranceData() {
-        try {
-          const response = await fetch(apiEndpoint);
-          const data = await response.json();
+// Function to fetch insurance data and populate the table
+async function fetchInsuranceData() {
+  try {
+    const response = await fetch(apiEndpoint);
+    const data = await response.json();
+    console.log(data);
+    
+    if (data.success) {
+      const insuranceDataArray = data.insuranceData;
 
-          if (data.success) {
-            const insuranceData = data.insuranceData;
+      // Loop through all insurance data and create a row for each item
+      insuranceDataArray.forEach(insuranceData => {
+        // Create a row for the table
+        const tableRow = document.createElement('tr');
 
-            // Create a row for the table
-            const tableRow = document.createElement('tr');
+        // Create table cells and populate them
+        const doctorCell = document.createElement('td');
+        doctorCell.textContent = insuranceData.name; // You can modify as per the correct data field
+        tableRow.appendChild(doctorCell);
 
-            // Create table cells and populate them
-            const doctorCell = document.createElement('td');
-            doctorCell.textContent = insuranceData.name; // You can modify as per the correct data field
-            tableRow.appendChild(doctorCell);
+        const userCell = document.createElement('td');
+        userCell.textContent = insuranceData.email;
+        tableRow.appendChild(userCell);
 
-            const userCell = document.createElement('td');
-            userCell.textContent = insuranceData.email;
-            tableRow.appendChild(userCell);
+        const statusCell = document.createElement('td');
+        statusCell.textContent = insuranceData.insured ? 'Insured' : 'Not Insured';
+        tableRow.appendChild(statusCell);
 
-            const statusCell = document.createElement('td');
-            statusCell.textContent = insuranceData.insured ? 'Insured' : 'Not Insured';
-            tableRow.appendChild(statusCell);
+        const actionsCell = document.createElement('td');
+        const viewButton = document.createElement('button');
+        viewButton.className = 'btn btn-primary';
+        viewButton.textContent = 'View';
+        viewButton.onclick = () => {
+          // Redirect to insurance cover page
+          window.location.href = `insurancecover.html?insuranceId=${insuranceData._id}`;
+        };
+        actionsCell.appendChild(viewButton);
+        tableRow.appendChild(actionsCell);
 
-            const actionsCell = document.createElement('td');
-            const viewButton = document.createElement('button');
-            viewButton.className = 'btn btn-primary';
-            viewButton.textContent = 'View';
-            viewButton.onclick = () => {
-              // Redirect to insurance cover page
-              window.location.href = `insurancecover.html?insuranceId=${insuranceData._id}`;
+        // Append the row to the table
+        document.getElementById('insuranceDetails').appendChild(tableRow);
+      });
+    }
+  } catch (error) {
+    console.error('Error fetching insurance data:', error);
+  }
+}
 
-            };
-            actionsCell.appendChild(viewButton);
-            tableRow.appendChild(actionsCell);
+// Call the function to fetch and display data
+fetchInsuranceData();
 
-            // Append the row to the table
-            document.getElementById('insuranceDetails').appendChild(tableRow);
-          }
-        } catch (error) {
-          console.error('Error fetching insurance data:', error);
-        }
-      }
-
-      // Call the function to fetch and display data
-      fetchInsuranceData();
-
-    </script>
-
+   </script>
 
 
 <script>

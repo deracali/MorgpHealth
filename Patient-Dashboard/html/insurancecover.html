@@ -349,7 +349,7 @@
                 </div>
                 <div class="policy-details">
                     <h2>Policy Number</h2>
-                    <div class="policy-number">MGP200 74</div>
+                    <div class="policy-number"></div>
                     <p>
                         Health insurance is an insurance policy that covers the costs of private healthcare. 
                         It can also be called private medical insurance. And it can cover you from diagnosis to treatment.
@@ -460,23 +460,23 @@
     <div class="insured-family">
         <div class="details-row">
             <div class="details-label">Self</div>
-            <div class="details-value" id="self">No</div>
+            <div class="details-value" id="self"></div>
         </div>
         <div class="details-row">
             <div class="details-label">Spouse</div>
-            <div class="details-value" id="spouse">No</div>
+            <div class="details-value" id="spouse"></div>
         </div>
         <div class="details-row">
             <div class="details-label">Child</div>
-            <div class="details-value" id="child">No</div>
+            <div class="details-value" id="child"></div>
         </div>
         <div class="details-row">
             <div class="details-label">Mother</div>
-            <div class="details-value" id="mother">No</div>
+            <div class="details-value" id="mother"></div>
         </div>
         <div class="details-row">
             <div class="details-label">Father</div>
-            <div class="details-value" id="father">No</div>
+            <div class="details-value" id="father"></div>
         </div>
     </div>
     
@@ -529,83 +529,143 @@
     
    
 
-<script>
-    // Fetch user ID from localStorage
-const userId = localStorage.getItem("userId"); // Ensure "userId" is stored in localStorage
-if (!userId) {
-    console.error("User ID not found in localStorage");
-} else {
-    // Fetch insurance details
-    fetch(`https://morgphealth.onrender.com/api/insurance/insurance/${userId}`)
-        .then(response => response.json())
-        .then(data => {
-    
-            if (data && data.insuranceData) {
-                const insurance = data.insuranceData;
-                console.log(insurance)
-                // Populate Plan Details
-                document.getElementById("planType").textContent = insurance.planType || "N/A";
-                document.getElementById("planPrice").textContent = insurance.planPrice || "$0";
-                const createdAt = insurance.createdAt; // Example: "2024-11-25T08:25:01.125Z"
+    <script>
+        // Fetch user ID from localStorage
+        const userId = localStorage.getItem("userId");
+        if (!userId) {
+            console.error("User ID not found in localStorage");
+        } else {
+            // Fetch insurance details
+            fetch(`https://morgphealth.onrender.com/api/insurance/insurance/${userId}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data && data.insuranceData) {
+                        const insuranceData = data.insuranceData;
+       
+                        // Extract insuranceId from the URL
+                        const urlParams = new URLSearchParams(window.location.search);
+                        const insuranceId = urlParams.get("insuranceId");
+        
+                        if (insuranceId) {
+                            // Filter insurance data based on the insuranceId
+                            const filteredInsurance = insuranceData.find(
+                                insurance => insurance._id === insuranceId
+                            );
+        
+                            if (filteredInsurance) {
+                                console.log("Filtered Insurance:", filteredInsurance);
+        
+                                // Populate insurance details
+                                document.getElementById("planType").textContent = filteredInsurance.planType || "N/A";
+                                document.getElementById("planPrice").textContent = filteredInsurance.planPrice || "$0";
+       
 
-// Check if createdAt exists
+
+                       // Calculate and display start date and end date
+const createdAt = filteredInsurance.createdAt;
 if (createdAt) {
-  // Convert the ISO string to a Date object
-  const date = new Date(createdAt);
+    const startDate = new Date(createdAt);
+    document.getElementById("date").textContent = startDate.toISOString().split("T")[0];
 
-  // Format the date (e.g., YYYY-MM-DD)
-  const formattedDate = date.toISOString().split("T")[0];
+    // Calculate months to add based on planType
+    let monthsToAdd = 0;
+    const planType = filteredInsurance.planType; // Get the plan type
+    console.log("Plan Type:", planType); // Log the planType to see the actual value
 
-  // Display the formatted date
-  document.getElementById("date").textContent = formattedDate;
+    switch (planType) {
+        case "Basic Package":
+            monthsToAdd = 3; // Basic package adds 3 months
+            break;
+        case "Intermediate":
+            monthsToAdd = 6; // Intermediate adds 6 months
+            break;
+        case "Advanced":
+            monthsToAdd = 12; // Advanced adds 12 months
+            break;
+        default:
+            console.error(`Unknown plan type: ${planType}`);
+            break;
+    }
+
+    // Function to add months to a date
+    function addMonthsToDate(date, months) {
+        const resultDate = new Date(date);
+        resultDate.setMonth(resultDate.getMonth() + months);
+
+        // If the new date exceeds the last day of the month, adjust it
+        if (resultDate.getDate() < date.getDate()) {
+            resultDate.setDate(0); // Move to the last day of the previous month
+        }
+
+        return resultDate;
+    }
+
+    // Calculate the end date
+    let endDate = addMonthsToDate(startDate, monthsToAdd);
+
+    // Ensure the end date does not match the start date (unless it's the first of the month)
+    if (endDate.getDate() === startDate.getDate() && startDate.getDate() !== 1) {
+        // Set the end date to the 1st of the next month if it's the same date as the start date
+        endDate = new Date(endDate.getFullYear(), endDate.getMonth());
+    }
+
+    // Display the calculated end date
+    document.getElementById("endDate").textContent = endDate.toISOString().split("T")[0];
 } else {
-  document.getElementById("date").textContent = "";
+    document.getElementById("date").textContent = "N/A";
+    document.getElementById("endDate").textContent = "N/A";
 }
 
-                // Populate Insured Family Members
-                document.getElementById("self").textContent = insurance.self ? "Yes" : "No";
-                document.getElementById("spouse").textContent = insurance.spouse ? "Yes" : "No";
-                document.getElementById("child").textContent = insurance.child ? "Yes" : "No";
-                document.getElementById("mother").textContent = insurance.mother ? "Yes" : "No";
-                document.getElementById("father").textContent = insurance.father ? "Yes" : "No";
 
-                // Populate Add-Ons Titles and Frequencies
-                for (let i = 1; i <= 5; i++) {
-                    const title = document.getElementById(`title${i}`);
-                    const frequency = document.getElementById(`frequency${i}`);
-                    title.textContent = insurance[`title${i}`] || "N/A";
-                    frequency.textContent = insurance[`frequency${i}`] || "N/A";
-                }
-
-                // Populate Policy Holder Details
-                document.getElementById("name").textContent = insurance.name || "N/A";
-                document.getElementById("email").textContent = insurance.email || "N/A";
-                document.getElementById("gender").textContent = insurance.gender || "N/A";
-                document.getElementById("age").textContent = insurance.age || "N/A";
-                document.getElementById("location").textContent = insurance.location || "N/A";
-
-                // Populate Family Details
-                document.getElementById("spouseName").textContent = insurance.spouseName || "N/A";
-                document.getElementById("spouseAge").textContent = insurance.spouseAge || "N/A";
-                document.getElementById("motherName").textContent = insurance.motherName || "N/A";
-                document.getElementById("motherAge").textContent = insurance.motherAge || "N/A";
-                document.getElementById("fatherName").textContent = insurance.fatherName || "N/A";
-                document.getElementById("fatherAge").textContent = insurance.fatherAge || "N/A";
-                document.getElementById("childName").textContent = insurance.childName || "N/A";
-                document.getElementById("childAge").textContent = insurance.childAge || "N/A";
-
-                // Shorten and Display Policy Number (_id)
-                const shortId = insurance._id.substring(0, 6).toUpperCase(); // Shorten to 6 characters
-                document.querySelector(".policy-number").textContent = `Policy Number: ${shortId}`;
-            } else {
-                console.error("Insurance data is invalid or missing");
-            }
-        })
-        .catch(error => console.error("Error fetching insurance data:", error));
-}
-
-</script>
-
+        
+                                // Display insured family members
+                                document.getElementById("self").textContent = filteredInsurance.self == "yes" ? "Yes" : "No";
+                                document.getElementById("spouse").textContent = filteredInsurance.spouse == "yes" ? "Yes" : "No";
+                                document.getElementById("child").textContent = filteredInsurance.child == "yes" ? "Yes" : "No";
+                                document.getElementById("mother").textContent = filteredInsurance.mother == "yes" ? "Yes" : "No";
+                                document.getElementById("father").textContent = filteredInsurance.father == "yes" ? "Yes" : "No";
+        
+                                // Populate Add-Ons Titles and Frequencies
+                                for (let i = 1; i <= 5; i++) {
+                                    const title = document.getElementById(`title${i}`);
+                                    const frequency = document.getElementById(`frequency${i}`);
+                                    title.textContent = filteredInsurance[`title${i}`] || "N/A";
+                                    frequency.textContent = filteredInsurance[`frequency${i}`] || "N/A";
+                                }
+        
+                                // Display policy holder details
+                                document.getElementById("name").textContent = filteredInsurance.name || "N/A";
+                                document.getElementById("email").textContent = filteredInsurance.email || "N/A";
+                                document.getElementById("gender").textContent = filteredInsurance.gender || "N/A";
+                                document.getElementById("age").textContent = filteredInsurance.age || "N/A";
+                                document.getElementById("location").textContent = filteredInsurance.location || "N/A";
+        
+                                // Display family details
+                                document.getElementById("spouseName").textContent = filteredInsurance.spouseName || "N/A";
+                                document.getElementById("spouseAge").textContent = filteredInsurance.spouseAge || "N/A";
+                                document.getElementById("motherName").textContent = filteredInsurance.motherName || "N/A";
+                                document.getElementById("motherAge").textContent = filteredInsurance.motherAge || "N/A";
+                                document.getElementById("fatherName").textContent = filteredInsurance.fatherName || "N/A";
+                                document.getElementById("fatherAge").textContent = filteredInsurance.fatherAge || "N/A";
+                                document.getElementById("childName").textContent = filteredInsurance.childName || "N/A";
+                                document.getElementById("childAge").textContent = filteredInsurance.childAge || "N/A";
+        
+                                // Shorten and display policy number (_id)
+                                const shortId = filteredInsurance._id.substring(0, 6).toUpperCase();
+                                document.querySelector(".policy-number").textContent = `Policy Number: MGP ${shortId}`;
+                            } else {
+                                console.error("No insurance found for the provided insuranceId");
+                            }
+                        } else {
+                            console.error("Insurance ID not found in the URL");
+                        }
+                    } else {
+                        console.error("Insurance data is invalid or missing");
+                    }
+                })
+                .catch(error => console.error("Error fetching insurance data:", error));
+        }
+        </script>
 
 
 

@@ -146,22 +146,41 @@ app.post('/create-intentss', async (req, res) => {
 
 
 
-app.get('/api/usertimer/timer-status/:userId', async (req, res) => {
-  const { userId } = req.params;
+app.post('/create-intentsss', async (req, res) => {
+    const { amount, userEmail, userName, userId } = req.body;
 
-  try {
-    // Fetch the user's timer status from the database
-    const user = await User.findById(userId);
-    if (user) {
-      return res.json({ timer: user.timer }); // Return the timer status to the frontend
-    } else {
-      return res.status(404).json({ message: "User not found" });
+    try {
+        // Create a Stripe Checkout Session
+        const session = await stripe.checkout.sessions.create({
+            payment_method_types: ['card'],
+            customer_email: userEmail, // Email for receipt and future payments
+            line_items: [
+                {
+                    price_data: {
+                        currency: 'usd',
+                        product_data: {
+                            name: `Payment for Patient History`,
+                            description: `Medical History Request`,
+                        },
+                        unit_amount: amount,
+                    },
+                    quantity: 1,
+                },
+            ],
+            mode: 'payment',
+            success_url: 'https://frontend-morgphealth.netlify.app/paymentsuccess',
+            cancel_url: 'https://frontend-morgphealth.netlify.app/paymentfailed',
+        });
+
+        res.status(200).json({ id: session.id });
+    } catch (error) {
+        console.error('Error creating Stripe session:', error.message);
+        res.status(500).json({ error: error.message });
     }
-  } catch (error) {
-    console.error("Error fetching user timer status:", error);
-    res.status(500).json({ message: "Server error" });
-  }
 });
+
+
+
 
 
 // Define your routes
