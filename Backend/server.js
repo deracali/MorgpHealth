@@ -147,13 +147,13 @@ app.post('/create-intentss', async (req, res) => {
 
 
 app.post('/create-intentsss', async (req, res) => {
-    const { amount, userEmail, userName, userId } = req.body;
+    const { amount, userId } = req.body;
 
     try {
         // Create a Stripe Checkout Session
         const session = await stripe.checkout.sessions.create({
             payment_method_types: ['card'],
-            customer_email: userEmail, // Email for receipt and future payments
+            customer_email: "morgphealth@gmail.com", // Email for receipt and future payments
             line_items: [
                 {
                     price_data: {
@@ -172,7 +172,7 @@ app.post('/create-intentsss', async (req, res) => {
             cancel_url: 'https://frontend-morgphealth.netlify.app/paymentfailed',
         });
 
-        res.status(200).json({ id: session.id });
+        res.status(200).json({ id: session.id }); // Send the session ID to the client
     } catch (error) {
         console.error('Error creating Stripe session:', error.message);
         res.status(500).json({ error: error.message });
