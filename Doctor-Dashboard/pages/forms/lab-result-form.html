@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Lab Result Form</title>
+
+
+  <script>
+    // Redirect to index.html if no token is found
+    if (!localStorage.getItem('doctor_id')) {
+      window.location.href = '../../index.html';
+    }
+  </script>
+
+
+  
+  <link rel="shortcut icon" href="../../images/morgp-logo.png" />
+  <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    body {
+      font-family: 'Manrope', sans-serif;
+    }
+    .container {
+      margin-top: 30px;
+    }
+    .form-group label {
+      font-weight: bold;
+    }
+    .form-control {
+      border-radius: 8px;
+      padding: 10px;
+    }
+    .reference {
+      font-size: 14px;
+      color: #555;
+    }
+    .investigation-container {
+      margin-bottom: 20px;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <h3>Lab Result Form</h3>
+    <form id="labResultForm">
+      <div class="form-group">
+        <label for="hospitalName1">Hospital Name</label>
+        <input type="text" class="form-control" id="hospitalName1" name="hospitalName1">
+      </div>
+
+      <div class="form-group">
+        <label for="diagnosis">Diagnosis</label>
+        <input type="text" class="form-control" id="diagnosis" name="diagnosis">
+      </div>
+
+      <div id="investigations">
+        <!-- Investigations will be dynamically added here -->
+      </div>
+
+      <div class="form-group">
+        <label for="notes">Notes</label>
+        <textarea class="form-control" id="notes" name="notes" rows="4"></textarea>
+      </div>
+
+      <button type="submit" class="btn btn-primary">Submit</button>
+    </form>
+  </div>
+
+
+  <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+  <script>
+    // Sample investigations array
+    const investigations = [
+      { name: 'Serum Protein', referenceRange: '6.60 - 8.30', unit: 'g/L' },
+      { name: 'Serum Albumin', referenceRange: '3.50 - 5.00', unit: 'g/L' },
+      { name: 'Serum Globulin', referenceRange: '2.10 - 3.50', unit: 'g/L' },
+      { name: 'A/G Ratio', referenceRange: '1.10 - 2.10', unit: 'g/L' },
+      { name: 'C-Reactive Protein (CRP)', referenceRange: '0.00 - 1.00', unit: 'mg/L' },
+      { name: 'Albumin/Globulin Ratio', referenceRange: '1.00 - 2.00', unit: 'ratio' },
+      { name: 'Serum Prealbumin', referenceRange: '20.00 - 40.00', unit: 'mg/dL' },
+      { name: 'Total Protein', referenceRange: '6.00 - 8.00', unit: 'g/L' }
+    ];
+
+    const investigationsContainer = document.getElementById('investigations');
+
+    // Dynamically generate input fields for each investigation
+    investigations.forEach((investigation, index) => {
+      const div = document.createElement('div');
+      div.classList.add('form-group', 'investigation-container');
+      div.innerHTML = `
+        <label for="result-${index}">${investigation.name}</label>
+        <input type="text" class="form-control" id="result-${index}" name="result-${index}" placeholder="Result">
+        <div class="reference">Reference Range: ${investigation.referenceRange} ${investigation.unit}</div>
+        <input type="text" class="form-control" id="flag-${index}" name="flag-${index}" placeholder="Flag (High/Low/Normal)">
+      `;
+      investigationsContainer.appendChild(div);
+    });
+
+    // Function to get query parameters
+    function getQueryParam(param) {
+      const urlParams = new URLSearchParams(window.location.search);
+      return urlParams.get(param);
+    }
+
+    // Handle form submission
+    document.getElementById('labResultForm').addEventListener('submit', function (e) {
+      e.preventDefault();
+
+      // Get appointmentId from query string
+      const appointmentId = getQueryParam('appointmentId');
+      if (!appointmentId) {
+        alert('Appointment ID is missing.');
+        return;
+      }
+
+      const formData = new FormData(this);
+      const data = {};
+
+      formData.forEach((value, key) => {
+        data[key] = value;
+      });
+
+      // Prepare data to send in the PUT request
+      const formPayload = {
+        hospitalName1: data.hospitalName1,
+        diagnosis: data.diagnosis,
+        investigations: investigations.map((investigation, index) => ({
+          name: investigation.name,
+          result: data[`result-${index}`],
+          referenceRange: investigation.referenceRange,
+          unit: investigation.unit,
+          flag: data[`flag-${index}`]
+        })),
+        notes: data.notes
+      };
+
+      // Send the PUT request
+      axios.put(`https://morgphealth.onrender.com/api/doctor/update-appointment/${appointmentId}`, formPayload)
+        .then(response => {
+          alert('Data updated successfully!');
+          window.location.href = '../../dashboard.html'; 
+        })
+        .catch(error => {
+          alert('Failed to update data.');
+          console.error('API Error:', error);
+        });
+    });
+  </script>
+
+  
+</body>
+</html>

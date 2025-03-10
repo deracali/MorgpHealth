@@ -1,0 +1,1071 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <!-- Required meta tags -->
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <title>Morgphealth</title>
+  <!-- plugins:css -->
+  <link rel="stylesheet" href="../../vendors/feather/feather.css">
+  <link rel="stylesheet" href="../../vendors/ti-icons/css/themify-icons.css">
+  <link rel="stylesheet" href="../../vendors/css/vendor.bundle.base.css">
+  <!-- endinject -->
+  <!-- Plugin css for this page -->
+
+  <script>
+    // Redirect to index.html if no token is found
+    if (!localStorage.getItem('doctor_id')) {
+      window.location.href = '../../index.html';
+    }
+  </script>
+
+
+  <!-- End plugin css for this page -->
+  <!-- inject:css -->
+  <link rel="stylesheet" href="../../css/vertical-layout-light/style.css">
+  <!-- endinject -->
+  <link rel="shortcut icon" href="../../images/morgp-logo.png" />
+</head>
+<style>
+  /* Custom style for the Cancel button */
+.btn.btn-danger, .btn-success {
+  padding: 5px 10px; /* Reduce padding (top-bottom, left-right) */
+  font-size: 12px; /* Optionally reduce font size */
+  width: auto; /* Let the button width adjust based on content */
+  min-width: 50px; /* Ensure the button has a minimum width */
+}
+
+#chat-app {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  display: flex;
+  flex-direction: column;
+  z-index: 1000;
+}
+
+.chat-list-container {
+  width: 250px;
+  background-color: #ffffff;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  overflow-y: auto;
+  padding: 15px;
+  margin-bottom: 10px;
+}
+
+.chat-list-container h2 {
+  font-size: 1.2rem;
+  margin-bottom: 15px;
+}
+
+#chat-list-items {
+  list-style: none;
+  padding: 0;
+}
+
+#chat-list-items li {
+  padding: 8px 15px;
+  border-bottom: 1px solid #ddd;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+#chat-list-items li:hover {
+  background-color: #007bff;
+  color: #fff;
+}
+
+.chat-window {
+  width: 300px;
+  background-color: #fff;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  display: flex;
+  flex-direction: column;
+  max-height: 400px;
+  transition: transform 0.3s ease;
+}
+
+.hidden {
+  display: none;
+}
+
+.chat-header {
+  background-color: #007bff;
+  color: white;
+  padding: 12px;
+  font-size: 1.1rem;
+  text-align: center;
+  cursor: pointer;
+  border-radius: 8px 8px 0 0;
+}
+
+.chat-messages {
+  flex: 1;
+  padding: 15px;
+  overflow-y: auto;
+  background-color: #f9f9f9;
+  border-bottom: 1px solid #ddd;
+  border-radius: 0 0 8px 8px;
+}
+
+.chat-messages .message {
+  margin-bottom: 12px;
+  padding: 8px 12px;
+  border-radius: 10px;
+  max-width: 80%;
+  word-wrap: break-word;
+  display: flex;
+  flex-direction: column;
+}
+
+.chat-messages .message.doctor {
+  background-color: #d9f0ff;
+  align-self: flex-start;
+}
+
+.chat-messages .message.user {
+  background-color: #007bff;
+  color: white;
+  align-self: flex-end;
+}
+
+.chat-input {
+  display: flex;
+  padding: 10px;
+  border-top: 1px solid #ddd;
+  background-color: #fff;
+}
+
+.chat-input input {
+  flex: 1;
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+}
+
+.chat-input button {
+  margin-left: 10px;
+  padding: 10px 20px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.chat-input button:hover {
+  background-color: #0056b3;
+}
+</style>
+<body>
+  <div class="container-scroller">
+    <!-- partial:../../partials/_navbar.html -->
+    <nav class="navbar col-lg-12 col-12 p-0 fixed-top d-flex flex-row">
+      <div class="text-center navbar-brand-wrapper d-flex align-items-center justify-content-center">
+        <a class="navbar-brand brand-logo mr-5" href="../../dashboard.html"><img src="../../images/morgp-logo.png" class="mr-2" alt="logo"/></a>
+        <!-- <a class="navbar-brand brand-logo-mini" href="index.html"><img src="images/logo-mini.svg" alt="logo"/></a> -->
+      </div>
+      <div class="navbar-menu-wrapper d-flex align-items-center justify-content-end">
+        <button class="navbar-toggler navbar-toggler align-self-center" type="button" data-toggle="minimize">
+          <span class="icon-menu"></span>
+        </button>
+       
+        <ul class="navbar-nav navbar-nav-right">
+          <!-- Nav Notifications -->
+<li class="nav-item dropdown">
+  <a class="nav-link count-indicator dropdown-toggle" id="notificationDropdown" href="#" data-toggle="dropdown">
+    <i class="icon-bell mx-0"></i>
+    <span class="count"></span>
+  </a>
+  <div class="dropdown-menu dropdown-menu-right navbar-dropdown preview-list" id="nav-notification-list" aria-labelledby="notificationDropdown">
+    <p class="mb-0 font-weight-normal float-left dropdown-header">Notifications</p>
+    <!-- Dynamic notifications will be appended here -->
+  </div>
+</li>
+
+          <li class="nav-item nav-profile dropdown">
+            <a class="nav-link dropdown-toggle" href="#" data-toggle="dropdown" id="profileDropdown">
+              <img id="profileImage" src="" alt="profile" />
+            </a>
+            <div class="dropdown-menu dropdown-menu-right navbar-dropdown" aria-labelledby="profileDropdown">
+              <a href="../../pages/forms/profile.html" class="dropdown-item">
+                <i class="ti-settings text-primary"></i>
+                Profile
+              </a>
+              <a class="dropdown-item" onclick="handleLogout()">
+                <i class="ti-power-off text-primary"></i>
+                Logout
+              </a>
+            </div>
+          </li>
+          <li class="nav-item nav-settings d-none d-lg-flex">
+            <a class="nav-link" href="#">
+              <i class="icon-ellipsis"></i>
+            </a>
+          </li>
+        </ul>
+        <button class="navbar-toggler navbar-toggler-right d-lg-none align-self-center" type="button" data-toggle="offcanvas">
+          <span class="icon-menu"></span>
+        </button>
+      </div>
+    </nav>
+    <!-- partial -->
+    <div class="container-fluid page-body-wrapper">
+      <!-- partial:../../partials/_settings-panel.html -->
+      <div class="theme-setting-wrapper">
+        <div id="settings-trigger"><i class="ti-settings"></i></div>
+        <div id="theme-settings" class="settings-panel">
+          <i class="settings-close ti-close"></i>
+          <p class="settings-heading">SIDEBAR SKINS</p>
+          <div class="sidebar-bg-options selected" id="sidebar-light-theme"><div class="img-ss rounded-circle bg-light border mr-3"></div>Light</div>
+          <div class="sidebar-bg-options" id="sidebar-dark-theme"><div class="img-ss rounded-circle bg-dark border mr-3"></div>Dark</div>
+          <p class="settings-heading mt-2">HEADER SKINS</p>
+          <div class="color-tiles mx-0 px-4">
+            <div class="tiles success"></div>
+            <div class="tiles warning"></div>
+            <div class="tiles danger"></div>
+            <div class="tiles info"></div>
+            <div class="tiles dark"></div>
+            <div class="tiles default"></div>
+          </div>
+        </div>
+      </div>
+      <div id="right-sidebar" class="settings-panel">
+        <i class="settings-close ti-close"></i>
+        <ul class="nav nav-tabs border-top" id="setting-panel" role="tablist">
+          
+          <li class="nav-item">
+            <a class="nav-link active" id="chats-tab" data-toggle="tab" href="#chats-section" role="tab" aria-controls="chats-section">CHATS</a>
+          </li>
+        </ul>
+        <div class="tab-content" id="setting-content">
+          <div class="tab-pane fade" id="todo-section" role="tabpanel" aria-labelledby="todo-section">
+            <div class="add-items d-flex px-3 mb-0">
+              <form class="form w-100">
+                <div class="form-group d-flex">
+                  <input type="text" class="form-control todo-list-input" placeholder="Add To-do">
+                  <button type="submit" class="add btn btn-primary todo-list-add-btn" id="add-task">Add</button>
+                </div>
+              </form>
+            </div>
+          
+          </div>
+          <!-- To do section tab ends -->
+          <div id="chat-app">
+            <div id="chat-list" class="chat-list-container">
+              <h2>Chats</h2>
+              <ul id="chat-list-items"></ul>
+            </div>
+          
+            <div id="chat-window" class="chat-window hidden">
+              <div class="chat-header" onclick="closeChat()">
+                <h3 id="chat-header">Chat with User</h3>
+              </div>
+          
+              <div id="chat-messages" class="chat-messages"></div>
+          
+              <div class="chat-input">
+                <input id="chat-input-field" type="text" placeholder="Type your reply..." />
+                <button id="send-message-btn">Send</button>
+              </div>
+            </div>
+          </div>
+          
+          
+          <!-- chat tab ends -->
+        </div>
+      </div>
+      <!-- partial -->
+      <!-- partial:../../partials/_sidebar.html -->
+      <nav class="sidebar sidebar-offcanvas" id="sidebar">
+        <ul class="nav">
+          <li class="nav-item">
+            <a class="nav-link" href="../../dashboard.html">
+              <i class="icon-grid menu-icon"></i>
+              <span class="menu-title">Dashboard</span>
+            </a>
+          </li>
+
+
+
+          <li class="nav-item">
+            <a class="nav-link" data-toggle="collapse" href="#form-elements" aria-expanded="false" aria-controls="form-elements">
+              <i class="icon-columns menu-icon"></i>
+              <span class="menu-title">Wallet Page</span>
+              <i class="menu-arrow"></i>
+            </a>
+            <div class="collapse" id="form-elements">
+              <ul class="nav flex-column sub-menu">
+                <li class="nav-item"><a class="nav-link" href="../../pages/tables/wallet.html">Wallet</a></li>
+              </ul>
+            </div>
+          </li>
+        
+
+          <li class="nav-item">
+            <a class="nav-link" href="../forms/basic_elements.html">
+              <i class="icon-grid-2 menu-icon"></i>
+              <span class="menu-title">Add Services</span>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="services.html">
+              <i class="icon-grid-2 menu-icon"></i>
+              <span class="menu-title">Manage Services</span>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="pending.html">
+              <i class="icon-grid-2 menu-icon"></i>
+              <span class="menu-title">Pending</span>
+            </a>
+          </li>
+         
+          
+          <li class="nav-item">
+            <a class="nav-link" href="upcoming.html">
+              <i class="icon-grid-2 menu-icon"></i>
+              <span class="menu-title">Upcoming</span>
+            </a>
+          </li>
+
+
+          <li class="nav-item">
+            <a class="nav-link" href="completed.html">
+              <i class="icon-grid-2 menu-icon"></i>
+              <span class="menu-title">Completed</span>
+            </a>
+          </li>
+         
+          <li class="nav-item">
+            <a class="nav-link" href="cancelled.html">
+              <i class="icon-grid-2 menu-icon"></i>
+              <span class="menu-title">Cancelled</span>
+            </a>
+          </li>
+
+
+          <li class="nav-item">
+            <a class="nav-link" href="../../appointment.html">
+              <i class="icon-grid-2 menu-icon"></i>
+              <span class="menu-title">Appointments</span>
+            </a>
+          </li>
+        
+        
+
+          
+          <li class="nav-item">
+            <a class="nav-link" href="../../availability.html">
+              <i class="icon-grid-2 menu-icon"></i>
+              <span class="menu-title">Availability</span>
+            </a>
+          </li>
+
+
+
+          <li class="nav-item">
+            <a class="nav-link" href="../../prescription.html">
+              <i class="icon-grid-2 menu-icon"></i>
+              <span class="menu-title">Manage Prescription</span>
+            </a>
+          </li>
+
+
+
+        </ul>
+      </nav>
+      <!-- partial -->
+      <div class="main-panel">
+        <div class="content-wrapper">
+          <div class="row">
+            <div class="col-lg-6 grid-margin stretch-card">
+              <div class="card">
+                <div class="card-body">
+                  <h4 class="card-title">Cancelled Appointments</h4>
+                  <p class="card-description">Manage your appointments and cancel appointments</p>
+                  <div class="table-responsive">
+                    <table class="table">
+                      <thead>
+                        <tr>
+                          <th>Profile</th>
+                          <th>SlotDate</th>
+                          <th>SlotTime</th>
+                          <th>Action</th>
+                        </tr>
+                      </thead>
+                      <tbody id="appointment-table-body-pending">
+                        <!-- Appointments will be populated here -->
+                      </tbody>
+                    </table>
+                  </div>
+                  <button id="load-more-btn" class="btn btn-primary mt-2">Load More</button>
+                </div>
+              </div>
+            </div>
+         
+      
+     
+           
+          </div>
+        </div>
+        <!-- content-wrapper ends -->
+        <!-- partial:../../partials/_footer.html -->
+        <footer class="footer">
+          <div class="d-sm-flex justify-content-center justify-content-sm-between">
+            <span class="text-muted text-center text-sm-left d-block d-sm-inline-block">Copyright © 2024.  Morgphealth</span>
+           
+          </div>
+          
+        </footer> 
+        <!-- partial -->
+      </div>
+      <!-- main-panel ends -->
+    </div>
+    <!-- page-body-wrapper ends -->
+  </div>
+  <!-- container-scroller -->
+<!-- <script>
+  // Assuming doctor_id is stored in localStorage
+const doctorId = localStorage.getItem('doctor_id');
+
+// Set up variables for appointments and pagination
+let appointmentsToDisplay = [];
+let loadCount = 0;
+const appointmentsPerLoad = 10;  // Set to 10 for the initial load
+let totalAppointments = 0;  // Track the total number of appointments
+
+// Function to fetch appointments from the API (without pagination)
+const fetchAppointments = async () => {
+  try {
+    const response = await fetch(`https://morgphealth.onrender.com/api/doctor/appointments/${doctorId}`);
+    const data = await response.json();
+    if (data.success) {
+      // Filter out appointments that are not 'pending' or have 'cancelled' status
+      const filteredAppointments = data.appointments.filter(appointment => 
+        appointment.status === 'pending' && !appointment.cancelled
+      );
+      
+      totalAppointments = filteredAppointments.length;  // Get total filtered appointments
+      appointmentsToDisplay = filteredAppointments;  // Store only pending and non-cancelled appointments
+      renderAppointments();  // Render the first set of appointments
+    } else {
+      console.error("Failed to fetch appointments:", data.message);
+    }
+  } catch (error) {
+    console.error('Error fetching appointments:', error);
+  }
+};
+
+// Function to render appointments in the table
+const renderAppointments = () => {
+  const tableBody = document.getElementById("appointment-table-body");
+  tableBody.innerHTML = '';  // Clear the current table rows
+
+  // Display appointments based on the load count
+  const startIndex = loadCount * appointmentsPerLoad;
+  const endIndex = startIndex + appointmentsPerLoad;
+  const appointmentsToRender = appointmentsToDisplay.slice(startIndex, endIndex);
+
+  appointmentsToRender.forEach((appointment) => {
+    const row = document.createElement("tr");
+    row.innerHTML = `
+      <td>${appointment.userData.name}</td>
+      <td>${appointment.slotDate}</td>
+      <td>${appointment.slotTime}</td>
+      <td><button class="btn btn-danger" onclick="cancelAppointment('${appointment._id}')">Cancel</button></td>
+    `;
+    tableBody.appendChild(row);
+  });
+};
+
+// Function to cancel an appointment
+const cancelAppointment = async (appointmentId) => {
+  try {
+    const response = await fetch(`https://morgphealth.onrender.com/api/doctor/appointments/${appointmentId}`, {
+      method: 'DELETE',
+    });
+    const data = await response.json();
+    if (data.success) {
+      alert('Appointment canceled successfully.');
+      // Remove the canceled appointment from the displayed list
+      appointmentsToDisplay = appointmentsToDisplay.filter(appointment => appointment._id !== appointmentId);
+      renderAppointments();
+    } else {
+      alert('Failed to cancel the appointment.');
+    }
+  } catch (error) {
+    console.error('Error canceling appointment:', error);
+  }
+};
+
+// Function to load more appointments
+const loadMoreAppointments = () => {
+  loadCount++;  // Increment the page count
+  renderAppointments();  // Render the next set of appointments
+
+  // Disable load more if all appointments are loaded
+  if ((loadCount + 1) * appointmentsPerLoad >= totalAppointments) {
+    document.getElementById("load-more-btn").disabled = true;
+  }
+};
+
+// Initial load of appointments
+fetchAppointments();
+
+// Event listener for Load More button
+document.getElementById("load-more-btn").addEventListener("click", loadMoreAppointments);
+
+
+</script> -->
+<script>
+  function handleLogout() {
+    // Remove items from localStorage
+
+    localStorage.removeItem('doctor_id');
+    localStorage.removeItem('token');
+
+    // Redirect to login page or perform other actions
+    window.location.href = '../../index.html'; // Update the URL to your login page
+  }
+
+</script>
+
+
+
+<script>
+  document.addEventListener("DOMContentLoaded", async () => {
+    // Get the doctor ID from localStorage
+    const doctorId = localStorage.getItem("doctor_id");
+    if (!doctorId) {
+      console.error("Doctor ID not found in localStorage.");
+      return;
+    }
+
+    try {
+      // Fetch the doctor's details from the API
+      const response = await fetch(`https://morgphealth.onrender.com/api/doctor/profile/${doctorId}`);
+      if (!response.ok) {
+        throw new Error("Failed to fetch doctor details");
+      }
+
+      const data = await response.json();
+      const { name, image } = data.profileData;
+
+      // Update the DOM elements
+      const profileImage = document.getElementById("profileImage");
+      const welcomeMessage = document.getElementById("welcomeMessage");
+
+      if (profileImage && image) {
+        profileImage.src = image;
+      }
+      if (welcomeMessage && name) {
+        welcomeMessage.textContent = `Welcome ${name}`;
+      }
+    } catch (error) {
+      console.error("Error fetching doctor details:", error.message);
+    }
+  });
+</script>
+
+
+
+<script>
+  document.addEventListener('DOMContentLoaded', async function () {
+    // Get the doctor ID from localStorage
+    const doctorId = localStorage.getItem('doctor_id');
+    if (!doctorId) {
+      alert('Doctor ID not found. Please log in.');
+      window.location.href = 'index.html';
+      return;
+    }
+
+    const recipientType = 'Doctor';
+
+    try {
+      // Fetch notifications from the API
+      const response = await fetch(`https://morgphealth.onrender.com/api/user/${doctorId}/${recipientType}`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+
+      const result = await response.json();
+
+      if (response.ok && Array.isArray(result)) {
+        // Limit notifications to the first 4 for both sections
+        const notifications = result.slice(0, 4);
+
+        // Handle Nav Notifications
+        const navNotificationList = document.getElementById('nav-notification-list');
+        const navNotificationCount = document.querySelector('.nav-link.count-indicator .count');
+        navNotificationList.innerHTML = ''; // Clear existing notifications
+        navNotificationCount.textContent = notifications.length; // Update notification count
+
+        notifications.forEach(notification => {
+          const notificationTime = new Date(notification.createdAt).toLocaleString();
+
+          const navNotificationItem = document.createElement('a');
+          navNotificationItem.className = 'dropdown-item preview-item';
+          navNotificationItem.innerHTML = `
+            <div class="preview-thumbnail">
+              <div class="preview-icon bg-info">
+                <i class="icon-bell mx-0"></i>
+              </div>
+            </div>
+            <div class="preview-item-content">
+              <h6 class="preview-subject font-weight-normal">${notification.title}</h6>
+              <p class="font-weight-light small-text mb-0 text-muted">${notification.message}</p>
+              <small class="text-muted">${notificationTime}</small>
+            </div>
+          `;
+
+          navNotificationList.appendChild(navNotificationItem);
+        });
+
+     
+      } else {
+        console.log('Notifications not found or invalid format:', result);
+      }
+    } catch (error) {
+      console.error('Error fetching notifications:', error);
+    }
+  });
+</script>
+
+
+
+<script>
+  // Assuming doctor_id is stored in localStorage
+  const doctorId = localStorage.getItem('doctor_id');
+  
+  // Set up variables for appointments and pagination
+  let appointmentsToDisplayUpcoming = [];
+  let loadCountUpcoming = 0;
+  const appointmentsPerLoad = 10;  // Set to 10 for the initial load
+  let totalAppointmentsUpcoming = 0;  // Track the total number of upcoming appointments
+  
+  let appointmentsToDisplayPending = [];
+  let loadCountPending = 0;
+  let totalAppointmentsPending = 0;  // Track the total number of pending appointments
+  
+  let appointmentsToDisplay = [];
+  let loadCount = 0;
+  let totalAppointments = 0;
+  const appointmentsPer = 10; // Define how many appointments to load per click  // Track the total number of pending appointments
+  
+  // Function to fetch upcoming appointments
+  const fetchUpcomingAppointments = async () => {
+    try {
+      const response = await fetch(`https://morgphealth.onrender.com/api/doctor/appointments/${doctorId}`);
+      const data = await response.json();
+      if (data.success) {
+        // Filter out appointments with status 'upcoming'
+        const filteredAppointments = data.appointments.filter(appointment =>
+          appointment.isCompleted === true // Only upcoming appointments
+        );
+  
+        totalAppointmentsUpcoming = filteredAppointments.length;  // Get total upcoming appointments
+        appointmentsToDisplayUpcoming = filteredAppointments;  // Store only 'upcoming' appointments
+        renderUpcomingAppointments();  // Render the first set of upcoming appointments
+      } else {
+        console.error("Failed to fetch appointments:", data.message);
+      }
+    } catch (error) {
+      console.error('Error fetching appointments:', error);
+    }
+  };
+  
+  // Function to render upcoming appointments in the table
+  const renderUpcomingAppointments = () => {
+    const tableBody = document.getElementById("appointment-table-body-upcoming");
+    tableBody.innerHTML = '';  // Clear the current table rows
+  
+    const startIndex = loadCountUpcoming * appointmentsPerLoad;
+    const endIndex = startIndex + appointmentsPerLoad;
+    const appointmentsToRender = appointmentsToDisplayUpcoming.slice(startIndex, endIndex);
+  
+    appointmentsToRender.forEach((appointment) => {
+      const row = document.createElement("tr");
+      row.innerHTML = `
+        <td>${appointment.userData.name}</td>
+        <td class="text-danger">${appointment.slotDate}</td>
+        <td><button class="btn btn-success">completed</button></td>
+      `;
+      tableBody.appendChild(row);
+    });
+  };
+  
+  // Function to fetch appointments
+  const fetchAppointments = async () => {
+    try {
+      const response = await fetch(`https://morgphealth.onrender.com/api/doctor/appointments/${doctorId}`);
+      const data = await response.json();
+      
+      if (data.success) {
+        // Filter out appointments with status 'upcoming'
+        const filteredAppointments = data.appointments.filter(appointment =>
+          appointment.status === 'upcoming' // Only upcoming appointments
+        );
+  
+        totalAppointments = filteredAppointments.length;  // Get total upcoming appointments
+        appointmentsToDisplay = filteredAppointments;  // Store only 'upcoming' appointments
+        loadCount = 0;  // Reset load count when fetching new appointments
+        renderAppointments();  // Render the first set of upcoming appointments
+      } else {
+        console.error("Failed to fetch appointments:", data.message);
+      }
+    } catch (error) {
+      console.error('Error fetching appointments:', error);
+    }
+  };
+  
+  // Function to render appointments
+  const renderAppointments = () => {
+    const tableBody = document.getElementById("appointment-table-body-appointments");
+    tableBody.innerHTML = '';  // Clear the current table rows
+  
+    const startIndex = loadCount * appointmentsPer;
+    const endIndex = startIndex + appointmentsPer;
+    const appointmentsToRender = appointmentsToDisplay.slice(startIndex, endIndex);
+  
+    appointmentsToRender.forEach((appointment) => {
+      const row = document.createElement("tr");
+      const paymentStatus = appointment.paymentStatus === 'approved' ? 'Approved' : 'Not Approved';
+  
+      row.innerHTML = `
+        <td>${appointment.userData.name}</td>
+        <td>${appointment.userData.email}</td>
+        <td class="text-danger">${appointment.slotDate}</td> 
+        <td class="text-danger">${appointment.slotTime}</td> 
+        <td class="text-danger">${appointment.docData.fees}</td> 
+        <td class="text-danger">${paymentStatus}</td>
+        <td><button class="btn btn-primary" onclick="redirectToVideoCall('${appointment._id}')">Join</button></td>
+        <td>
+          <button class="btn btn-primary" onclick="markAppointmentAsCompleted('${appointment._id}', '${appointment.docId}')">Complete</button>
+        </td>
+      `;
+      tableBody.appendChild(row);
+    });
+  };
+  
+  // Function to redirect to the video call page with appointment ID
+  const redirectToVideoCall = (appointmentId) => {
+    const url = `videocall.html?appointmentId=${appointmentId}`; // Construct the URL with the appointment ID
+    window.location.href = url;  // Redirect to the video call page
+  };
+  
+  // Function to mark an appointment as completed
+  const markAppointmentAsCompleted = async (appointmentId, doctorId) => {
+    try {
+      const response = await fetch('https://morgphealth.onrender.com/api/doctor/complete-appointment', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          docId: doctorId,
+          appointmentId: appointmentId,
+        }),
+      });
+  
+      const data = await response.json();
+      if (data.success) {
+        alert('Appointment marked as completed!');
+        renderAppointments();
+      } else {
+        alert('Failed to complete appointment: ' + data.message);
+      }
+    } catch (error) {
+      console.error('Error completing appointment:', error);
+      alert('An error occurred while completing the appointment.');
+    }
+  };
+  
+  // Function to load more upcoming appointments
+  const loadMoreUpcomingAppointments = () => {
+    loadCountUpcoming++;
+    renderUpcomingAppointments();
+  
+    if ((loadCountUpcoming + 1) * appointmentsPerLoad >= totalAppointmentsUpcoming) {
+      document.getElementById("load-more-btn-upcoming").disabled = true;
+    }
+  };
+  
+  // Function to load more appointments
+  const loadMoreAppointments = () => {
+    loadCount++;
+    renderAppointments();
+  
+    // Disable the "Load More" button when all appointments are displayed
+    if ((loadCount * appointmentsPer) >= totalAppointments) {
+      document.getElementById("load-more-btn-appointment").disabled = true;
+    }
+  };
+  
+  // Function to load more pending appointments
+  const loadMorePendingAppointments = () => {
+    loadCountPending++;
+    renderPendingAppointments();
+  
+    if ((loadCountPending + 1) * appointmentsPerLoad >= totalAppointmentsPending) {
+      document.getElementById("load-more-btn-pending").disabled = true;
+    }
+  };
+  
+  // Function to fetch pending appointments
+  const fetchPendingAppointments = async () => {
+    try {
+      const response = await fetch(`https://morgphealth.onrender.com/api/doctor/appointments/${doctorId}`);
+      const data = await response.json();
+      if (data.success) {
+        const filteredAppointments = data.appointments.filter(appointment =>
+          appointment.cancelled === true
+        );
+  
+        totalAppointmentsPending = filteredAppointments.length;
+        appointmentsToDisplayPending = filteredAppointments;
+        renderPendingAppointments();
+      } else {
+        console.error("Failed to fetch appointments:", data.message);
+      }
+    } catch (error) {
+      console.error('Error fetching appointments:', error);
+    }
+  };
+  
+  // Function to render pending appointments
+  const renderPendingAppointments = () => {
+    const tableBody = document.getElementById("appointment-table-body-pending");
+    tableBody.innerHTML = '';
+  
+    const startIndex = loadCountPending * appointmentsPerLoad;
+    const endIndex = startIndex + appointmentsPerLoad;
+    const appointmentsToRender = appointmentsToDisplayPending.slice(startIndex, endIndex);
+  
+    appointmentsToRender.forEach((appointment) => {
+      const row = document.createElement("tr");
+      row.innerHTML = `
+        <td>${appointment.userData.name}</td>
+        <td>${appointment.slotDate}</td>
+        <td>${appointment.slotTime}</td>
+        <td><button class="btn text-white p-2 btn-danger">${appointment.cancelled === true? "cancelled" : ""}</button></td>
+      `;
+      tableBody.appendChild(row);
+    });
+  };
+  
+  // Function to mark a pending appointment as completed
+  const markAsCompletedPending = async (appointmentId) => {
+    try {
+      const response = await fetch(`https://morgphealth.onrender.com/api/doctor/appointments/${appointmentId}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ isCompleted: true })
+      });
+  
+      const data = await response.json();
+      if (data.success) {
+        alert('Pending appointment marked as completed.');
+        appointmentsToDisplayPending = appointmentsToDisplayPending.map(appointment =>
+          appointment._id === appointmentId ? { ...appointment, isCompleted: true } : appointment
+        );
+        renderPendingAppointments();
+      } else {
+        alert('Error: ' + data.message);
+      }
+    } catch (error) {
+      console.error('Error completing pending appointment:', error);
+    }
+  };
+  
+  // Initial fetch and render for upcoming, pending, and all appointments
+  fetchUpcomingAppointments();
+  fetchAppointments();
+  fetchPendingAppointments();
+  </script>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  <script>
+    const backendUrl = "https://morgphealth.onrender.com"; // Replace with your backend URL
+    const docId = localStorage.getItem("doctor_id");
+  
+    let chats = [];
+    let selectedChatId = null;
+    let chatMessages = [];
+    let userProfiles = {};
+  
+    const chatList = document.getElementById("chat-list-items");
+    const chatWindow = document.getElementById("chat-window");
+    const chatHeader = document.getElementById("chat-header");
+    const chatMessagesContainer = document.getElementById("chat-messages");
+    const chatInputField = document.getElementById("chat-input-field");
+    const sendMessageBtn = document.getElementById("send-message-btn");
+  
+    // Fetch chats
+    const fetchChats = async () => {
+      try {
+        const response = await fetch(`${backendUrl}/api/chat/doctor-chats/${docId}`);
+        const data = await response.json();
+  
+        if (data.success) {
+          chats = data.chats;
+          displayChatList();
+        } else {
+          alert(data.message);
+        }
+      } catch (error) {
+        console.error("Error fetching chats:", error);
+        alert("Failed to fetch chats");
+      }
+    };
+  
+    // Fetch user profile by userId (this can be modified based on your backend)
+    const fetchUserProfile = async (userId) => {
+      if (userProfiles[userId]) return userProfiles[userId]; // Return cached profile if available
+  
+      try {
+        const response = await fetch(`${backendUrl}/api/user/get-profileId/${userId}`);
+        const data = await response.json();
+        if (data.success) {
+          userProfiles[userId] = data.user; // Cache the user profile
+          return data.user;
+        } else {
+          alert(data.message);
+        }
+      } catch (error) {
+        console.error("Error fetching user profile:", error);
+        alert("Failed to fetch user profile");
+      }
+    };
+  
+    // Display chat list
+    const displayChatList = async () => {
+      chatList.innerHTML = "";
+      for (const chat of chats) {
+        const userId = chat.user;
+        const userProfile = await fetchUserProfile(userId);
+        const listItem = document.createElement("li");
+        listItem.textContent = userProfile ? userProfile.name : `User ${userId}`; // Display user name
+        listItem.onclick = () => selectChat(chat._id, userProfile ? userProfile.name : `User ${userId}`);
+        chatList.appendChild(listItem);
+      }
+    };
+  
+    // Select chat
+    const selectChat = async (chatId, userName) => {
+      selectedChatId = chatId;
+      chatWindow.classList.remove("hidden");
+      chatHeader.textContent = `Chat with ${userName}`;
+      await fetchChatHistory(chatId);
+    };
+  
+    // Fetch chat history
+    const fetchChatHistory = async (chatId) => {
+      try {
+        const response = await fetch(`${backendUrl}/api/chat/${chatId}/history`);
+        const data = await response.json();
+  
+        if (data.success) {
+          chatMessages = data.messages;
+          displayChatMessages();
+        } else {
+          alert(data.message);
+        }
+      } catch (error) {
+        console.error("Error fetching chat history:", error);
+        alert("Failed to fetch chat history");
+      }
+    };
+  
+    // Display chat messages
+    const displayChatMessages = () => {
+      chatMessagesContainer.innerHTML = "";
+      chatMessages.forEach((msg) => {
+        const messageDiv = document.createElement("div");
+        messageDiv.classList.add("message", msg.senderModel === "Doctor" ? "doctor" : "user");
+        messageDiv.textContent = msg.content;
+        chatMessagesContainer.appendChild(messageDiv);
+      });
+    };
+  
+    // Send message
+    const sendMessage = async () => {
+      const content = chatInputField.value.trim();
+      if (!content) return;
+  
+      const senderModel = "Doctor";
+  
+      try {
+        await fetch(`${backendUrl}/api/chat/${selectedChatId}/message`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            senderId: doctorId,
+            senderModel,
+            content,
+          }),
+        });
+  
+        // Emit message (if using WebSocket)
+        // socket.emit("sendMessage", { selectedChatId, senderId: doctorId, content });
+  
+        // Update UI
+        chatMessages.push({ senderModel, content });
+        displayChatMessages();
+        chatInputField.value = "";
+      } catch (error) {
+        console.error("Error sending message:", error);
+        alert("Failed to send message");
+      }
+    };
+  
+    // Close chat
+    const closeChat = () => {
+      chatWindow.classList.add("hidden");
+      selectedChatId = null;
+      chatMessages = [];
+    };
+  
+    // Initialize chat list on page load
+    fetchChats();
+  </script>
+  
+
+  <!-- plugins:js -->
+  <script src="../../vendors/js/vendor.bundle.base.js"></script>
+  <!-- endinject -->
+  <!-- Plugin js for this page -->
+  <!-- End plugin js for this page -->
+  <!-- inject:js -->
+  <script src="../../js/off-canvas.js"></script>
+  <script src="../../js/hoverable-collapse.js"></script>
+  <script src="../../js/template.js"></script>
+  <script src="../../js/settings.js"></script>
+  <script src="../../js/todolist.js"></script>
+  <!-- endinject -->
+  <!-- Custom js for this page-->
+  <!-- End custom js for this page-->
+</body>
+
+</html>

@@ -1,0 +1,282 @@
+
+<!--Website: wwww.codingdung.com-->
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Account | settings</title>
+
+    <script>
+        // Redirect to index.html if no token is found
+        if (!localStorage.getItem('doctor_id')) {
+          window.location.href = '../../index.html';
+        }
+      </script>
+
+      
+    <link rel="shortcut icon" href="../../images/morgp-logo.png" />
+    <link rel="stylesheet" href="style.css">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+
+<body>
+    <div class="container light-style flex-grow-1 container-p-y">
+        <h4 class="font-weight-bold py-3 mb-4">
+            Account settings
+        </h4>
+        <div class="card overflow-hidden">
+            <div class="row no-gutters row-bordered row-border-light">
+                <div class="col-md-3 pt-0">
+                    <div class="list-group list-group-flush account-settings-links">
+                        <a class="list-group-item list-group-item-action active" data-toggle="list"
+                            href="#account-general">Personal Info</a>
+                       
+                        <a class="list-group-item list-group-item-action" data-toggle="list"
+                            href="#account-info">Bio</a>
+                        <a class="list-group-item list-group-item-action" data-toggle="list"
+                            href="#account-social-links">Medicails</a>
+                       
+                    </div>
+                </div>
+                <div class="col-md-9">
+                    <div class="tab-content">
+                        <div class="tab-pane fade active show" id="account-general">
+                            <div class="card-body media align-items-center">
+                                <img id="image" src="" alt
+                                    class="d-block ui-w-80">
+                                <!-- <div class="media-body ml-4">
+                                    <label class="btn btn-outline-primary">
+                                        Upload new photo
+                                        <input type="file" class="account-settings-fileinput">
+                                    </label> &nbsp;
+                                    <button type="button" class="btn btn-default md-btn-flat">Reset</button>
+                                    <div class="text-light small mt-1">Allowed JPG, GIF or PNG. Max size of 800K</div>
+                                </div> -->
+                            </div>
+                            <hr class="border-light m-0">
+                            <div class="card-body">
+                                <div class="form-group">
+                                    <label class="form-label">Name</label>
+                                    <input type="text" class="form-control mb-1" id="name" value="">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">E-mail</label>
+                                    <input type="email" class="form-control mb-1" id="email" value="">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Phone</label>
+                                    <input type="number" class="form-control mb-1" id="phone" value="">
+                                </div>
+                               
+                                <div class="form-group">
+                                    <label class="form-label">Speciality</label>
+                                    <input type="text" class="form-control" id="speciality" value="">
+                                </div>
+                                <button class="btn btn-secondary editBtn" onclick="enableEdit(this)">Edit</button>
+                                <button class="btn btn-primary saveChangesBtn" onclick="saveChanges(this)" style="display:none;">Save Changes</button>
+                                
+                            </div>
+                            
+                        </div>
+                       
+                        <div class="tab-pane fade" id="account-info">
+                            <div class="card-body pb-2">
+                                <div class="form-group">
+                                    <label class="form-label">About</label>
+                                    <textarea class="form-control" id="about" rows="5"></textarea>
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Fees</label>
+                                    <input type="text" class="form-control" id="fees">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Gender</label>
+                                    <select class="custom-select" id="gender">
+                                        <option value="male">Male</option>
+                                        <option value="female">Female</option>
+                                        <option value="other">Other</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Address</label>
+                                    <div>
+                                        <input type="text" class="form-control mb-1" id="addressLine1" placeholder="Line 1">
+                                        <input type="text" class="form-control mb-1" id="addressLine2" placeholder="Line 2">
+                                        <input type="text" class="form-control" id="region" placeholder="Region">
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Experience (years)</label>
+                                    <input type="number" class="form-control" id="experience">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Available for new patients</label>
+                                    <input type="checkbox" id="available">
+                                </div>
+                                <button class="btn btn-secondary editBtn" onclick="enableEdit(this)">Edit</button>
+                                <button class="btn btn-primary saveChangesBtn" onclick="saveChanges(this)" style="display:none;">Save Changes</button>
+                                
+                            </div>
+                          
+                         
+                        </div>
+                        <div class="tab-pane fade" id="account-social-links">
+                            <div class="card-body pb-2">
+                                <!-- Medical University Fields -->
+                                <div class="form-group">
+                                    <label class="form-label">Medical University Name</label>
+                                    <input type="text" class="form-control" id="medicalUniversityName" value="">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">University Country</label>
+                                    <input type="text" class="form-control" id="universityCountry" value="">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Medical Council Name</label>
+                                    <input type="text" class="form-control" id="medicalCouncilName" value="">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Medical Council Country</label>
+                                    <input type="text" class="form-control" id="medicalCouncilCountry" value="">
+                                </div>
+                        
+                                <button class="btn btn-secondary editBtn" onclick="enableEdit(this)">Edit</button>
+                                <button class="btn btn-primary saveChangesBtn" onclick="saveChanges(this)" style="display:none;">Save Changes</button>
+                                
+                            </div>
+                        </div>
+                        
+                     
+                       
+                    </div>
+                </div>
+            </div>
+        </div>
+       
+    </div>
+
+    <script>
+    // Function to fetch doctor profile data and display it
+    function getDoctorProfile() {
+        const doctorId = localStorage.getItem('doctor_id'); // Retrieve doctor ID from local storage
+        
+        fetch(`https://morgphealth.onrender.com/api/doctor/profile/${doctorId}`)
+            .then(response => response.json())
+            .then(data => {
+                console.log(data)
+                // Populate the form with fetched data
+                document.getElementById('name').value = data.profileData.name;
+                document.getElementById('email').value = data.profileData.email;
+                document.getElementById('phone').value = data.profileData.phone;
+                document.getElementById('speciality').value = data.profileData.speciality;
+                document.getElementById('about').value = data.profileData.about;
+                document.getElementById('fees').value = data.profileData.fees;
+                document.getElementById('gender').value = data.profileData.gender;
+                document.getElementById('addressLine1').value = data.profileData.address.line1;
+                document.getElementById('addressLine2').value = data.profileData.address.line2;
+                document.getElementById('region').value = data.profileData.address.region;
+                document.getElementById('experience').value = data.profileData.experience;
+                document.getElementById('available').checked = data.profileData.available;
+                document.getElementById('image').src = data.profileData.image;
+                
+                // Populate the medical fields
+                document.getElementById('medicalUniversityName').value = data.profileData.medicalUniversityName || '';
+                document.getElementById('universityCountry').value = data.profileData.universityCountry || '';
+                document.getElementById('medicalCouncilName').value = data.profileData.medicalCouncilName || '';
+                document.getElementById('medicalCouncilCountry').value = data.profileData.medicalCouncilCountry || '';
+            })
+            .catch(error => console.error('Error fetching doctor profile:', error));
+    }
+    
+   // Function to enable edit mode
+function enableEdit(button) {
+    // Get the parent card of the button clicked
+    const cardBody = button.closest('.card-body');
+    
+    // Enable all input fields in this section for editing
+    const inputs = cardBody.querySelectorAll('.form-control');
+    inputs.forEach(input => input.disabled = false);
+    
+    // Show Save Changes button and hide Edit button
+    cardBody.querySelector('.saveChangesBtn').style.display = 'block';
+    button.style.display = 'none';
+}
+
+function saveChanges(button) {
+    const cardBody = button.closest('.card-body');
+    const doctorId = localStorage.getItem('doctor_id'); // Retrieve doctor ID from local storage
+
+    if (!cardBody) {
+        console.error('Card body not found!');
+        return;
+    }
+
+    // Collect updated data from all form fields (not just the current card-body)
+    const updatedProfile = {
+        name: document.getElementById('name').value || '',
+        email: document.getElementById('email').value || '',
+        phone: document.getElementById('phone').value || '',
+        speciality: document.getElementById('speciality').value || '',
+        about: document.getElementById('about').value || '',
+        fees: document.getElementById('fees').value || '',
+        gender: document.getElementById('gender').value || '',
+        address: {
+            line1: document.getElementById('addressLine1').value || '',
+            line2: document.getElementById('addressLine2').value || '',
+            region: document.getElementById('region').value || '',
+        },
+        experience: document.getElementById('experience').value || '',
+        available: document.getElementById('available').checked || false,
+        medicalUniversityName: document.getElementById('medicalUniversityName').value || '',
+        universityCountry: document.getElementById('universityCountry').value || '',
+        medicalCouncilName: document.getElementById('medicalCouncilName').value || '',
+        medicalCouncilCountry: document.getElementById('medicalCouncilCountry').value || '',
+    };
+
+    // Send the updated profile data to the server
+    fetch(`https://morgphealth.onrender.com/api/doctor/update-profile/${doctorId}`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(updatedProfile),
+    })
+    .then(response => response.json())
+    .then(data => {
+        alert('Profile updated successfully!');
+        
+        // Disable input fields after save
+        const inputs = cardBody.querySelectorAll('.form-control');
+        inputs.forEach(input => input.disabled = true);
+
+        // Hide Save Changes button and show Edit button
+        cardBody.querySelector('.saveChangesBtn').style.display = 'none';
+        cardBody.querySelector('.editBtn').style.display = 'block';
+    })
+    .catch(error => console.error('Error updating doctor profile:', error));
+}
+
+    // Call the function to get the doctor profile when the page loads
+    window.onload = getDoctorProfile;
+    
+    </script>
+
+
+
+
+
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script>
+    <script src="https://code.jquery.com/jquery-1.10.2.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script type="text/javascript">
+
+    </script>
+</body>
+
+</html>
+
+
+
+

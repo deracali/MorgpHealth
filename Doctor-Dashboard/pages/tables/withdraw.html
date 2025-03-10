@@ -1,0 +1,977 @@
+<!-- <!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Withdrawal</title>
+
+
+    <script>
+        // Redirect to index.html if no token is found
+        if (!localStorage.getItem('doctor_id')) {
+          window.location.href = '../../index.html';
+        }
+      </script>
+
+    <link rel="shortcut icon" href="../../images/morgp-logo.png" />
+    
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        .form-section-title {
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+            font-weight: bold;
+        }
+        .submit-btn {
+            background-color: #007bff;
+            color: #fff;
+        }
+      
+.modal {
+    display: none; /* Hidden by default */
+    position: fixed;
+    z-index: 1;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent background */
+}
+
+.modal-content {
+    background-color: #fff;
+    margin: 15% auto;
+    padding: 20px;
+    border: 1px solid #888;
+    width: 300px;
+    text-align: center;
+}
+
+button {
+    margin-top: 10px;
+    padding: 10px;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    cursor: pointer;
+}
+
+button:hover {
+    background-color: #45a049;
+}
+</style>
+
+
+    
+</head>
+<body>
+    <div class="container py-5">
+        <form id="withdrawalForm">
+            <div class="row">
+             
+             
+
+              
+                <div class="col-md-6">
+                    <h3 class="form-section-title">Enter Amount</h3>
+
+                    <div class="form-group">
+                        <label for="amount">Amount</label>
+                        <input type="number" class="form-control" id="amount" placeholder="Enter Amount" min="0" required>
+                    </div>
+
+                    
+                </div>
+            </div>
+
+            <div class="text-center mt-4">
+                <button type="submit" class="btn submit-btn btn-block">Withdraw</button>
+            </div>
+        </form>
+
+       
+<div id="pinModal" class="modal">
+    <div class="modal-content">
+        <h2>Enter your PIN</h2>
+        <input type="password" id="pinInput" placeholder="Enter PIN" />
+        <button id="submitPinBtn">Submit</button>
+        <button id="closeModalBtn">Cancel</button>
+    </div>
+</div>
+
+    </div>
+
+
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+     <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const pinModal = document.getElementById('pinModal');
+            const pinInput = document.getElementById('pinInput');
+            const submitPinBtn = document.getElementById('submitPinBtn');
+            const closeModalBtn = document.getElementById('closeModalBtn');
+            const withdrawalForm = document.getElementById('withdrawalForm');
+    
+            // Populate withdrawal fields from localStorage if available
+            const withdrawalData = JSON.parse(localStorage.getItem('withdrawalData'));
+            if (withdrawalData) {
+                document.getElementById('fullName').value = withdrawalData.fullName || '';
+                document.getElementById('email').value = withdrawalData.email || '';
+               
+                document.getElementById('bankName').value = withdrawalData.bankName || '';
+                document.getElementById('accountNumber').value = withdrawalData.accountNumber || '';
+                document.getElementById('amount').value = withdrawalData.amount || '';
+                document.getElementById('expMonth').value = withdrawalData.expMonth || '';
+                document.getElementById('cvv').value = withdrawalData.cvv || '';
+            }
+    
+            // Add event listener for form submission
+            withdrawalForm.addEventListener('submit', async (e) => {
+                e.preventDefault();
+    
+                // Gather form values
+                const withdrawalData = {
+                    fullName: document.getElementById('fullName').value.trim(),
+                    email: document.getElementById('email').value.trim(),
+                  
+                    bankName: document.getElementById('bankName').value.trim(),
+                    accountNumber: parseInt(document.getElementById('accountNumber').value.trim()),
+                    amount: parseFloat(document.getElementById('amount').value.trim()),
+                    expMonth: document.getElementById('expMonth').value.trim(),
+                    cvv: document.getElementById('cvv').value.trim(),
+                };
+    
+                // Save withdrawal data to localStorage
+                localStorage.setItem('withdrawalData', JSON.stringify(withdrawalData));
+    
+                // Show the PIN modal
+                pinModal.style.display = 'block';
+    
+                // Handle submit PIN
+                submitPinBtn.addEventListener('click', async function () {
+                    const pin = pinInput.value.trim();
+                    if (pin === '') {
+                        alert('PIN is required to proceed.');
+                        return;
+                    }
+    
+                    try {
+                        // Retrieve doctor ID from localStorage
+                        const doctorId = localStorage.getItem('doctor_id');
+                        if (!doctorId) throw new Error('Doctor ID not found.');
+    
+                        // Fetch doctor profile to verify PIN
+                        const response = await axios.get(`https://morgphealth.onrender.com/api/doctor/profile/${doctorId}`);
+                        const doctorProfile = response.data;
+                        console.log(response.data)
+    
+                        // Ensure PIN is compared as strings
+                        if (!doctorProfile || String(doctorProfile.profileData.pin) !== String(pin)) {
+                            alert('Invalid PIN. Please try again.');
+                            pinInput.value = ''; // Clear the PIN input
+                            return;
+                        }
+    
+                        // Make API calls to process withdrawal
+                        const withdrawalResponse = await axios.post(
+                            'https://morgphealth.onrender.com/api/withdraws/add',
+                            withdrawalData
+                        );
+    
+                        const decrementResponse = await axios.put(
+                            `https://morgphealth.onrender.com/api/doctor/balance/decrement/${doctorId}`,
+                            { amount: withdrawalData.amount }
+                        );
+    
+                        if (withdrawalResponse.data.success && decrementResponse.data.success) {
+                            alert('Withdrawal processed successfully and balance updated.');
+                            window.location.href = 'successfulpage.html'; // Redirect to wallet.html if successful
+                        } else {
+                            alert(
+                                withdrawalResponse.data.message ||
+                                decrementResponse.data.message ||
+                                'An error occurred.'
+                            );
+                        }
+                    } catch (error) {
+                        console.error('Error:', error);
+                        alert(error.message || 'An error occurred during the withdrawal process.');
+                    } finally {
+                        // Close the modal after processing
+                        pinModal.style.display = 'none';
+                    }
+                });
+    
+                // Handle close modal (cancel action)
+                closeModalBtn.addEventListener('click', function () {
+                    pinModal.style.display = 'none'; // Close the modal
+                });
+            });
+        });
+    </script> 
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', async function () {
+            const pinModal = document.getElementById('pinModal');
+            const pinInput = document.getElementById('pinInput');
+            const submitPinBtn = document.getElementById('submitPinBtn');
+            const closeModalBtn = document.getElementById('closeModalBtn');
+            const withdrawalForm = document.getElementById('withdrawalForm');
+    
+            // Get the query parameter for payment method (method)
+            const urlParams = new URLSearchParams(window.location.search);
+            const method = urlParams.get('method');
+            console.log('Withdrawal Method:', method); // Log method for debugging
+    
+            // Populate withdrawal fields from localStorage if available
+            const withdrawalData = JSON.parse(localStorage.getItem('withdrawalData'));
+            if (withdrawalData) {
+                document.getElementById('fullName').value = withdrawalData.fullName || '';
+                document.getElementById('email').value = withdrawalData.email || '';
+            }
+    
+            // Fetch doctor profile and populate fullName and email
+            const doctorId = localStorage.getItem('doctor_id');
+            if (doctorId) {
+                try {
+                    const response = await axios.get(`https://morgphealth.onrender.com/api/doctor/profile/${doctorId}`);
+                    const doctorProfile = response.data;
+    
+                    // Populate fullName and email fields
+                    document.getElementById('fullName').value = doctorProfile.fullName || '';
+                    document.getElementById('email').value = doctorProfile.email || '';
+    
+                    console.log('Doctor Profile:', doctorProfile); // Log doctor profile for debugging
+                } catch (error) {
+                    console.error('Error fetching doctor profile:', error);
+                    alert('Error fetching doctor profile.');
+                }
+            }
+    
+            // If the payment method contains 'Bank account ending in' or 'PayPal', populate fields accordingly
+            if (method) {
+                document.getElementById('bankName').value = method; // Set the method (e.g., "Bank account ending in 8685" or "PayPal")
+                if (method.includes('Bank account ending in')) {
+                    const accountEnding = method.match(/\d+$/); // Extract the account ending number
+                    document.getElementById('accountNumber').value = accountEnding ? accountEnding[0] : ''; // Set account number
+                } else if (method.includes('PayPal')) {
+                    const paypalEmail = method.replace('PayPal - ', ''); // Extract PayPal email
+                    document.getElementById('accountNumber').value = paypalEmail; // Set PayPal email as account number
+                }
+            }
+    
+            // Add event listener for form submission
+            withdrawalForm.addEventListener('submit', async (e) => {
+                e.preventDefault();
+    
+                // Gather form values
+                const withdrawalData = {
+                    fullName: document.getElementById('fullName').value.trim(),
+                    email: document.getElementById('email').value.trim(),
+                    bankName: document.getElementById('bankName').value.trim(),
+                    accountNumber: document.getElementById('accountNumber').value.trim(), // account number (email for PayPal)
+                    amount: parseFloat(document.getElementById('amount').value.trim()),
+                    method: method // Add the method from query params
+                };
+    
+                // Save withdrawal data to localStorage
+                localStorage.setItem('withdrawalData', JSON.stringify(withdrawalData));
+    
+                // Show the PIN modal
+                pinModal.style.display = 'block';
+    
+                // Handle submit PIN
+                submitPinBtn.addEventListener('click', async function () {
+                    const pin = pinInput.value.trim();
+                    if (pin === '') {
+                        alert('PIN is required to proceed.');
+                        return;
+                    }
+    
+                    try {
+                        // Fetch doctor profile to verify PIN
+                        const response = await axios.get(`https://morgphealth.onrender.com/api/doctor/profile/${doctorId}`);
+                        const doctorProfile = response.data;
+    
+                        // Ensure PIN is compared as strings
+                        if (!doctorProfile || String(doctorProfile.profileData.pin) !== String(pin)) {
+                            alert('Invalid PIN. Please try again.');
+                            pinInput.value = ''; // Clear the PIN input
+                            return;
+                        }
+    
+                        // Fetch doctor's current balance from the API
+                        const balanceResponse = await axios.get(`https://morgphealth.onrender.com/api/doctor/balance/${doctorId}`);
+                        const currentBalance = balanceResponse.data.balance;
+    
+                        // Check if the withdrawal amount is less than or equal to the current balance
+                        if (withdrawalData.amount > currentBalance) {
+                            alert('Insufficient funds for this withdrawal.');
+                            return;
+                        }
+    
+                        // Make API calls to process withdrawal
+                        const withdrawalResponse = await axios.post(
+                            'https://morgphealth.onrender.com/api/withdraws/add',
+                            withdrawalData
+                        );
+    
+                        const decrementResponse = await axios.put(
+                            `https://morgphealth.onrender.com/api/doctor/balance/decrement/${doctorId}`,
+                            { amount: withdrawalData.amount }
+                        );
+    
+                        if (withdrawalResponse.data.success && decrementResponse.data.success) {
+                            alert('Withdrawal processed successfully and balance updated.');
+                            window.location.href = 'successfulpage.html'; // Redirect to wallet.html if successful
+                        } else {
+                            alert(
+                                withdrawalResponse.data.message ||
+                                decrementResponse.data.message ||
+                                'An error occurred.'
+                            );
+                        }
+                    } catch (error) {
+                        console.error('Error:', error);
+                        alert(error.message || 'An error occurred during the withdrawal process.');
+                    } finally {
+                        // Close the modal after processing
+                        pinModal.style.display = 'none';
+                    }
+                });
+    
+                // Handle close modal (cancel action)
+                closeModalBtn.addEventListener('click', function () {
+                    pinModal.style.display = 'none'; // Close the modal
+                });
+            });
+        });
+    </script>
+    
+        
+
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@1.16.1/dist/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html> -->
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <!-- Required meta tags -->
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <title>Withdrawal</title>
+
+
+    
+
+  
+  <!-- plugins:css -->
+  <link rel="stylesheet" href="../../vendors/feather/feather.css">
+  <link rel="stylesheet" href="../../vendors/ti-icons/css/themify-icons.css">
+  <link rel="stylesheet" href="../../vendors/css/vendor.bundle.base.css">
+  <!-- endinject -->
+  <!-- Plugin css for this page -->
+
+  <script>
+    // Redirect to index.html if no token is found
+    if (!localStorage.getItem('doctor_id')) {
+      window.location.href = '../../index.html';
+    }
+  </script>
+
+
+  <!-- End plugin css for this page -->
+  <!-- inject:css -->
+  <link rel="stylesheet" href="../../css/vertical-layout-light/style.css">
+  <!-- endinject -->
+  <link rel="shortcut icon" href="../../images/morgp-logo.png" />
+</head>
+<style>
+    .form-section-title {
+        font-size: 1.5rem;
+        margin-bottom: 1rem;
+        font-weight: bold;
+    }
+    .submit-btn {
+        background-color: #007bff;
+        color: #fff;
+    }
+  
+.modal {
+display: none; /* Hidden by default */
+position: fixed;
+z-index: 1;
+left: 0;
+top: 0;
+width: 100%;
+height: 100%;
+overflow: auto;
+background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent background */
+}
+
+.modal-content {
+background-color: #fff;
+margin: 15% auto;
+padding: 20px;
+border: 1px solid #888;
+width: 300px;
+text-align: center;
+}
+
+button {
+margin-top: 10px;
+padding: 10px;
+background-color: #4CAF50;
+color: white;
+border: none;
+cursor: pointer;
+}
+
+button:hover {
+background-color: #45a049;
+}
+</style>
+
+<body>
+  <div class="container-scroller">
+    <!-- partial:../../partials/_navbar.html -->
+    <nav class="navbar col-lg-12 col-12 p-0 fixed-top d-flex flex-row">
+      <div class="text-center navbar-brand-wrapper d-flex align-items-center justify-content-center">
+        <a class="navbar-brand brand-logo mr-5" href="../../dashboard.html"><img src="../../images/morgp-logo.png" class="mr-2" alt="logo"/></a>
+        <!-- <a class="navbar-brand brand-logo-mini" href="index.html"><img src="images/logo-mini.svg" alt="logo"/></a> -->
+      </div>
+      <div class="navbar-menu-wrapper d-flex align-items-center justify-content-end">
+        <button class="navbar-toggler navbar-toggler align-self-center" type="button" data-toggle="minimize">
+          <span class="icon-menu"></span>
+        </button>
+       
+        <ul class="navbar-nav navbar-nav-right">
+          <!-- Nav Notifications -->
+<li class="nav-item dropdown">
+  <a class="nav-link count-indicator dropdown-toggle" id="notificationDropdown" href="#" data-toggle="dropdown">
+    <i class="icon-bell mx-0"></i>
+    <span class="count"></span>
+  </a>
+  <div class="dropdown-menu dropdown-menu-right navbar-dropdown preview-list" id="nav-notification-list" aria-labelledby="notificationDropdown">
+    <p class="mb-0 font-weight-normal float-left dropdown-header">Notifications</p>
+    <!-- Dynamic notifications will be appended here -->
+  </div>
+</li>
+
+          <li class="nav-item nav-profile dropdown">
+            <a class="nav-link dropdown-toggle" href="#" data-toggle="dropdown" id="profileDropdown">
+              <img id="profileImage" src="" alt="profile" />
+            </a>
+            <div class="dropdown-menu dropdown-menu-right navbar-dropdown" aria-labelledby="profileDropdown">
+              <a href="../../pages/forms/profile.html" class="dropdown-item">
+                <i class="ti-settings text-primary"></i>
+                Profile
+              </a>
+              <a class="dropdown-item" onclick="handleLogout()">
+                <i class="ti-power-off text-primary"></i>
+                Logout
+              </a>
+            </div>
+          </li>
+         
+        </ul>
+        <button class="navbar-toggler navbar-toggler-right d-lg-none align-self-center" type="button" data-toggle="offcanvas">
+          <span class="icon-menu"></span>
+        </button>
+      </div>
+    </nav>
+    <!-- partial -->
+    <div class="container-fluid page-body-wrapper">
+      <!-- partial:../../partials/_settings-panel.html -->
+      <div class="theme-setting-wrapper">
+        <div id="settings-trigger"><i class="ti-settings"></i></div>
+        <div id="theme-settings" class="settings-panel">
+          <i class="settings-close ti-close"></i>
+          <p class="settings-heading">SIDEBAR SKINS</p>
+          <div class="sidebar-bg-options selected" id="sidebar-light-theme"><div class="img-ss rounded-circle bg-light border mr-3"></div>Light</div>
+          <div class="sidebar-bg-options" id="sidebar-dark-theme"><div class="img-ss rounded-circle bg-dark border mr-3"></div>Dark</div>
+          <p class="settings-heading mt-2">HEADER SKINS</p>
+          <div class="color-tiles mx-0 px-4">
+            <div class="tiles success"></div>
+            <div class="tiles warning"></div>
+            <div class="tiles danger"></div>
+            <div class="tiles info"></div>
+            <div class="tiles dark"></div>
+            <div class="tiles default"></div>
+          </div>
+        </div>
+      </div>
+      <div id="right-sidebar" class="settings-panel">
+        <i class="settings-close ti-close"></i>
+        <ul class="nav nav-tabs border-top" id="setting-panel" role="tablist">
+          
+          <li class="nav-item">
+            <a class="nav-link active" id="chats-tab" data-toggle="tab" href="#chats-section" role="tab" aria-controls="chats-section">CHATS</a>
+          </li>
+        </ul>
+      
+      </div>
+      <!-- partial -->
+      <!-- partial:../../partials/_sidebar.html -->
+      <nav class="sidebar sidebar-offcanvas" id="sidebar">
+        <ul class="nav">
+          <li class="nav-item">
+            <a class="nav-link" href="../../dashboard.html">
+              <i class="icon-grid menu-icon"></i>
+              <span class="menu-title">Dashboard</span>
+            </a>
+          </li>
+
+
+
+          <li class="nav-item">
+            <a class="nav-link" data-toggle="collapse" href="#form-elements" aria-expanded="false" aria-controls="form-elements">
+              <i class="icon-columns menu-icon"></i>
+              <span class="menu-title">Wallet Page</span>
+              <i class="menu-arrow"></i>
+            </a>
+            <div class="collapse" id="form-elements">
+              <ul class="nav flex-column sub-menu">
+                <li class="nav-item"><a class="nav-link" href="../../pages/tables/wallet.html">Wallet</a></li>
+              </ul>
+            </div>
+          </li>
+        
+          <li class="nav-item">
+            <a class="nav-link" href="../forms/basic_elements.html">
+              <i class="icon-grid-2 menu-icon"></i>
+              <span class="menu-title">Add Services</span>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="services.html">
+              <i class="icon-grid-2 menu-icon"></i>
+              <span class="menu-title">Manage Services</span>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="pending.html">
+              <i class="icon-grid-2 menu-icon"></i>
+              <span class="menu-title">Pending</span>
+            </a>
+          </li>
+         
+         
+          
+          <li class="nav-item">
+            <a class="nav-link" href="upcoming.html">
+              <i class="icon-grid-2 menu-icon"></i>
+              <span class="menu-title">Upcoming</span>
+            </a>
+          </li>
+
+
+          <li class="nav-item">
+            <a class="nav-link" href="completed.html">
+              <i class="icon-grid-2 menu-icon"></i>
+              <span class="menu-title">Completed</span>
+            </a>
+          </li>
+         
+          <li class="nav-item">
+            <a class="nav-link" href="cancelled.html">
+              <i class="icon-grid-2 menu-icon"></i>
+              <span class="menu-title">Cancelled</span>
+            </a>
+          </li>
+
+
+          <li class="nav-item">
+            <a class="nav-link" href="../../appointment.html">
+              <i class="icon-grid-2 menu-icon"></i>
+              <span class="menu-title">Appointments</span>
+            </a>
+          </li>
+        
+        
+          <li class="nav-item">
+            <a class="nav-link" href="../../availability.html">
+              <i class="icon-grid-2 menu-icon"></i>
+              <span class="menu-title">Availability</span>
+            </a>
+          </li>
+
+
+
+          <li class="nav-item">
+            <a class="nav-link" href="../../prescription.html">
+              <i class="icon-grid-2 menu-icon"></i>
+              <span class="menu-title">Manage Prescription</span>
+            </a>
+          </li>
+
+        </ul>
+      </nav>
+      <!-- partial -->
+      <div class="main-panel">
+        <div class="content-wrapper">
+          <div class="row-method">
+          
+            <div class="col-lg-6 grid-margin stretch-card">
+          <div class="container py-5">
+        <form id="withdrawalForm">
+            <div class="row">
+                <!-- Billing Address Section -->
+             
+
+                <!-- Payment Section -->
+                <div style="margin: 0 auto;" class="col-md-6">
+                    <h3 class="form-section-title">Enter Amount</h3>
+
+                    <div class="form-group">
+                        <label for="amount">Amount</label>
+                        <input type="number" class="form-control" id="amount" placeholder="Enter Amount" min="0" required>
+                    </div>
+
+                    
+                </div>
+            </div>
+
+            <div class="text-center mt-4">
+                <button type="submit" class="btn submit-btn ">Withdraw</button>
+            </div>
+        </form>
+
+        <!-- Modal for PIN input -->
+<div id="pinModal" class="modal">
+    <div class="modal-content">
+        <h2>Enter your PIN</h2>
+        <input type="password" id="pinInput" placeholder="Enter PIN" />
+        <button id="submitPinBtn">Submit</button>
+        <button id="closeModalBtn">Cancel</button>
+    </div>
+</div>
+
+    </div>
+              </div>
+           
+          </div>
+        </div>
+        <!-- content-wrapper ends -->
+        <!-- partial:../../partials/_footer.html -->
+        <footer class="footer">
+          <div class="d-sm-flex justify-content-center justify-content-sm-between">
+            <span class="text-muted text-center text-sm-left d-block d-sm-inline-block">Copyright © 2024.  Morgphealth</span>
+           
+          </div>
+          
+        </footer> 
+        <!-- partial -->
+      </div>
+      <!-- main-panel ends -->
+    </div>
+    <!-- page-body-wrapper ends -->
+  </div>
+  <!-- container-scroller -->
+  <script>
+    function handleLogout() {
+      // Remove items from localStorage
+  
+      localStorage.removeItem('doctor_id');
+      localStorage.removeItem('token');
+  
+      // Redirect to login page or perform other actions
+      window.location.href = '../../index.html'; // Update the URL to your login page
+    }
+  
+  </script>
+  
+  
+  
+  <script>
+    document.addEventListener("DOMContentLoaded", async () => {
+      // Get the doctor ID from localStorage
+      const doctorId = localStorage.getItem("doctor_id");
+      if (!doctorId) {
+        console.error("Doctor ID not found in localStorage.");
+        return;
+      }
+  
+      try {
+        // Fetch the doctor's details from the API
+        const response = await fetch(`https://morgphealth.onrender.com/api/doctor/profile/${doctorId}`);
+        if (!response.ok) {
+          throw new Error("Failed to fetch doctor details");
+        }
+  
+        const data = await response.json();
+        const { name, image } = data.profileData;
+  
+        // Update the DOM elements
+        const profileImage = document.getElementById("profileImage");
+        const welcomeMessage = document.getElementById("welcomeMessage");
+  
+        if (profileImage && image) {
+          profileImage.src = image;
+        }
+        if (welcomeMessage && name) {
+          welcomeMessage.textContent = `Welcome ${name}`;
+        }
+      } catch (error) {
+        console.error("Error fetching doctor details:", error.message);
+      }
+    });
+  </script>
+  
+  
+  
+  <script>
+    document.addEventListener('DOMContentLoaded', async function () {
+      // Get the doctor ID from localStorage
+      const doctorId = localStorage.getItem('doctor_id');
+      if (!doctorId) {
+        alert('Doctor ID not found. Please log in.');
+        window.location.href = 'index.html';
+        return;
+      }
+  
+      const recipientType = 'Doctor';
+  
+      try {
+        // Fetch notifications from the API
+        const response = await fetch(`https://morgphealth.onrender.com/api/user/${doctorId}/${recipientType}`, {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        });
+  
+        const result = await response.json();
+  
+        if (response.ok && Array.isArray(result)) {
+          // Limit notifications to the first 4 for both sections
+          const notifications = result.slice(0, 4);
+  
+          // Handle Nav Notifications
+          const navNotificationList = document.getElementById('nav-notification-list');
+          const navNotificationCount = document.querySelector('.nav-link.count-indicator .count');
+          navNotificationList.innerHTML = ''; // Clear existing notifications
+          navNotificationCount.textContent = notifications.length; // Update notification count
+  
+          notifications.forEach(notification => {
+            const notificationTime = new Date(notification.createdAt).toLocaleString();
+  
+            const navNotificationItem = document.createElement('a');
+            navNotificationItem.className = 'dropdown-item preview-item';
+            navNotificationItem.innerHTML = `
+              <div class="preview-thumbnail">
+                <div class="preview-icon bg-info">
+                  <i class="icon-bell mx-0"></i>
+                </div>
+              </div>
+              <div class="preview-item-content">
+                <h6 class="preview-subject font-weight-normal">${notification.title}</h6>
+                <p class="font-weight-light small-text mb-0 text-muted">${notification.message}</p>
+                <small class="text-muted">${notificationTime}</small>
+              </div>
+            `;
+  
+            navNotificationList.appendChild(navNotificationItem);
+          });
+  
+       
+        } else {
+          console.log('Notifications not found or invalid format:', result);
+        }
+      } catch (error) {
+        console.error('Error fetching notifications:', error);
+      }
+    });
+  </script>
+  
+  
+
+
+  
+
+
+  <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+ 
+  
+  <script>
+    document.addEventListener('DOMContentLoaded', async function () {
+        const pinModal = document.getElementById('pinModal');
+        const pinInput = document.getElementById('pinInput');
+        const submitPinBtn = document.getElementById('submitPinBtn');
+        const closeModalBtn = document.getElementById('closeModalBtn');
+        const withdrawalForm = document.getElementById('withdrawalForm');
+
+        // Get the query parameter for payment method (method)
+        const urlParams = new URLSearchParams(window.location.search);
+        const method = urlParams.get('method');
+        console.log('Withdrawal Method:', method); // Log method for debugging
+
+        // Fetch doctor profile and populate fullName and email from the profile
+        const doctorId = localStorage.getItem('doctor_id');
+        let doctorProfile = null;
+        if (doctorId) {
+            try {
+                const response = await axios.get(`https://morgphealth.onrender.com/api/doctor/profile/${doctorId}`);
+                doctorProfile = response.data;
+                console.log('Doctor Profile:', doctorProfile); // Log doctor profile for debugging
+            } catch (error) {
+                console.error('Error fetching doctor profile:', error);
+                alert('Error fetching doctor profile.');
+            }
+        }
+
+        // Define withdrawalData object directly without using getElementById for non-existing elements
+        const withdrawalData = {
+            fullName: doctorProfile ? doctorProfile.fullName : '', // Use fullName from doctor profile
+            email: doctorProfile ? doctorProfile.email : '', // Use email from doctor profile
+            bankName: method, // Set the method (e.g., "Bank account ending in 8685" or "PayPal")
+            accountNumber: '', // Initialize accountNumber, which will be determined below
+            amount: parseFloat(document.getElementById('amount').value.trim()) || 0, // Get amount from input field
+            method: method // Add the method from query params
+        };
+
+        // Set accountNumber based on the method
+        if (method) {
+            let accountNumber = '';
+            if (method.includes('Bank account ending in')) {
+                const accountEnding = method.match(/\d+$/); // Extract the account ending number
+                accountNumber = accountEnding ? accountEnding[0] : ''; // Set account number
+            } else if (method.includes('PayPal')) {
+                const paypalEmail = method.replace('PayPal - ', ''); // Extract PayPal email
+                accountNumber = paypalEmail; // Set PayPal email as account number
+            }
+            withdrawalData.accountNumber = accountNumber; // Update accountNumber in the data object
+        }
+
+        // Add event listener for form submission
+        withdrawalForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            // Save withdrawal data to localStorage
+            localStorage.setItem('withdrawalData', JSON.stringify(withdrawalData));
+
+            // Show the PIN modal
+            pinModal.style.display = 'block';
+
+            // Handle submit PIN
+            submitPinBtn.addEventListener('click', async function () {
+                const pin = pinInput.value.trim();
+                if (pin === '') {
+                    alert('PIN is required to proceed.');
+                    return;
+                }
+
+                try {
+                    // Fetch doctor profile to verify PIN
+                    const response = await axios.get(`https://morgphealth.onrender.com/api/doctor/profile/${doctorId}`);
+                    const doctorProfile = response.data;
+
+                    // Ensure PIN is compared as strings
+                    if (!doctorProfile || String(doctorProfile.profileData.pin) !== String(pin)) {
+                        alert('Invalid PIN. Please try again.');
+                        pinInput.value = ''; // Clear the PIN input
+                        return;
+                    }
+
+                    // Fetch doctor's current balance from the API
+                    const balanceResponse = await axios.get(`https://morgphealth.onrender.com/api/doctor/balance/${doctorId}`);
+                    const currentBalance = balanceResponse.data.balance;
+
+                    // Check if the withdrawal amount is less than or equal to the current balance
+                    if (withdrawalData.amount > currentBalance) {
+                        alert('Insufficient funds for this withdrawal.');
+                        return;
+                    }
+
+                    // Make API calls to process withdrawal
+                    const withdrawalResponse = await axios.post(
+                        'https://morgphealth.onrender.com/api/withdraws/add',
+                        withdrawalData
+                    );
+
+                    const decrementResponse = await axios.put(
+                        `https://morgphealth.onrender.com/api/doctor/balance/decrement/${doctorId}`,
+                        { amount: withdrawalData.amount }
+                    );
+
+                    if (withdrawalResponse.data.success && decrementResponse.data.success) {
+                        alert('Withdrawal processed successfully and balance updated.');
+                        window.location.href = 'successfulpage.html'; // Redirect to wallet.html if successful
+                    } else {
+                        alert(
+                            withdrawalResponse.data.message ||
+                            decrementResponse.data.message ||
+                            'An error occurred.'
+                        );
+                    }
+                } catch (error) {
+                    console.error('Error:', error);
+                    alert(error.message || 'An error occurred during the withdrawal process.');
+                } finally {
+                    // Close the modal after processing
+                    pinModal.style.display = 'none';
+                }
+            });
+
+            // Handle close modal (cancel action)
+            closeModalBtn.addEventListener('click', function () {
+                pinModal.style.display = 'none'; // Close the modal
+            });
+        });
+    });
+</script>
+
+      
+  <!-- Bootstrap 4 JS, Popper.js, and jQuery -->
+  <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@1.16.1/dist/umd/popper.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+
+
+
+
+
+
+</body>
+
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

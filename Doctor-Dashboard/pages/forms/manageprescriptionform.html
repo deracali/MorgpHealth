@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Prescription Form</title>
+
+  <script>
+    // Redirect to index.html if no token is found
+    if (!localStorage.getItem('doctor_id')) {
+      window.location.href = '../../index.html';
+    }
+  </script>
+
+  <link rel="shortcut icon" href="../../images/morgp-logo.png" />
+  <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    body {
+      font-family: 'Manrope', sans-serif;
+    }
+    .container {
+      margin-top: 30px;
+    }
+    .form-group label {
+      font-weight: bold;
+    }
+    .form-control {
+      border-radius: 8px;
+      padding: 10px;
+    }
+    .medicine-container {
+      margin-bottom: 20px;
+    }
+  </style>
+</head>
+<body>
+
+    <div class="container">
+        <h3>Prescription Form</h3>
+        <form id="prescriptionForm">
+          <div class="form-group">
+            <label for="age">Patient Age</label>
+            <input type="number" class="form-control" id="age" name="age" required>
+          </div>
+      
+          <div class="form-group">
+            <label for="date">Date</label>
+            <input type="date" class="form-control" id="date" name="date" required>
+          </div>
+      
+          <div id="medicinesContainer">
+            <div class="medicine-container">
+              <h5>Medicines:</h5>
+              <div class="form-group">
+                <label for="medicine-name-0">Medicine Name</label>
+                <input type="text" class="form-control" id="medicine-name-0" name="updatedmedicine[0][name]" placeholder="Medicine Name" required>
+              </div>
+              <div class="form-group">
+                <label for="dosage-0">Dosage (e.g., 100mg)</label>
+                <input type="text" class="form-control" id="dosage-0" name="updatedmedicine[0][dosage]" placeholder="Dosage" required>
+              </div>
+              <div class="form-group">
+                <label for="frequency-0">Frequency (e.g., 1 tab BID)</label>
+                <input type="text" class="form-control" id="frequency-0" name="updatedmedicine[0][frequency]" placeholder="Frequency" required>
+              </div>
+            </div>
+          </div>
+      
+          <button type="button" id="addMedicineBtn" class="btn btn-secondary mb-3">Add Medicine</button>
+      
+          <div class="form-group">
+            <label for="discontinueCheckbox">Discontinue Prescription</label>
+            <input type="checkbox" id="discontinueCheckbox" name="discontinue">
+          </div>
+      
+          <button type="submit" class="btn btn-primary">Submit</button>
+        </form>
+      </div>
+      
+  <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+  <script>
+    const medicinesContainer = document.getElementById('medicinesContainer');
+    let medicineCount = 1;
+  
+    // Add a new medicine input field when the "Add Medicine" button is clicked
+    document.getElementById('addMedicineBtn').addEventListener('click', () => {
+      const newMedicineDiv = document.createElement('div');
+      newMedicineDiv.classList.add('medicine-container');
+      newMedicineDiv.innerHTML = `
+        <h5>Medicines:</h5>
+        <div class="form-group">
+          <label for="medicine-name-${medicineCount}">Medicine Name</label>
+          <input type="text" class="form-control" id="medicine-name-${medicineCount}" name="updatedmedicine[${medicineCount}][name]" placeholder="Medicine Name" required>
+        </div>
+        <div class="form-group">
+          <label for="dosage-${medicineCount}">Dosage (e.g., 100mg)</label>
+          <input type="text" class="form-control" id="dosage-${medicineCount}" name="updatedmedicine[${medicineCount}][dosage]" placeholder="Dosage" required>
+        </div>
+        <div class="form-group">
+          <label for="frequency-${medicineCount}">Frequency (e.g., 1 tab BID)</label>
+          <input type="text" class="form-control" id="frequency-${medicineCount}" name="updatedmedicine[${medicineCount}][frequency]" placeholder="Frequency" required>
+        </div>
+      `;
+      medicinesContainer.appendChild(newMedicineDiv);
+      medicineCount++;
+    });
+  
+    // Get appointmentId from URL query params
+    function getQueryParam(param) {
+      const urlParams = new URLSearchParams(window.location.search);
+      return urlParams.get(param);
+    }
+  
+    // Handle form submission
+    document.getElementById('prescriptionForm').addEventListener('submit', function (e) {
+      e.preventDefault();
+  
+      // Get the appointmentId from query params
+      const appointmentId = getQueryParam('appointmentId');
+      if (!appointmentId) {
+        alert('Appointment ID is missing.');
+        return;
+      }
+  
+      const formData = new FormData(this);
+      const data = {};
+  
+      formData.forEach((value, key) => {
+        data[key] = value;
+      });
+  
+      // Prepare data to send in the PUT request
+      const formPayload = {
+        age: parseInt(data.age),  // Ensure age is a number
+        date: data.date,
+        updatedmedicine: Object.keys(data)
+          .filter(key => key.startsWith('updatedmedicine'))
+          .map((key, index) => ({
+            name: data[`updatedmedicine[${index}][name]`],
+            dosage: data[`updatedmedicine[${index}][dosage]`],
+            frequency: data[`updatedmedicine[${index}][frequency]`],
+          })),
+        discontinue: data.discontinue === 'on' ? true : false,  // Set discontinue to true if checkbox is checked
+        discontinue2: false,  // Always set discontinue2 to false in the payload
+      };
+  
+      // Send the PUT request
+      axios.put(`https://morgphealth.onrender.com/api/doctor/update-appointment/${appointmentId}`, formPayload)
+        .then(response => {
+          alert('Prescription updated successfully!');
+        //   console.log(formPayload)
+          window.location.href = '../../dashboard.html'; 
+        })
+        .catch(error => {
+        //   alert('Failed to update prescription.');
+          console.error('API Error:', error);
+        });
+    });
+  </script>
+
+</body>
+</html>
