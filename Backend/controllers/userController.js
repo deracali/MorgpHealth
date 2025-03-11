@@ -85,7 +85,7 @@ const registerUser = async (req, res) => {
         res.status(201).json({
             success: true,
             token,
-            userid: user._id,  // You prefer 'userid' instead of 'userId'
+            userId: user._id,  // You prefer 'userid' instead of 'userId'
             insured: user.insured,
             timer: user.timer
         });
@@ -110,14 +110,14 @@ const loginUser = async (req, res) => {
         if (isMatch) {
             const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET);
             const insured = user.insured;
-            const userid = user._id;
+            const userId = user._id;
             const timer = user.timer;
 
             // Send Login Notification Email
             await sendEmail(email, "Login Alert", 
                 `Hello,\n\nYour account was just accessed.\n\nIf this wasn't you, please change your password.`);
 
-            res.json({ success: true, token, insured, userid, timer });
+            res.json({ success: true, token, insured, userId, timer });
         } else {
             res.json({ success: false, message: "Invalid credentials" });
         }
@@ -231,14 +231,34 @@ const updateProfileMobile = async (req, res) => {
 };
 
 
+
+
+
+// Function to send appointment emails
+const sendAppointmentEmail = async (to, subject, text) => {
+    const mailOptions = {
+        from: process.env.TITAN_EMAIL,
+        to,
+        subject,
+        text
+    };
+
+    try {
+        await transporter.sendMail(mailOptions);
+        console.log(`Email sent to ${to}`);
+    } catch (error) {
+        console.error('Email error:', error);
+    }
+};
+
+// Book Appointment Controller
 const bookAppointment = async (req, res) => {
     try {
-        console.log("Request Body:", req.body); // Log incoming request payload
+        console.log("Request Body:", req.body);
 
-        const { userId, docId, slotDate, slotTime, concern, description, type, amount,duration } = req.body;
+        const { userId, docId, slotDate, slotTime, concern, description, type, amount, duration } = req.body;
 
-        // Fetch doctor data, excluding password field
-        console.log("Fetching doctor data for ID:", docId); // Log doctor ID
+        console.log("Fetching doctor data for ID:", docId);
         const docData = await doctorModel.findById(docId).select('-password');
         if (!docData) {
             console.error("Doctor not found for ID:", docId);
@@ -252,26 +272,20 @@ const bookAppointment = async (req, res) => {
 
         console.log("Doctor data fetched:", docData);
 
-        // Ensure slots_booked exists in doctor data
         let slots_booked = docData.slots_booked || {};
-        console.log("Initial slots_booked:", slots_booked);
 
-        // Check if the specific date is already booked
         if (slots_booked[slotDate]) {
             if (slots_booked[slotDate].includes(slotTime)) {
                 console.error("Slot already booked:", { slotDate, slotTime });
                 return res.json({ success: false, message: "Slot not available" });
             } else {
-                slots_booked[slotDate].push(slotTime); // Add slot to the existing array
+                slots_booked[slotDate].push(slotTime);
             }
         } else {
-            slots_booked[slotDate] = [slotTime]; // Initialize the array with the new slot
+            slots_booked[slotDate] = [slotTime];
         }
 
-        console.log("Updated slots_booked:", slots_booked);
-
-        // Fetch user data, excluding password field
-        console.log("Fetching user data for ID:", userId); // Log user ID
+        console.log("Fetching user data for ID:", userId);
         const userData = await userModel.findById(userId).select('-password');
         if (!userData) {
             console.error("User not found for ID:", userId);
@@ -280,10 +294,8 @@ const bookAppointment = async (req, res) => {
 
         console.log("User data fetched:", userData);
 
-        // Remove slots_booked from docData as it's not needed in the appointment
         delete docData.slots_booked;
 
-        // Prepare appointment data
         const appointmentData = {
             userId,
             docId,
@@ -296,25 +308,25 @@ const bookAppointment = async (req, res) => {
             description,
             type,
             duration,
-            data: Date.now(), // Use Date.now() for timestamp
+            date: Date.now(),
         };
 
-        console.log("Prepared appointment data:", appointmentData);
-
-        // Create a new appointment
-        const newAppointment = new appointmentModel(appointmentData);
         console.log("Saving new appointment...");
-
-        // Save new appointment to the database
+        const newAppointment = new appointmentModel(appointmentData);
         await newAppointment.save();
         console.log("Appointment saved successfully");
 
-        // Update the doctor's available slots in the database
         console.log("Updating doctor's slots_booked in the database");
         await doctorModel.findByIdAndUpdate(docId, { slots_booked });
         console.log("Doctor's slots updated successfully");
 
-        // Respond with success
+        // Send confirmation emails to the doctor and user
+        const userEmailContent = `Dear ${userData.name},\n\nYour appointment with Dr. ${docData.name} is confirmed.\n\nDate: ${slotDate}\nTime: ${slotTime}\nType: ${type}\nConcern: ${concern}\n\nThank you for choosing our service.\n\nBest regards,\nYour Healthcare Team`;
+        const doctorEmailContent = `Dear Dr. ${docData.name},\n\nYou have a new appointment booked.\n\nPatient: ${userData.name}\nDate: ${slotDate}\nTime: ${slotTime}\nType: ${type}\nConcern: ${concern}\n\nPlease check your dashboard for details.\n\nBest regards,\nYour Healthcare Team`;
+
+        sendAppointmentEmail(userData.email, "Appointment Confirmation", userEmailContent);
+        sendAppointmentEmail(docData.email, "New Appointment Booked", doctorEmailContent);
+
         res.json({ success: true, message: "Appointment Booked", appointment: appointmentData });
 
     } catch (error) {
