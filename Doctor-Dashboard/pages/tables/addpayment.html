@@ -475,29 +475,29 @@ label {
                   <div class="paypal-info" style="display: none;">
                     <div class="form-group">
                       <label for="paypalEmail" class="payment-label">PayPal Email</label>
-                      <input type="email" id="paypalEmail" class="form-control" required>
+                      <input type="email" id="paypalEmail" class="form-control" >
                     </div>
                   </div>
             
                   <div class="bank-info" style="display: none;">
                     <div class="form-group">
                       <label for="bankName" class="payment-label">Bank Name</label>
-                      <input type="text" id="bankName" class="form-control" required>
+                      <input type="text" id="bankName" name="bankName" class="form-control" >
                     </div>
             
                     <div class="form-group">
                       <label for="accountHolder" class="payment-label">Account Holder Name</label>
-                      <input type="text" id="accountHolder" class="form-control" required>
+                      <input type="text" id="accountHolder" name="accountHolder" class="form-control" >
                     </div>
             
                     <div class="form-group">
                       <label for="bankAccount" class="payment-label">Bank Account Number</label>
-                      <input type="text" id="bankAccount" class="form-control" required>
+                      <input type="text" id="bankAccount" name="bankAccount" class="form-control" >
                     </div>
             
                     <div class="form-group">
                       <label for="iban" class="payment-label">IBAN</label>
-                      <input type="text" id="iban" class="form-control" required>
+                      <input type="text" id="iban" name="iban" class="form-control">
                     </div>
                   </div>
             
@@ -529,7 +529,7 @@ label {
   function handleLogout() {
     // Remove items from localStorage
 
-    localStorage.removeItem('doctor_id');
+    localStorage.removeItem('doctorId');
     localStorage.removeItem('token');
 
     // Redirect to login page or perform other actions
@@ -543,7 +543,7 @@ label {
 <script>
   document.addEventListener("DOMContentLoaded", async () => {
     // Get the doctor ID from localStorage
-    const doctorId = localStorage.getItem("doctor_id");
+    const doctorId = localStorage.getItem("doctorId");
     if (!doctorId) {
       console.error("Doctor ID not found in localStorage.");
       return;
@@ -580,7 +580,7 @@ label {
 <script>
   document.addEventListener('DOMContentLoaded', async function () {
     // Get the doctor ID from localStorage
-    const doctorId = localStorage.getItem('doctor_id');
+    const doctorId = localStorage.getItem('doctorId');
     if (!doctorId) {
       alert('Doctor ID not found. Please log in.');
       window.location.href = 'index.html';
@@ -650,7 +650,7 @@ label {
 
 <script>
   const backendUrl = "https://morgphealth.onrender.com"; // Replace with your backend URL
-  const docId = localStorage.getItem("doctor_id");
+  const docId = localStorage.getItem("doctorId");
 
   let chats = [];
   let selectedChatId = null;
@@ -850,10 +850,14 @@ console.log({
 
 
 
-
 <script>
   document.getElementById('paymentForm').addEventListener('submit', async function (e) {
     e.preventDefault();
+
+    // Disable the submit button and show "Uploading" text
+    const submitButton = document.querySelector('.submit-btn');
+    submitButton.disabled = true;
+    submitButton.textContent = 'Uploading...';
 
     const paymentMethod = document.getElementById('paymentMethod').value;
     let paymentDetails = {};
@@ -861,6 +865,8 @@ console.log({
     // Validate that payment method is selected
     if (!paymentMethod) {
       alert("Please select a payment method.");
+      submitButton.disabled = false;
+      submitButton.textContent = 'Add Payment Method'; // Restore the button text
       return;
     }
 
@@ -869,21 +875,41 @@ console.log({
       const paypalEmail = document.getElementById('paypalEmail').value;
       if (!paypalEmail) {
         alert("Please enter PayPal email.");
+        submitButton.disabled = false;
+        submitButton.textContent = 'Add Payment Method'; // Restore the button text
         return;
       }
       paymentDetails = { paypalEmail };
     } else if (paymentMethod === 'bank') {
-      const bankName = document.getElementById('bankName').value;
-      const accountHolder = document.getElementById('accountHolder').value;
-      const bankAccount = document.getElementById('bankAccount').value;
-      const iban = document.getElementById('iban').value;
+      const bankName = document.getElementById('bankName');
+      const accountHolder = document.getElementById('accountHolder');
+      const bankAccount = document.getElementById('bankAccount');
+      const iban = document.getElementById('iban');
 
-      if (!bankName || !accountHolder || !bankAccount || !iban) {
-        alert("Please fill in all bank account details.");
-        return;
+      // Only validate fields that are visible
+      if (document.querySelector('.bank-info').style.display !== 'none') {
+        if (!bankName.value || !accountHolder.value || !bankAccount.value || !iban.value) {
+          alert("Please fill in all bank account details.");
+          submitButton.disabled = false;
+          submitButton.textContent = 'Add Payment Method'; // Restore the button text
+          return;
+        }
+        paymentDetails = { 
+          bankName: bankName.value,
+          accountHolder: accountHolder.value,
+          bankAccount: bankAccount.value,
+          iban: iban.value
+        };
       }
+    }
 
-      paymentDetails = { bankName, accountHolder, bankAccount, iban };
+    // Get docId from localStorage
+    const docId = localStorage.getItem('doctorId');
+    if (!docId) {
+      alert("Doctor ID not found.");
+      submitButton.disabled = false;
+      submitButton.textContent = 'Add Payment Method'; // Restore the button text
+      return;
     }
 
     // Prepare the data to send in the POST request
@@ -894,7 +920,7 @@ console.log({
 
     // Send the POST request to the server
     try {
-      const response = await fetch('https://morgphealth.onrender.com/api/doctor/update-profile/:docId', {
+      const response = await fetch(`https://morgphealth.onrender.com/api/doctor/update-profile/${docId}`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
@@ -911,6 +937,10 @@ console.log({
     } catch (error) {
       console.error("Error:", error);
       alert("An error occurred while adding the payment method.");
+    } finally {
+      // Re-enable the button and restore its text
+      submitButton.disabled = false;
+      submitButton.textContent = 'Add Payment Method';
     }
   });
 
@@ -929,6 +959,9 @@ console.log({
     }
   });
 </script>
+
+
+
 
 
   <!-- plugins:js -->

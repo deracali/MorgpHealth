@@ -1,378 +1,3 @@
-<!-- <!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Withdrawal</title>
-
-
-    <script>
-        // Redirect to index.html if no token is found
-        if (!localStorage.getItem('doctor_id')) {
-          window.location.href = '../../index.html';
-        }
-      </script>
-
-    <link rel="shortcut icon" href="../../images/morgp-logo.png" />
-    
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-    <style>
-        .form-section-title {
-            font-size: 1.5rem;
-            margin-bottom: 1rem;
-            font-weight: bold;
-        }
-        .submit-btn {
-            background-color: #007bff;
-            color: #fff;
-        }
-      
-.modal {
-    display: none; /* Hidden by default */
-    position: fixed;
-    z-index: 1;
-    left: 0;
-    top: 0;
-    width: 100%;
-    height: 100%;
-    overflow: auto;
-    background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent background */
-}
-
-.modal-content {
-    background-color: #fff;
-    margin: 15% auto;
-    padding: 20px;
-    border: 1px solid #888;
-    width: 300px;
-    text-align: center;
-}
-
-button {
-    margin-top: 10px;
-    padding: 10px;
-    background-color: #4CAF50;
-    color: white;
-    border: none;
-    cursor: pointer;
-}
-
-button:hover {
-    background-color: #45a049;
-}
-</style>
-
-
-    
-</head>
-<body>
-    <div class="container py-5">
-        <form id="withdrawalForm">
-            <div class="row">
-             
-             
-
-              
-                <div class="col-md-6">
-                    <h3 class="form-section-title">Enter Amount</h3>
-
-                    <div class="form-group">
-                        <label for="amount">Amount</label>
-                        <input type="number" class="form-control" id="amount" placeholder="Enter Amount" min="0" required>
-                    </div>
-
-                    
-                </div>
-            </div>
-
-            <div class="text-center mt-4">
-                <button type="submit" class="btn submit-btn btn-block">Withdraw</button>
-            </div>
-        </form>
-
-       
-<div id="pinModal" class="modal">
-    <div class="modal-content">
-        <h2>Enter your PIN</h2>
-        <input type="password" id="pinInput" placeholder="Enter PIN" />
-        <button id="submitPinBtn">Submit</button>
-        <button id="closeModalBtn">Cancel</button>
-    </div>
-</div>
-
-    </div>
-
-
-    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
-     <script>
-        document.addEventListener('DOMContentLoaded', function () {
-            const pinModal = document.getElementById('pinModal');
-            const pinInput = document.getElementById('pinInput');
-            const submitPinBtn = document.getElementById('submitPinBtn');
-            const closeModalBtn = document.getElementById('closeModalBtn');
-            const withdrawalForm = document.getElementById('withdrawalForm');
-    
-            // Populate withdrawal fields from localStorage if available
-            const withdrawalData = JSON.parse(localStorage.getItem('withdrawalData'));
-            if (withdrawalData) {
-                document.getElementById('fullName').value = withdrawalData.fullName || '';
-                document.getElementById('email').value = withdrawalData.email || '';
-               
-                document.getElementById('bankName').value = withdrawalData.bankName || '';
-                document.getElementById('accountNumber').value = withdrawalData.accountNumber || '';
-                document.getElementById('amount').value = withdrawalData.amount || '';
-                document.getElementById('expMonth').value = withdrawalData.expMonth || '';
-                document.getElementById('cvv').value = withdrawalData.cvv || '';
-            }
-    
-            // Add event listener for form submission
-            withdrawalForm.addEventListener('submit', async (e) => {
-                e.preventDefault();
-    
-                // Gather form values
-                const withdrawalData = {
-                    fullName: document.getElementById('fullName').value.trim(),
-                    email: document.getElementById('email').value.trim(),
-                  
-                    bankName: document.getElementById('bankName').value.trim(),
-                    accountNumber: parseInt(document.getElementById('accountNumber').value.trim()),
-                    amount: parseFloat(document.getElementById('amount').value.trim()),
-                    expMonth: document.getElementById('expMonth').value.trim(),
-                    cvv: document.getElementById('cvv').value.trim(),
-                };
-    
-                // Save withdrawal data to localStorage
-                localStorage.setItem('withdrawalData', JSON.stringify(withdrawalData));
-    
-                // Show the PIN modal
-                pinModal.style.display = 'block';
-    
-                // Handle submit PIN
-                submitPinBtn.addEventListener('click', async function () {
-                    const pin = pinInput.value.trim();
-                    if (pin === '') {
-                        alert('PIN is required to proceed.');
-                        return;
-                    }
-    
-                    try {
-                        // Retrieve doctor ID from localStorage
-                        const doctorId = localStorage.getItem('doctor_id');
-                        if (!doctorId) throw new Error('Doctor ID not found.');
-    
-                        // Fetch doctor profile to verify PIN
-                        const response = await axios.get(`https://morgphealth.onrender.com/api/doctor/profile/${doctorId}`);
-                        const doctorProfile = response.data;
-                        console.log(response.data)
-    
-                        // Ensure PIN is compared as strings
-                        if (!doctorProfile || String(doctorProfile.profileData.pin) !== String(pin)) {
-                            alert('Invalid PIN. Please try again.');
-                            pinInput.value = ''; // Clear the PIN input
-                            return;
-                        }
-    
-                        // Make API calls to process withdrawal
-                        const withdrawalResponse = await axios.post(
-                            'https://morgphealth.onrender.com/api/withdraws/add',
-                            withdrawalData
-                        );
-    
-                        const decrementResponse = await axios.put(
-                            `https://morgphealth.onrender.com/api/doctor/balance/decrement/${doctorId}`,
-                            { amount: withdrawalData.amount }
-                        );
-    
-                        if (withdrawalResponse.data.success && decrementResponse.data.success) {
-                            alert('Withdrawal processed successfully and balance updated.');
-                            window.location.href = 'successfulpage.html'; // Redirect to wallet.html if successful
-                        } else {
-                            alert(
-                                withdrawalResponse.data.message ||
-                                decrementResponse.data.message ||
-                                'An error occurred.'
-                            );
-                        }
-                    } catch (error) {
-                        console.error('Error:', error);
-                        alert(error.message || 'An error occurred during the withdrawal process.');
-                    } finally {
-                        // Close the modal after processing
-                        pinModal.style.display = 'none';
-                    }
-                });
-    
-                // Handle close modal (cancel action)
-                closeModalBtn.addEventListener('click', function () {
-                    pinModal.style.display = 'none'; // Close the modal
-                });
-            });
-        });
-    </script> 
-    
-    <script>
-        document.addEventListener('DOMContentLoaded', async function () {
-            const pinModal = document.getElementById('pinModal');
-            const pinInput = document.getElementById('pinInput');
-            const submitPinBtn = document.getElementById('submitPinBtn');
-            const closeModalBtn = document.getElementById('closeModalBtn');
-            const withdrawalForm = document.getElementById('withdrawalForm');
-    
-            // Get the query parameter for payment method (method)
-            const urlParams = new URLSearchParams(window.location.search);
-            const method = urlParams.get('method');
-            console.log('Withdrawal Method:', method); // Log method for debugging
-    
-            // Populate withdrawal fields from localStorage if available
-            const withdrawalData = JSON.parse(localStorage.getItem('withdrawalData'));
-            if (withdrawalData) {
-                document.getElementById('fullName').value = withdrawalData.fullName || '';
-                document.getElementById('email').value = withdrawalData.email || '';
-            }
-    
-            // Fetch doctor profile and populate fullName and email
-            const doctorId = localStorage.getItem('doctor_id');
-            if (doctorId) {
-                try {
-                    const response = await axios.get(`https://morgphealth.onrender.com/api/doctor/profile/${doctorId}`);
-                    const doctorProfile = response.data;
-    
-                    // Populate fullName and email fields
-                    document.getElementById('fullName').value = doctorProfile.fullName || '';
-                    document.getElementById('email').value = doctorProfile.email || '';
-    
-                    console.log('Doctor Profile:', doctorProfile); // Log doctor profile for debugging
-                } catch (error) {
-                    console.error('Error fetching doctor profile:', error);
-                    alert('Error fetching doctor profile.');
-                }
-            }
-    
-            // If the payment method contains 'Bank account ending in' or 'PayPal', populate fields accordingly
-            if (method) {
-                document.getElementById('bankName').value = method; // Set the method (e.g., "Bank account ending in 8685" or "PayPal")
-                if (method.includes('Bank account ending in')) {
-                    const accountEnding = method.match(/\d+$/); // Extract the account ending number
-                    document.getElementById('accountNumber').value = accountEnding ? accountEnding[0] : ''; // Set account number
-                } else if (method.includes('PayPal')) {
-                    const paypalEmail = method.replace('PayPal - ', ''); // Extract PayPal email
-                    document.getElementById('accountNumber').value = paypalEmail; // Set PayPal email as account number
-                }
-            }
-    
-            // Add event listener for form submission
-            withdrawalForm.addEventListener('submit', async (e) => {
-                e.preventDefault();
-    
-                // Gather form values
-                const withdrawalData = {
-                    fullName: document.getElementById('fullName').value.trim(),
-                    email: document.getElementById('email').value.trim(),
-                    bankName: document.getElementById('bankName').value.trim(),
-                    accountNumber: document.getElementById('accountNumber').value.trim(), // account number (email for PayPal)
-                    amount: parseFloat(document.getElementById('amount').value.trim()),
-                    method: method // Add the method from query params
-                };
-    
-                // Save withdrawal data to localStorage
-                localStorage.setItem('withdrawalData', JSON.stringify(withdrawalData));
-    
-                // Show the PIN modal
-                pinModal.style.display = 'block';
-    
-                // Handle submit PIN
-                submitPinBtn.addEventListener('click', async function () {
-                    const pin = pinInput.value.trim();
-                    if (pin === '') {
-                        alert('PIN is required to proceed.');
-                        return;
-                    }
-    
-                    try {
-                        // Fetch doctor profile to verify PIN
-                        const response = await axios.get(`https://morgphealth.onrender.com/api/doctor/profile/${doctorId}`);
-                        const doctorProfile = response.data;
-    
-                        // Ensure PIN is compared as strings
-                        if (!doctorProfile || String(doctorProfile.profileData.pin) !== String(pin)) {
-                            alert('Invalid PIN. Please try again.');
-                            pinInput.value = ''; // Clear the PIN input
-                            return;
-                        }
-    
-                        // Fetch doctor's current balance from the API
-                        const balanceResponse = await axios.get(`https://morgphealth.onrender.com/api/doctor/balance/${doctorId}`);
-                        const currentBalance = balanceResponse.data.balance;
-    
-                        // Check if the withdrawal amount is less than or equal to the current balance
-                        if (withdrawalData.amount > currentBalance) {
-                            alert('Insufficient funds for this withdrawal.');
-                            return;
-                        }
-    
-                        // Make API calls to process withdrawal
-                        const withdrawalResponse = await axios.post(
-                            'https://morgphealth.onrender.com/api/withdraws/add',
-                            withdrawalData
-                        );
-    
-                        const decrementResponse = await axios.put(
-                            `https://morgphealth.onrender.com/api/doctor/balance/decrement/${doctorId}`,
-                            { amount: withdrawalData.amount }
-                        );
-    
-                        if (withdrawalResponse.data.success && decrementResponse.data.success) {
-                            alert('Withdrawal processed successfully and balance updated.');
-                            window.location.href = 'successfulpage.html'; // Redirect to wallet.html if successful
-                        } else {
-                            alert(
-                                withdrawalResponse.data.message ||
-                                decrementResponse.data.message ||
-                                'An error occurred.'
-                            );
-                        }
-                    } catch (error) {
-                        console.error('Error:', error);
-                        alert(error.message || 'An error occurred during the withdrawal process.');
-                    } finally {
-                        // Close the modal after processing
-                        pinModal.style.display = 'none';
-                    }
-                });
-    
-                // Handle close modal (cancel action)
-                closeModalBtn.addEventListener('click', function () {
-                    pinModal.style.display = 'none'; // Close the modal
-                });
-            });
-        });
-    </script>
-    
-        
-
-    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@1.16.1/dist/umd/popper.min.js"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
-</body>
-</html> -->
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 <!DOCTYPE html>
@@ -665,8 +290,8 @@ background-color: #45a049;
     <div class="modal-content">
         <h2>Enter your PIN</h2>
         <input type="password" id="pinInput" placeholder="Enter PIN" />
-        <button id="submitPinBtn">Submit</button>
-        <button id="closeModalBtn">Cancel</button>
+        <button style="background-color: #007bff;" id="submitPinBtn">Submit</button>
+        <button style="background-color: #007bff;" id="closeModalBtn">Cancel</button>
     </div>
 </div>
 
@@ -695,7 +320,7 @@ background-color: #45a049;
     function handleLogout() {
       // Remove items from localStorage
   
-      localStorage.removeItem('doctor_id');
+      localStorage.removeItem('doctorId');
       localStorage.removeItem('token');
   
       // Redirect to login page or perform other actions
@@ -709,7 +334,7 @@ background-color: #45a049;
   <script>
     document.addEventListener("DOMContentLoaded", async () => {
       // Get the doctor ID from localStorage
-      const doctorId = localStorage.getItem("doctor_id");
+      const doctorId = localStorage.getItem("doctorId");
       if (!doctorId) {
         console.error("Doctor ID not found in localStorage.");
         return;
@@ -746,7 +371,7 @@ background-color: #45a049;
   <script>
     document.addEventListener('DOMContentLoaded', async function () {
       // Get the doctor ID from localStorage
-      const doctorId = localStorage.getItem('doctor_id');
+      const doctorId = localStorage.getItem('doctorId');
       if (!doctorId) {
         alert('Doctor ID not found. Please log in.');
         window.location.href = 'index.html';
@@ -815,134 +440,149 @@ background-color: #45a049;
 
   <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
  
-  
   <script>
     document.addEventListener('DOMContentLoaded', async function () {
-        const pinModal = document.getElementById('pinModal');
-        const pinInput = document.getElementById('pinInput');
-        const submitPinBtn = document.getElementById('submitPinBtn');
-        const closeModalBtn = document.getElementById('closeModalBtn');
-        const withdrawalForm = document.getElementById('withdrawalForm');
-
-        // Get the query parameter for payment method (method)
-        const urlParams = new URLSearchParams(window.location.search);
-        const method = urlParams.get('method');
-        console.log('Withdrawal Method:', method); // Log method for debugging
-
-        // Fetch doctor profile and populate fullName and email from the profile
-        const doctorId = localStorage.getItem('doctor_id');
-        let doctorProfile = null;
-        if (doctorId) {
-            try {
-                const response = await axios.get(`https://morgphealth.onrender.com/api/doctor/profile/${doctorId}`);
-                doctorProfile = response.data;
-                console.log('Doctor Profile:', doctorProfile); // Log doctor profile for debugging
-            } catch (error) {
-                console.error('Error fetching doctor profile:', error);
-                alert('Error fetching doctor profile.');
-            }
-        }
-
-        // Define withdrawalData object directly without using getElementById for non-existing elements
-        const withdrawalData = {
-            fullName: doctorProfile ? doctorProfile.fullName : '', // Use fullName from doctor profile
-            email: doctorProfile ? doctorProfile.email : '', // Use email from doctor profile
-            bankName: method, // Set the method (e.g., "Bank account ending in 8685" or "PayPal")
-            accountNumber: '', // Initialize accountNumber, which will be determined below
-            amount: parseFloat(document.getElementById('amount').value.trim()) || 0, // Get amount from input field
-            method: method // Add the method from query params
-        };
-
-        // Set accountNumber based on the method
-        if (method) {
-            let accountNumber = '';
-            if (method.includes('Bank account ending in')) {
-                const accountEnding = method.match(/\d+$/); // Extract the account ending number
-                accountNumber = accountEnding ? accountEnding[0] : ''; // Set account number
-            } else if (method.includes('PayPal')) {
-                const paypalEmail = method.replace('PayPal - ', ''); // Extract PayPal email
-                accountNumber = paypalEmail; // Set PayPal email as account number
-            }
-            withdrawalData.accountNumber = accountNumber; // Update accountNumber in the data object
-        }
-
-        // Add event listener for form submission
-        withdrawalForm.addEventListener('submit', async (e) => {
-            e.preventDefault();
-
-            // Save withdrawal data to localStorage
-            localStorage.setItem('withdrawalData', JSON.stringify(withdrawalData));
-
-            // Show the PIN modal
-            pinModal.style.display = 'block';
-
-            // Handle submit PIN
-            submitPinBtn.addEventListener('click', async function () {
-                const pin = pinInput.value.trim();
-                if (pin === '') {
-                    alert('PIN is required to proceed.');
-                    return;
-                }
-
-                try {
-                    // Fetch doctor profile to verify PIN
-                    const response = await axios.get(`https://morgphealth.onrender.com/api/doctor/profile/${doctorId}`);
-                    const doctorProfile = response.data;
-
-                    // Ensure PIN is compared as strings
-                    if (!doctorProfile || String(doctorProfile.profileData.pin) !== String(pin)) {
-                        alert('Invalid PIN. Please try again.');
-                        pinInput.value = ''; // Clear the PIN input
-                        return;
-                    }
-
-                    // Fetch doctor's current balance from the API
-                    const balanceResponse = await axios.get(`https://morgphealth.onrender.com/api/doctor/balance/${doctorId}`);
-                    const currentBalance = balanceResponse.data.balance;
-
-                    // Check if the withdrawal amount is less than or equal to the current balance
-                    if (withdrawalData.amount > currentBalance) {
-                        alert('Insufficient funds for this withdrawal.');
-                        return;
-                    }
-
-                    // Make API calls to process withdrawal
-                    const withdrawalResponse = await axios.post(
-                        'https://morgphealth.onrender.com/api/withdraws/add',
-                        withdrawalData
-                    );
-
-                    const decrementResponse = await axios.put(
-                        `https://morgphealth.onrender.com/api/doctor/balance/decrement/${doctorId}`,
-                        { amount: withdrawalData.amount }
-                    );
-
-                    if (withdrawalResponse.data.success && decrementResponse.data.success) {
-                        alert('Withdrawal processed successfully and balance updated.');
-                        window.location.href = 'successfulpage.html'; // Redirect to wallet.html if successful
-                    } else {
-                        alert(
-                            withdrawalResponse.data.message ||
-                            decrementResponse.data.message ||
-                            'An error occurred.'
-                        );
-                    }
-                } catch (error) {
-                    console.error('Error:', error);
-                    alert(error.message || 'An error occurred during the withdrawal process.');
-                } finally {
-                    // Close the modal after processing
-                    pinModal.style.display = 'none';
-                }
-            });
-
-            // Handle close modal (cancel action)
-            closeModalBtn.addEventListener('click', function () {
-                pinModal.style.display = 'none'; // Close the modal
-            });
-        });
+      const pinModal = document.getElementById('pinModal');
+      const pinInput = document.getElementById('pinInput');
+      const submitPinBtn = document.getElementById('submitPinBtn');
+      const closeModalBtn = document.getElementById('closeModalBtn');
+      const withdrawalForm = document.getElementById('withdrawalForm');
+  
+      if (!withdrawalForm) {
+          console.error("Withdrawal form not found.");
+          return;
+      }
+  
+      // Get query parameters from URL
+      const urlParams = new URLSearchParams(window.location.search);
+      const method = urlParams.get('method') || ''; // Payment method (Bank or PayPal)
+      const details = urlParams.get('details') || '';  // Account details (e.g., Bank account or PayPal email)
+  
+      console.log('Withdrawal Method:', method);
+      console.log('Withdrawal Details:', details);
+  
+      // Fetch doctor profile (get doctorId from localStorage)
+      const doctorId = localStorage.getItem('doctorId');
+      let doctorProfile = null;
+  
+      if (doctorId) {
+          try {
+              const response = await axios.get(`https://morgphealth.onrender.com/api/doctor/profile/${doctorId}`);
+              doctorProfile = response.data;
+              console.log('Doctor Profile:', doctorProfile);
+          } catch (error) {
+              console.error('Error fetching doctor profile:', error);
+              alert('Error fetching doctor profile.');
+          }
+      }
+  
+      // Add event listener for withdrawal form submission
+      withdrawalForm.addEventListener('submit', async (e) => {
+          e.preventDefault();  // Prevent form submission and page reload
+  
+          // Get the withdrawal amount from the input field
+          const amount = parseFloat(document.getElementById('amount').value.trim()) || 0;
+          if (amount <= 0) {
+              alert('Please enter a valid withdrawal amount.');
+              return;
+          }
+  
+          // Prepare withdrawal data object
+          const withdrawalData = {
+              fullName: doctorProfile?.fullName || '',  // Use full name from the doctor profile
+              email: doctorProfile?.email || '',        // Use email from the doctor profile
+              method,  // Payment method (Bank or PayPal)
+              details, // Account number or PayPal email
+              amount   // Withdrawal amount
+          };
+  
+          // Save withdrawal data to localStorage for later use
+          localStorage.setItem('withdrawalData', JSON.stringify(withdrawalData));
+  
+          // Show PIN modal
+          pinModal.style.display = 'block';
+      });
+  
+      // Handle submit PIN button click
+      submitPinBtn.addEventListener('click', async function () {
+          // Change button text to "Processing..." and disable it to prevent multiple clicks
+          submitPinBtn.textContent = 'Processing...';
+          submitPinBtn.disabled = true;
+  
+          const pin = pinInput.value.trim();
+          if (!pin) {
+              alert('PIN is required to proceed.');
+              // Reset button state
+              submitPinBtn.textContent = 'Submit';
+              submitPinBtn.disabled = false;
+              return;
+          }
+  
+          try {
+              // Fetch the doctor profile again to verify the PIN
+              const response = await axios.get(`https://morgphealth.onrender.com/api/doctor/profile/${doctorId}`);
+              const doctorProfile = response.data;
+  
+              // Check if the PIN is correct
+              if (!doctorProfile || String(doctorProfile.profileData?.pin) !== String(pin)) {
+                  alert('Invalid PIN. Please try again.');
+                  pinInput.value = ''; // Clear PIN input
+                  // Reset button state
+                  submitPinBtn.textContent = 'Submit';
+                  submitPinBtn.disabled = false;
+                  return;
+              }
+  
+              // Fetch the doctor's current balance
+              const currentBalance = doctorProfile.profileData.balance;
+  
+              // Validate if there are sufficient funds for the withdrawal
+              const withdrawalData = JSON.parse(localStorage.getItem('withdrawalData'));
+              if (withdrawalData.amount > currentBalance) {
+                  alert('Insufficient funds for this withdrawal.');
+                  // Reset button state
+                  submitPinBtn.textContent = 'Submit';
+                  submitPinBtn.disabled = false;
+                  return;
+              }
+  
+              // Process the withdrawal request
+              const withdrawalResponse = await axios.post(
+                  'https://morgphealth.onrender.com/api/withdraws/add',
+                  withdrawalData
+              );
+  
+              // Deduct the withdrawal amount from the doctor's balance
+              const decrementResponse = await axios.put(
+                  `https://morgphealth.onrender.com/api/doctor/balance/decrement/${doctorId}`,
+                  { amount: withdrawalData.amount }
+              );
+  
+              // Check if both withdrawal and balance decrement were successful
+              if (withdrawalResponse.data.success && decrementResponse.data.success) {
+                  alert('Withdrawal processed successfully.');
+                  window.location.href = 'successfulpage.html'; // Redirect to a success page
+              } else {
+                  alert('Error processing withdrawal.');
+              }
+          } catch (error) {
+              console.error('Error:', error);
+              alert('An error occurred during the withdrawal process.');
+          } finally {
+              // Reset button state after processing
+              submitPinBtn.textContent = 'Submit';
+              submitPinBtn.disabled = false;
+              pinModal.style.display = 'none'; // Hide the PIN modal
+          }
+      });
+  
+      // Close the PIN modal when clicking the close button
+      closeModalBtn.addEventListener('click', function () {
+          pinModal.style.display = 'none';
+      });
     });
-</script>
+  </script>
+  
 
       
   <!-- Bootstrap 4 JS, Popper.js, and jQuery -->

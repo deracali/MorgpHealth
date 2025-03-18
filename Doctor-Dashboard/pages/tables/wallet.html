@@ -6,12 +6,12 @@
     <title>Wallet</title>
 
 
-    <script>
+    <!-- <script>
       // Redirect to index.html if no token is found
       if (!localStorage.getItem('doctorId')) {
         window.location.href = 'https://morgphealth.com/auth/doclogin.html';
       }
-    </script>
+    </script> -->
     
 
     <link rel="stylesheet" href="../../vendors/feather/feather.css">
@@ -344,7 +344,7 @@
     function handleLogout() {
       // Remove items from localStorage
 
-      localStorage.removeItem('doctor_id');
+      localStorage.removeItem('doctorId');
       localStorage.removeItem('token');
   
       // Redirect to login page or perform other actions
@@ -357,7 +357,7 @@
 <script>
   document.addEventListener("DOMContentLoaded", async () => {
     // Get the doctor ID from localStorage
-    const doctorId = localStorage.getItem("doctor_id");
+    const doctorId = localStorage.getItem("doctorId");
     if (!doctorId) {
       console.error("Doctor ID not found in localStorage.");
       return;
@@ -393,7 +393,7 @@
 <script>
   document.addEventListener('DOMContentLoaded', async function () {
     // Get the doctor ID from localStorage
-    const doctorId = localStorage.getItem('doctor_id');
+    const doctorId = localStorage.getItem('doctorId');
     if (!doctorId) {
       alert('Doctor ID not found. Please log in.');
       window.location.href = 'index.html';
@@ -478,7 +478,7 @@
 <script>
 document.addEventListener("DOMContentLoaded", async () => {
     // Fetch doctor ID from local storage
-    const doctorId = localStorage.getItem("doctor_id");
+    const doctorId = localStorage.getItem("doctorId");
     if (!doctorId) {
         console.error("Doctor ID not found in local storage.");
         return;
@@ -549,7 +549,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 <script>
 document.addEventListener('DOMContentLoaded', async function () {
     // Fetch doctor ID from local storage
-    const doctorId = localStorage.getItem("doctor_id");
+    const doctorId = localStorage.getItem("doctorId");
     if (!doctorId) {
         console.error("Doctor ID not found in local storage.");
         return;
@@ -652,7 +652,7 @@ function calculateWeeklyIncome(balanceHistory) {
 <script>
     document.addEventListener('DOMContentLoaded', function () {
         // Get the doctorId from local storage (or session storage depending on your app)
-        const doctorId = localStorage.getItem('doctor_id');  // Replace with actual doctor ID fetch logic
+        const doctorId = localStorage.getItem('doctorId');  // Replace with actual doctor ID fetch logic
 
         // Fetch balance history data from the backend
         fetch(`https://morgphealth.onrender.com/api/doctor/profile/${doctorId}`)  // Assuming your API is setup like this
@@ -778,7 +778,7 @@ function calculateWeeklyIncome(balanceHistory) {
 <script>
     document.addEventListener('DOMContentLoaded', function () {
         // Get the doctorId from local storage (or session storage depending on your app)
-        const doctorId = localStorage.getItem('doctor_id');  // Replace with actual doctor ID fetch logic
+        const doctorId = localStorage.getItem('doctorId');  // Replace with actual doctor ID fetch logic
     
         // Fetch balance history data from the backend
         fetch(`https://morgphealth.onrender.com/api/doctor/profile/${doctorId}`)  // Assuming your API is setup like this

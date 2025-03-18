@@ -50,9 +50,7 @@ const ReviewController = async (req, res) => {
       return res.status(400).json({ success: false, message: "Email already exists" });
     }
 
-    // Hash the password
-    const salt = await bcrypt.genSalt(10);
-    const hashedPassword = await bcrypt.hash(password, salt);
+   
 
     // Placeholder image URL
     const placeholderImageUrl = "https://example.com/placeholder-image.jpg";

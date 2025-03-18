@@ -802,7 +802,7 @@
     function handleLogout() {
       // Remove items from localStorage
 
-      localStorage.removeItem('doctor_id');
+      localStorage.removeItem('doctorId');
       localStorage.removeItem('token');
   
       // Redirect to login page or perform other actions
@@ -815,7 +815,7 @@
   <script>
     document.addEventListener("DOMContentLoaded", async () => {
       // Get the doctor ID from localStorage
-      const doctorId = localStorage.getItem("doctor_id");
+      const doctorId = localStorage.getItem("doctorId");
       if (!doctorId) {
         console.error("Doctor ID not found in localStorage.");
         return;
@@ -884,7 +884,7 @@
 <script>
   document.addEventListener('DOMContentLoaded', async function () {
     // Get the doctor ID from local storage
-    const doctorId = localStorage.getItem('doctor_id');
+    const doctorId = localStorage.getItem('doctorId');
     if (!doctorId) {
       alert('Doctor ID not found. Please log in.');
       window.location.href = 'login.html';
@@ -952,7 +952,7 @@
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
   document.addEventListener('DOMContentLoaded', async function () {
-    const doctorId = localStorage.getItem('doctor_id');
+    const doctorId = localStorage.getItem('doctorId');
     if (!doctorId) {
       // alert('Doctor ID not found. Please log in.');
       window.location.href = 'login.html';
@@ -1018,7 +1018,7 @@
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
   document.addEventListener('DOMContentLoaded', async function () {
-    const doctorId = localStorage.getItem('doctor_id');
+    const doctorId = localStorage.getItem('doctorId');
     if (!doctorId) {
       alert('Doctor ID not found. Please log in.');
       window.location.href = 'login.html';
@@ -1125,7 +1125,7 @@
 
 <script>
   document.addEventListener('DOMContentLoaded', async function () {
-    const doctorId = localStorage.getItem('doctor_id');
+    const doctorId = localStorage.getItem('doctorId');
     if (!doctorId) {
       window.location.href = 'index.html';
       return;
@@ -1330,7 +1330,7 @@
   <script>
     document.addEventListener('DOMContentLoaded', async function () {
       // Get the doctor ID from localStorage
-      const doctorId = localStorage.getItem('doctor_id');
+      const doctorId = localStorage.getItem('doctorId');
       if (!doctorId) {
         alert('Doctor ID not found. Please log in.');
         window.location.href = 'index.html';
@@ -1418,7 +1418,7 @@
 
 <script>
     document.addEventListener('DOMContentLoaded', async function () {
-      const doctorId = localStorage.getItem('doctor_id');
+      const doctorId = localStorage.getItem('doctorId');
       if (!doctorId) {
         alert('Doctor ID not found. Please log in.');
         window.location.href = 'login.html';
@@ -1500,7 +1500,7 @@
  
 <script>
     document.addEventListener('DOMContentLoaded', function () {
-  const doctorId = localStorage.getItem('doctor_id');
+  const doctorId = localStorage.getItem('doctorId');
   if (!doctorId) {
     // alert('Doctor ID not found. Please log in.');
     window.location.href = 'index.html';
@@ -1588,7 +1588,7 @@ function updateProgressBar(countElementId, countValue, totalValue, progressBarId
   const searchInput = document.getElementById("search-input");
   const loadMoreBtn = document.getElementById("load-more-btn");
 
-  let doctorId = localStorage.getItem("doctor_id");
+  let doctorId = localStorage.getItem("doctorId");
   if (!doctorId) {
     console.error("Doctor ID not found in localStorage");
     return;
@@ -1704,7 +1704,7 @@ function updateProgressBar(countElementId, countValue, totalValue, progressBarId
 
 <script>
   const backendUrl = "https://morgphealth.onrender.com"; // Replace with your backend URL
-  const doctorId = localStorage.getItem("doctor_id");
+  const doctorId = localStorage.getItem("doctorId");
 
   let chats = [];
   let selectedChatId = null;

@@ -141,7 +141,7 @@ const doctorData = {
 };
 
 // Save new doctor to the database
-const newDoctor = new ReviewdocModel(doctorData);
+const newDoctor = new doctorModel(doctorData);
 await newDoctor.save();
 
 // Add the doctor to the hospital's staff

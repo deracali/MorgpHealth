@@ -3,15 +3,15 @@ import mongoose from 'mongoose';
 const doctorSchema = new mongoose.Schema({
     name: { type: String }, // Optional field
     phone: { type: Number }, // Optional field
-    email: { type: String, unique: true, required: true }, // Required
-    password: { type: String, required: true }, // Required
-    pin: { type: String, required: true },
+    email: { type: String }, // Required
+    password: { type: String }, // Required
+    pin: { type: String},
    services: [
     {
-        name: { type: String, required: true }, // Name of the service (e.g., "Headache", "Malaria")
-        fee: { type: Number, required: true }, // Fee for the service
-        time: { type: String, required: true }, // Time for the appointment
-        category: { type: String, required: true }, // Category for the service (e.g., "Family Medicine")
+        name: { type: String }, // Name of the service (e.g., "Headache", "Malaria")
+        fee: { type: Number }, // Fee for the service
+        time: { type: String }, // Time for the appointment
+        category: { type: String }, // Category for the service (e.g., "Family Medicine")
     },
 ],
     image: {
@@ -82,7 +82,7 @@ const doctorSchema = new mongoose.Schema({
     },
     paymentMethods: [
         {
-            method: { type: String, required: true }, // Name of the payment method (e.g., "PayPal", "Bank Transfer")
+            method: { type: String }, // Name of the payment method (e.g., "PayPal", "Bank Transfer")
             details: {
                 bankName:{type:String},
                 paypalEmail: { type: String }, // Optional for PayPal

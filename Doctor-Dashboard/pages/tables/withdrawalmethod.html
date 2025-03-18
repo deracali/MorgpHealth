@@ -496,7 +496,7 @@
   function handleLogout() {
     // Remove items from localStorage
 
-    localStorage.removeItem('doctor_id');
+    localStorage.removeItem('doctorId');
     localStorage.removeItem('token');
 
     // Redirect to login page or perform other actions
@@ -510,7 +510,7 @@
 <script>
   document.addEventListener("DOMContentLoaded", async () => {
     // Get the doctor ID from localStorage
-    const doctorId = localStorage.getItem("doctor_id");
+    const doctorId = localStorage.getItem("doctorId");
     if (!doctorId) {
       console.error("Doctor ID not found in localStorage.");
       return;
@@ -547,7 +547,7 @@
 <script>
   document.addEventListener('DOMContentLoaded', async function () {
     // Get the doctor ID from localStorage
-    const doctorId = localStorage.getItem('doctor_id');
+    const doctorId = localStorage.getItem('doctorId');
     if (!doctorId) {
       alert('Doctor ID not found. Please log in.');
       window.location.href = 'index.html';
@@ -618,7 +618,7 @@
 
 <script>
   const backendUrl = "https://morgphealth.onrender.com"; // Replace with your backend URL
-  const docId = localStorage.getItem("doctor_id");
+  const docId = localStorage.getItem("doctorId");
 
   let chats = [];
   let selectedChatId = null;
@@ -766,19 +766,6 @@
 
 
 
-<script>
-  function navigateToPage(methodDetails, preferredStatus) {
-      // Create the query parameters string
-      const queryParams = new URLSearchParams({
-          method: methodDetails,
-          preferred: preferredStatus
-      }).toString();
-
-      // Redirect to withdraw.html with the query parameters
-      window.location.href = `withdraw.html?${queryParams}`;
-  }
-</script>
-
 
 
 
@@ -792,49 +779,95 @@
 
 <script>
   // Get the doctor's ID from localStorage
-  const docid = localStorage.getItem('doctor_id');  // Assuming 'docId' is stored in localStorage
+  const docid = localStorage.getItem('doctorId');  // Assuming 'docId' is stored in localStorage
 
   if (docid) {
-      // Fetch payment methods from the backend API
-      fetch(`https://morgphealth.onrender.com/api/doctor/profile/${docid}`)
-          .then(response => response.json())
-          .then(data => {
-              const paymentMethods = data.paymentMethods;
-              const container = document.getElementById('payment-methods-container');
-              container.innerHTML = ''; // Clear the existing content
+    // Fetch payment methods from the backend API
+    fetch(`https://morgphealth.onrender.com/api/doctor/profile/${docid}`)
+      .then(response => response.json())
+      .then(data => {
+        console.log('API Response:', data);  // Log the response
+        const paymentMethods = data.profileData.paymentMethods || [];  // Fallback to an empty array
+        const container = document.getElementById('payment-methods-container');
+        container.innerHTML = ''; // Clear the existing content
 
-              paymentMethods.forEach(method => {
-                  // Create the HTML structure for each payment method
-                  let methodHTML = `
-                      <div class="method">
-                          <i class="method-icon"></i>
-                          <div onclick="navigateToPage('${method.details.bankAccount || method.details.paypalEmail}', '')" class="method-details">
-                              ${method.method} - ${method.details.bankAccount || method.details.paypalEmail}
-                          </div>
-                          <div class="method-actions">&#8226;&#8226;&#8226;</div>
-                      </div>
-                  `;
-                  
-                  // If the payment method is PayPal, add a specific icon
-                  if (method.method.toLowerCase() === 'paypal') {
-                      methodHTML = methodHTML.replace('<i class="method-icon"></i>', '<i class="fab fa-paypal method-icon"></i>');
-                  }
-                  // If it's a bank account, add a bank icon
-                  else if (method.method.toLowerCase() === 'bank transfer') {
-                      methodHTML = methodHTML.replace('<i class="method-icon"></i>', '<i class="fas fa-university method-icon"></i>');
-                  }
+        paymentMethods.forEach(({ method, details }) => {
+          // Destructure details (fallback to empty strings to avoid "undefined")
+          const { bankAccount = '', paypalEmail = '', accountHolder = '', bankName = '' } = details || {};
 
-                  // Append the created HTML to the container
-                  container.innerHTML += methodHTML;
-              });
-          })
-          .catch(error => {
-              console.error('Error fetching payment methods:', error);
-          });
+          // Determine method details based on payment type
+          const methodDetails = method.toLowerCase() === 'paypal' ? paypalEmail : bankAccount;
+
+          // Encode parameters for safe URL passing
+          const encodedMethod = encodeURIComponent(method);
+          const encodedDetails = encodeURIComponent(JSON.stringify(details)); // Passing complete details as a JSON string
+
+          // Generate the method HTML
+          let methodHTML = `
+            <div class="method">
+              <i class="method-icon"></i>
+              <div class="method-details">
+                <a href="withdraw.html?method=${encodedMethod}&details=${encodedDetails}">
+                  ${method} - ${methodDetails}
+                </a>
+              </div>
+              <div class="method-actions">&#8226;&#8226;&#8226;</div>
+            </div>
+          `;
+
+          // Add correct icon based on method type
+          if (method.toLowerCase() === 'paypal') {
+            methodHTML = methodHTML.replace('<i class="method-icon"></i>', '<i class="fab fa-paypal method-icon"></i>');
+          } else if (method.toLowerCase() === 'bank transfer') {
+            methodHTML = methodHTML.replace('<i class="method-icon"></i>', '<i class="fas fa-university method-icon"></i>');
+          }
+
+          // Append to the container
+          container.innerHTML += methodHTML;
+        });
+      })
+      .catch(error => {
+        console.error('Error fetching payment methods:', error);
+      });
   } else {
-      console.error('Doctor ID not found in localStorage');
+    console.error('Doctor ID not found in localStorage');
   }
 </script>
+
+
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    // Get the query parameters from the URL
+    const urlParams = new URLSearchParams(window.location.search);
+    const method = urlParams.get('method');
+    const details = urlParams.get('details');
+    
+    // Log method and details for debugging
+    console.log('Method:', method);
+    console.log('Details:', details);
+
+    // Decode and parse the details (assuming the details were passed as a JSON string)
+    const decodedDetails = details ? JSON.parse(decodeURIComponent(details)) : null;
+
+    // Extract specific details
+    const accountHolder = decodedDetails ? decodedDetails.accountHolder : '';
+    const bankAccount = decodedDetails ? decodedDetails.bankAccount : '';
+    const bankName = decodedDetails ? decodedDetails.bankName : '';
+    const iban = decodedDetails ? decodedDetails.iban : '';
+    const paypalEmail = decodedDetails ? decodedDetails.paypalEmail : '';
+
+    // Shorten the details for display (Optional: You can truncate or format the details as needed)
+    const shortenedDetails = bankAccount || paypalEmail ? `${bankAccount || paypalEmail}` : 'No account details available';
+
+    // Display the method and shortened details
+    if (method && details) {
+      document.getElementById('methodDisplay').textContent = `Method: ${method}`;
+      document.getElementById('detailsDisplay').textContent = `Account Details: ${shortenedDetails}`;
+    }
+  });
+</script>
+
 
 
 

@@ -63,8 +63,8 @@ app.post('/create-intent', async (req, res) => {
                 },
             ],
             mode: 'payment',
-            success_url: 'https://frontend-morgphealth.netlify.app/paymentsuccess',
-            cancel_url: 'https://frontend-morgphealth.netlify.app/paymentfailed',
+            success_url: 'http://patient.morgphealth.com/html/success-page.html',
+            cancel_url: 'http://patient.morgphealth.com/html/cancel-page.html',
         });
 
         res.status(200).json({ id: session.id });
@@ -98,8 +98,8 @@ app.post('/create-intents', async (req, res) => {
                 },
             ],
             mode: 'payment',
-            success_url: 'https://frontend-morgphealth.netlify.app/paymentsuccess',
-            cancel_url: 'https://frontend-morgphealth.netlify.app/paymentfailed',
+            success_url: 'http://patient.morgphealth.com/html/success-page.html',
+            cancel_url: 'http://patient.morgphealth.com/html/cancel-page.html',
         });
 
         res.status(200).json({ id: session.id });
@@ -133,8 +133,8 @@ app.post('/create-intentss', async (req, res) => {
                 },
             ],
             mode: 'payment',
-            success_url: 'https://frontend-morgphealth.netlify.app/paymentsuccess',
-            cancel_url: 'https://frontend-morgphealth.netlify.app/paymentfailed',
+            success_url: 'http://patient.morgphealth.com/html/success-page.html',
+            cancel_url: 'http://patient.morgphealth.com/html/cancel-page.html',
         });
 
         res.status(200).json({ id: session.id });
@@ -168,8 +168,8 @@ app.post('/create-intentsss', async (req, res) => {
                 },
             ],
             mode: 'payment',
-            success_url: 'https://frontend-morgphealth.netlify.app/paymentsuccess',
-            cancel_url: 'https://frontend-morgphealth.netlify.app/paymentfailed',
+            success_url: 'http://patient.morgphealth.com/html/success-page.html',
+            cancel_url: 'http://patient.morgphealth.com/html/cancel-page.html',
         });
 
         res.status(200).json({ id: session.id }); // Send the session ID to the client
