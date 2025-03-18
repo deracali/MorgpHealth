@@ -9,13 +9,13 @@ const insuranceSchema = new mongoose.Schema({
   motherName: { type: String }, // Mother's name, optional
   fatherName: { type: String }, // Father's name, optional
   childName: { type: String }, // Child's name, optional
-  age: { type: String }, // Age of the user
+  age: { type: Date }, // Age of the user
   location: { type: String }, // Location (e.g., country or city)
   insured: { type: Boolean, default: false }, // Whether the user is insured
-  spouseAge: { type: String }, // Age of the spouse
-  motherAge: { type: String }, // Age of the mother
-  fatherAge: { type: String }, // Age of the father
-  childAge: { type: String }, // Age of the child
+  spouseAge: { type: Date }, // Age of the spouse
+  motherAge: { type: Date }, // Age of the mother
+  fatherAge: { type: Date }, // Age of the father
+  childAge: { type: Date }, // Age of the child
   plan: { type: String }, // Plan type (e.g., Monthly, Yearly)
   planType: { type: String }, // Plan type (e.g., Monthly or Yearly)
   planPrice: { type: Number }, // Price of the selected plan

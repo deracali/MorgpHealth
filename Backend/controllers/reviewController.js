@@ -22,7 +22,7 @@ const ReviewController = async (req, res) => {
       pin,
       address,
       docaddress,
-      age,
+      age, // Users input Date of Birth here
       gender,
       region,
       services,
@@ -50,7 +50,9 @@ const ReviewController = async (req, res) => {
       return res.status(400).json({ success: false, message: "Email already exists" });
     }
 
-   
+    // Hash the password
+    const salt = await bcrypt.genSalt(10);
+    const hashedPassword = await bcrypt.hash(password, salt);
 
     // Placeholder image URL
     const placeholderImageUrl = "https://example.com/placeholder-image.jpg";
@@ -98,6 +100,9 @@ const ReviewController = async (req, res) => {
       }
     }
 
+    // Convert user input (age) to a Date (date of birth)
+    const dateOfBirth = age ? new Date(age) : null;
+
     // 🔹 Create Doctor Data Object
     const doctorData = {
       name: name || null,
@@ -112,7 +117,7 @@ const ReviewController = async (req, res) => {
       phone: phone || null,
       address: address || null,
       docaddress: docaddress || null,
-      age: age || null,
+      age: dateOfBirth, // Storing Date of Birth
       gender: gender || null,
       region: region || null,
       universityName: universityName || null,
@@ -144,6 +149,7 @@ const ReviewController = async (req, res) => {
     res.status(500).json({ success: false, message: error.message });
   }
 };
+
 
 
 

@@ -28,7 +28,7 @@ const addDoctor = async (req, res) => {
       fees,
       address,
       docaddress,
-      age,
+      age, // Users input date of birth here
       gender,
       region,
       universityName,
@@ -42,11 +42,10 @@ const addDoctor = async (req, res) => {
       diplomaCertificates: diplomaBody,
       proofOfID: proofIDBody,
       services,
-      paymentMethods, // Added paymentMethods
-      hospitalId // Added hospitalId
+      paymentMethods,
+      hospitalId
     } = req.body;
 
-    // Destructure files from req.files if available
     const { image, medicalLicense, diplomaCertificates, proofOfID } = req.files || {};
 
     // Check if email already exists
@@ -66,14 +65,8 @@ const addDoctor = async (req, res) => {
       if (!file) return null;
 
       try {
-        if (file.startsWith('data:image')) {
-          const uploadResult = await cloudinaryV2.uploader.upload(file, { resource_type: 'image' });
-          return uploadResult.secure_url;
-        } else if (file.startsWith('http')) {
-          const uploadResult = await cloudinaryV2.uploader.upload(file, { resource_type: 'image' });
-          return uploadResult.secure_url;
-        } else if (file.path) {
-          const uploadResult = await cloudinaryV2.uploader.upload(file.path, { resource_type: 'image' });
+        if (file.startsWith('data:image') || file.startsWith('http') || file.path) {
+          const uploadResult = await cloudinaryV2.uploader.upload(file.path || file, { resource_type: 'image' });
           return uploadResult.secure_url;
         }
       } catch (error) {
@@ -82,79 +75,80 @@ const addDoctor = async (req, res) => {
       }
     };
 
-    // Upload images based on availability (files or body data)
+    // Upload images
     const imageUrl = await uploadToCloudinary(image && image[0] ? image[0] : imageBody) || placeholderImageUrl;
     const medicalLicenseUrl = await uploadToCloudinary(medicalLicense && medicalLicense[0] ? medicalLicense[0] : licenseBody);
     const diplomaCertificatesUrl = await uploadToCloudinary(diplomaCertificates && diplomaCertificates[0] ? diplomaCertificates[0] : diplomaBody);
     const proofOfIDUrl = await uploadToCloudinary(proofOfID && proofOfID[0] ? proofOfID[0] : proofIDBody);
 
-    // Ensure hospitalId is valid and exists in the database
+    // Ensure hospitalId is valid
     const hospital = await hospitalsModel.findById(hospitalId);
     if (!hospital) {
       return res.status(400).json({ success: false, message: 'Invalid hospital ID' });
     }
 
-    // Ensure `paymentMethods` is properly parsed
-let parsedPaymentMethods = [];
-if (paymentMethods) {
-  try {
-    parsedPaymentMethods = typeof paymentMethods === "string" ? JSON.parse(paymentMethods) : paymentMethods;
-
-    if (!Array.isArray(parsedPaymentMethods)) {
-      throw new Error("Invalid paymentMethods format");
+    // Ensure `paymentMethods` is parsed correctly
+    let parsedPaymentMethods = [];
+    if (paymentMethods) {
+      try {
+        parsedPaymentMethods = typeof paymentMethods === "string" ? JSON.parse(paymentMethods) : paymentMethods;
+        if (!Array.isArray(parsedPaymentMethods)) {
+          throw new Error("Invalid paymentMethods format");
+        }
+      } catch (error) {
+        return res.status(400).json({ success: false, message: "Invalid paymentMethods format" });
+      }
     }
-  } catch (error) {
-    return res.status(400).json({ success: false, message: "Invalid paymentMethods format" });
-  }
-}
 
-// Create doctor data object
-const doctorData = {
-  name: name || null,
-  email: email || null,
-  password: hashedPassword,
-  speciality: speciality || null,
-  degree: degree || null,
-  experience: experience || null,
-  about: about || null,
-  fees: fees || null,
-  pin: pin || null,
-  phone: phone || null,
-  address: address || null,
-  docaddress: docaddress || null,
-  age: age || null,
-  gender: gender || null,
-  region: region || null,
-  universityName: universityName || null,
-  universityCountry: universityCountry || null,
-  medicalCouncilName: medicalCouncilName || null,
-  medicalCouncilCountry: medicalCouncilCountry || null,
-  graduationYear: graduationYear || null,
-  image: imageUrl,
-  medicalLicense: medicalLicenseUrl,
-  diplomaCertificates: diplomaCertificatesUrl,
-  proofOfID: proofOfIDUrl,
-  balance: balance || 0,
-  services: services || [], // Saving services as part of doctor data
-  paymentMethods: parsedPaymentMethods, // ✅ Ensure correct parsing before saving
-  hospital: hospitalId // Associating doctor with hospital
-};
+    // Convert user input (age) to a Date (date of birth)
+    const dateOfBirth = age ? new Date(age) : null;
 
-// Save new doctor to the database
-const newDoctor = new doctorModel(doctorData);
-await newDoctor.save();
+    // Create doctor data object
+    const doctorData = {
+      name: name || null,
+      email: email || null,
+      password: hashedPassword,
+      speciality: speciality || null,
+      degree: degree || null,
+      experience: experience || null,
+      about: about || null,
+      fees: fees || null,
+      pin: pin || null,
+      phone: phone || null,
+      address: address || null,
+      docaddress: docaddress || null,
+      age: dateOfBirth, // Storing Date of Birth
+      gender: gender || null,
+      region: region || null,
+      universityName: universityName || null,
+      universityCountry: universityCountry || null,
+      medicalCouncilName: medicalCouncilName || null,
+      medicalCouncilCountry: medicalCouncilCountry || null,
+      graduationYear: graduationYear || null,
+      image: imageUrl,
+      medicalLicense: medicalLicenseUrl,
+      diplomaCertificates: diplomaCertificatesUrl,
+      proofOfID: proofOfIDUrl,
+      balance: balance || 0,
+      services: services || [],
+      paymentMethods: parsedPaymentMethods,
+      hospital: hospitalId
+    };
 
-// Add the doctor to the hospital's staff
-hospital.staff.push({
-  name: newDoctor.name,
-  role: 'Doctor', // You can change the role if needed
-  email: newDoctor.email,
-  contactInfo: newDoctor.phone // Add other contact info as needed
-});
+    // Save new doctor to the database
+    const newDoctor = new doctorModel(doctorData);
+    await newDoctor.save();
 
-// Save the updated hospital document
-await hospital.save();
+    // Add the doctor to the hospital's staff
+    hospital.staff.push({
+      name: newDoctor.name,
+      role: 'Doctor',
+      email: newDoctor.email,
+      contactInfo: newDoctor.phone
+    });
 
+    // Save updated hospital document
+    await hospital.save();
 
     res.json({ success: true, message: 'Doctor Added and Assigned to Hospital Successfully' });
   } catch (error) {
@@ -162,6 +156,7 @@ await hospital.save();
     res.json({ success: false, message: error.message });
   }
 };
+
 
 
   

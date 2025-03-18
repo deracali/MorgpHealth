@@ -11,11 +11,11 @@ const addInsurance = async (req, res) => {
             motherName,
             fatherName,
             childName,
-            age,
-            spouseAge,
-            motherAge,
-            fatherAge,
-            childAge,
+            age, // Should be DOB
+            spouseAge, // Should be DOB
+            motherAge, // Should be DOB
+            fatherAge, // Should be DOB
+            childAge, // Should be DOB
             location,
             country,
             title,
@@ -31,13 +31,11 @@ const addInsurance = async (req, res) => {
             type,
             cover,
             policyTerm,
-            self, // Coming from the body
-            spouse, // Coming from the body
-            child, // Coming from the body
-            mother, // Coming from the body
-            father, // Coming from the body
-
-            // Fields for add-ons and frequency
+            self,
+            spouse,
+            child,
+            mother,
+            father,
             title1,
             frequency1,
             title2,
@@ -50,7 +48,9 @@ const addInsurance = async (req, res) => {
             frequency5
         } = req.body;
 
-        // Prepare the insurance data to be saved, including the new fields for titles and frequencies
+        // Convert age-related fields (DOB) to Date format
+        const parseDate = (dob) => (dob ? new Date(dob) : null);
+
         const insuranceData = {
             name,
             email,
@@ -59,34 +59,31 @@ const addInsurance = async (req, res) => {
             motherName,
             fatherName,
             childName,
-            age,
-            spouseAge,
-            motherAge,
-            fatherAge,
-            childAge,
+            age: parseDate(age),
+            spouseAge: parseDate(spouseAge),
+            motherAge: parseDate(motherAge),
+            fatherAge: parseDate(fatherAge),
+            childAge: parseDate(childAge),
             location,
             country,
             title,
             price,
             value,
             price2,
-            insured: insured || false, // Defaulting to false if not provided
+            insured: insured || false,
             plan,
             planType,
             planPrice,
-            addOns: addOns || [], // Defaulting to empty array if not provided
+            addOns: addOns || [],
             totalPrice,
             type,
             cover,
             policyTerm,
-            // Use the values provided in the body for self, spouse, child, mother, and father
             self,
             spouse,
             child,
             mother,
             father,
-
-            // Added dynamic values for add-on titles and frequencies
             title1,
             frequency1,
             title2,
@@ -99,19 +96,16 @@ const addInsurance = async (req, res) => {
             frequency5
         };
 
-        // Create a new insurance document using the insurance data
         const newInsurance = new insuranceModel(insuranceData);
-
-        // Save the document to the database
         await newInsurance.save();
 
-        // Respond with a success message
         res.json({ success: true, message: "Insurance Added" });
     } catch (error) {
         console.log(error);
         res.json({ success: false, message: error.message });
     }
 };
+
 
 
 const getAllInsurance = async (req, res) => {

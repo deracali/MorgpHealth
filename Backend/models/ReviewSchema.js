@@ -29,7 +29,7 @@ const ReviewdoctorSchema = new mongoose.Schema({
     docaddress: { type: String },
     slots_booked: { type: Object }, // Optional field
     region: { type: String }, // Optional field
-    age: { type: Number }, // Optional field
+    age: { type: Date }, // Optional field
     universityName: { type: String }, // Optional field
     universityCountry: { type: String }, // Optional field
     medicalCouncilName: { type: String }, // Optional field
