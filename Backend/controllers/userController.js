@@ -7,6 +7,8 @@ import doctorModel from "../models/doctorsModel.js";
 import appointmentModel from "../models/appointmentModel.js";
 import Notification from "../models/notificationModel.js";
 import nodemailer from 'nodemailer';
+import dotenv from 'dotenv';
+dotenv.config();
 
 // Access the 'vs' property if it exists on the cloudinary object
 const { vs } = cloudinary;
@@ -17,8 +19,8 @@ const transporter = nodemailer.createTransport({
     port: 587,  // Use 465 for SSL if needed
     secure: false, // Set to `true` if using port 465
     auth: {
-        user: process.env.TITAN_EMAIL,  // Your Titan Mail email
-        pass: process.env.TITAN_PASSWORD // Your Titan Mail password
+        user: 'support@morgphealth.com',  // Your Titan Mail email
+        pass: '@Charyn0771941' // Your Titan Mail password
     }
 });
 
@@ -324,8 +326,9 @@ const bookAppointment = async (req, res) => {
         const userEmailContent = `Dear ${userData.name},\n\nYour appointment with Dr. ${docData.name} is confirmed.\n\nDate: ${slotDate}\nTime: ${slotTime}\nType: ${type}\nConcern: ${concern}\n\nThank you for choosing our service.\n\nBest regards,\nYour Healthcare Team`;
         const doctorEmailContent = `Dear Dr. ${docData.name},\n\nYou have a new appointment booked.\n\nPatient: ${userData.name}\nDate: ${slotDate}\nTime: ${slotTime}\nType: ${type}\nConcern: ${concern}\n\nPlease check your dashboard for details.\n\nBest regards,\nYour Healthcare Team`;
 
-        sendAppointmentEmail(userData.email, "Appointment Confirmation", userEmailContent);
-        sendAppointmentEmail(docData.email, "New Appointment Booked", doctorEmailContent);
+        await sendAppointmentEmail(userData.email, "Appointment Confirmation", userEmailContent);
+        await sendAppointmentEmail(docData.email, "New Appointment Booked", doctorEmailContent);
+        
 
         res.json({ success: true, message: "Appointment Booked", appointment: appointmentData });
 
