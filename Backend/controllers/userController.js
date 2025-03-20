@@ -245,7 +245,7 @@ const updateProfileMobile = async (req, res) => {
 // Function to send appointment emails
 const sendAppointmentEmail = async (to, subject, text) => {
     const mailOptions = {
-        from: process.env.TITAN_EMAIL,
+        from: 'support@morgphealth.com',  // Directly use the email
         to,
         subject,
         text
@@ -258,6 +258,8 @@ const sendAppointmentEmail = async (to, subject, text) => {
         console.error('Email error:', error);
     }
 };
+
+
 
 // Book Appointment Controller
 const bookAppointment = async (req, res) => {

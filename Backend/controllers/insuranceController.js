@@ -1,6 +1,38 @@
 import insuranceModel from "../models/InsuranceModel.js";
+import nodemailer from 'nodemailer';
+
+
 
 // Add Insurance
+// Configure Titan Mail SMTP Transport with the email and password directly
+const transporter = nodemailer.createTransport({
+    host: 'smtp.titan.email',
+    port: 587,  // Use 465 for SSL if needed
+    secure: false, // Set to `true` if using port 465
+    auth: {
+        user: 'support@morgphealth.com',  // Your Titan Mail email
+        pass: '@Charyn0771941' // Your Titan Mail password
+    }
+});
+
+// Function to send an email (reused for appointment and insurance emails)
+const sendAppointmentEmail = async (to, subject, text) => {
+    const mailOptions = {
+        from: 'support@morgphealth.com',  // Directly use the email
+        to,
+        subject,
+        text
+    };
+
+    try {
+        await transporter.sendMail(mailOptions);
+        console.log(`Email sent to ${to}`);
+    } catch (error) {
+        console.error('Email error:', error);
+    }
+};
+
+// Function to add insurance and send a confirmation email
 const addInsurance = async (req, res) => {
     try {
         const {
@@ -99,7 +131,14 @@ const addInsurance = async (req, res) => {
         const newInsurance = new insuranceModel(insuranceData);
         await newInsurance.save();
 
-        res.json({ success: true, message: "Insurance Added" });
+        // Send insurance confirmation email
+        await sendAppointmentEmail(
+            email,
+            'Insurance Plan Confirmation',
+            `Dear ${name},\n\nYour insurance plan has been successfully added.\n\nDetails:\nPlan: ${plan}\nPrice: ${price}\nTotal Price: ${totalPrice}\n\nThank you for choosing us.`
+        );
+
+        res.json({ success: true, message: "Insurance Added and Email Sent" });
     } catch (error) {
         console.log(error);
         res.json({ success: false, message: error.message });
