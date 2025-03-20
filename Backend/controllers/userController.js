@@ -13,7 +13,7 @@ dotenv.config();
 // Access the 'vs' property if it exists on the cloudinary object
 const { vs } = cloudinary;
 
-// Configure Titan Mail SMTP Transport
+// Configure Titan Mail SMTP Transport with the email and password directly
 const transporter = nodemailer.createTransport({
     host: 'smtp.titan.email',
     port: 587,  // Use 465 for SSL if needed
@@ -22,12 +22,12 @@ const transporter = nodemailer.createTransport({
         user: 'support@morgphealth.com',  // Your Titan Mail email
         pass: '@Charyn0771941' // Your Titan Mail password
     }
-});
+});  
 
 // Function to send an email
 const sendEmail = async (to, subject, text) => {
     const mailOptions = {
-        from: process.env.TITAN_EMAIL,
+        from: 'support@morgphealth.com', // Directly use the email
         to,
         subject,
         text
@@ -38,8 +38,13 @@ const sendEmail = async (to, subject, text) => {
         console.log(`Email sent to ${to}`);
     } catch (error) {
         console.error('Email error:', error);
+        if (error.response) {
+            console.error('SMTP response:', error.response);
+        }
     }
 };
+
+
 
 // Register User
 const registerUser = async (req, res) => {
@@ -98,6 +103,7 @@ const registerUser = async (req, res) => {
 };
 
 // Login User
+// Example login function
 const loginUser = async (req, res) => {
     try {
         const { email, password } = req.body;
